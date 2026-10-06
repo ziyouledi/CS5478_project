@@ -25,3 +25,12 @@ videos/
 
 # Tmp
 /tmp
+
+# cluster dir
+runs
+checkpoints
+datasets
+cache
+*.pt
+*.pth
+*.ckpt
