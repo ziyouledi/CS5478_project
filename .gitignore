@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+env_isaaclab/
+
+# Isaac Lab outputs
+logs/
+outputs/
+runs/
+checkpoints/
+videos/
+*.pt
+*.pth
+*.ckpt
+
+# Isaac Sim caches
+.cache/
+.nvidia-omniverse/
+
+# Local files
+.DS_Store
+.env
+*.log
+
+# Tmp
+/tmp

@@ -1,0 +1,203 @@
+{"kind":"deck","id":"pr/o8usac","name":"Deck"}
+{"kind":"layout","layoutId":"f38ff7c4-5882-40ee-8c55-49dfd1d7a8ed","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"901b0a73-8024-429a-bf73-d218a7e19429","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/s85udc","slide":1,"title":"LOW-DIMENSIONAL","textShapes":8}
+{"kind":"shape","id":"sh/ipsry1o7","slide":1,"bbox":[0,0,18,720]}
+{"kind":"textbox","id":"sh/5sjatg7i","slide":1,"text":"LOW-DIMENSIONAL\nMANIPULATION INTENT","textPreview":"LOW-DIMENSIONAL | MANIPULATION INTENT","textChars":35,"textLines":2,"bbox":[72,90,850,132]}
+{"kind":"textbox","id":"sh/4ra90b6d","slide":1,"text":"for shared-autonomy dexterous control","textPreview":"for shared-autonomy dexterous control","textChars":37,"textLines":1,"bbox":[75,230,760,44]}
+{"kind":"textbox","id":"sh/re1sv6po","slide":1,"text":"How much human hand information is needed?","textPreview":"How much human hand information is needed?","textChars":42,"textLines":1,"bbox":[75,346,850,62]}
+{"kind":"shape","id":"sh/qtsr21o3","slide":1,"bbox":[76,440,860,2]}
+{"kind":"textbox","id":"sh/dgjaxg7u","slide":1,"text":"Task goal and object state can specify what to do. This proposal isolates how much human manipulation information is needed to make contact-rich execution learnable.","textPreview":"Task goal and object state can specify what to do. This proposal isolates how much human manipulation information is needed to make conta...","textChars":165,"textLines":1,"bbox":[76,468,900,92]}
+{"kind":"textbox","id":"sh/sfa94b69","slide":1,"text":"Proposal presentation","textPreview":"Proposal presentation","textChars":21,"textLines":1,"bbox":[76,628,340,28]}
+{"kind":"textbox","id":"sh/filszqp0","slide":1,"text":"TASK","textPreview":"TASK","textChars":4,"textLines":1,"bbox":[1010,145,150,70]}
+{"kind":"textbox","id":"sh/ehcr6lof","slide":1,"text":"INTENT","textPreview":"INTENT","textChars":6,"textLines":1,"bbox":[1010,315,150,70]}
+{"kind":"textbox","id":"sh/8f2psbut","slide":1,"text":"ACTION","textPreview":"ACTION","textChars":6,"textLines":1,"bbox":[1010,485,150,70]}
+{"kind":"shape","id":"sh/9gbq1wvy","slide":1,"bbox":[1085,215,0,100]}
+{"kind":"shape","id":"sh/mdk7q1cn","slide":1,"bbox":[1085,385,0,100]}
+{"kind":"notes","id":"nt/s85udc","slide":1,"text":"Opening framing: this is not a Quest teleoperation project. The scientific question is the information content of an intermediate manipulation representation between a task goal and 16-DoF control."}
+{"kind":"slide","id":"sl/uf74gr","slide":2,"title":"The missing layer between task intent and dexterous action","textShapes":14}
+{"kind":"textbox","id":"sh/dkzedcna","slide":2,"text":"The missing layer between task intent and dexterous action","textPreview":"The missing layer between task intent and dexterous action","textChars":58,"textLines":1,"bbox":[64,42,1060,54]}
+{"kind":"textbox","id":"sh/qhovih4z","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1160,48,56,30]}
+{"kind":"textbox","id":"sh/bihwb25k","slide":2,"text":"Task-level intent\n\"rotate the cube\"","textPreview":"Task-level intent | \"rotate the cube\"","textChars":35,"textLines":2,"bbox":[90,145,300,112]}
+{"kind":"textbox","id":"sh/0nqdorm1","slide":2,"text":"Manipulation intent\n?","textPreview":"Manipulation intent | ?","textChars":21,"textLines":2,"bbox":[490,145,300,112]}
+{"kind":"textbox","id":"sh/lozehwnm","slide":2,"text":"Dexterous action\n16-DoF Allegro","textPreview":"Dexterous action | 16-DoF Allegro","textChars":31,"textLines":2,"bbox":[890,145,300,112]}
+{"kind":"shape","id":"sh/yl8vmh4v","slide":2,"bbox":[390,201,100,0]}
+{"kind":"shape","id":"sh/zmhwfm5g","slide":2,"bbox":[790,201,100,0]}
+{"kind":"textbox","id":"sh/gr6dcn6x","slide":2,"text":"Language and VLMs","textPreview":"Language and VLMs","textChars":17,"textLines":1,"bbox":[110,300,250,34]}
+{"kind":"textbox","id":"sh/1sfu5sni","slide":2,"text":"what to do","textPreview":"what to do","textChars":10,"textLines":1,"bbox":[110,334,250,42]}
+{"kind":"textbox","id":"sh/1cvy9wvu","slide":2,"text":"Contact-rich control","textPreview":"Contact-rich control","textChars":20,"textLines":1,"bbox":[910,300,250,34]}
+{"kind":"textbox","id":"sh/0bmx0re9","slide":2,"text":"how to do it physically","textPreview":"how to do it physically","textChars":23,"textLines":1,"bbox":[900,334,270,42]}
+{"kind":"shape","id":"sh/zatg7mdo","slide":2,"bbox":[64,410,1152,1]}
+{"kind":"textbox","id":"sh/e9kfy1w3","slide":2,"text":"RQ1","textPreview":"RQ1","textChars":3,"textLines":1,"bbox":[88,445,72,34]}
+{"kind":"textbox","id":"sh/9gvydgvq","slide":2,"text":"Does intermediate manipulation intent improve dexterous control beyond task and object state alone?","textPreview":"Does intermediate manipulation intent improve dexterous control beyond task and object state alone?","textChars":99,"textLines":1,"bbox":[165,438,1000,52]}
+{"kind":"textbox","id":"sh/ofmh4be5","slide":2,"text":"RQ2","textPreview":"RQ2","textChars":3,"textLines":1,"bbox":[88,535,72,34]}
+{"kind":"textbox","id":"sh/nedgb6dk","slide":2,"text":"Can low-dimensional hand synergies preserve the useful information in full hand tracking?","textPreview":"Can low-dimensional hand synergies preserve the useful information in full hand tracking?","textChars":89,"textLines":1,"bbox":[165,528,1000,52]}
+{"kind":"textbox","id":"sh/md4z21wf","slide":2,"text":"Controlled study: the representation changes; the task, policy and training setup stay fixed.","textPreview":"Controlled study: the representation changes; the task, policy and training setup stay fixed.","textChars":93,"textLines":1,"bbox":[64,682,1090,18]}
+{"kind":"notes","id":"nt/uf74gr","slide":2,"text":"Problem definition. The task-level command and object state are assumed available. RQ1 tests whether human manipulation intent adds value. RQ2 asks whether a compact representation retains that value."}
+{"kind":"slide","id":"sl/yek60p","slide":3,"title":"Research gap: prior work changes the pipeline, not the information budget","textShapes":17}
+{"kind":"textbox","id":"sh/bmt4repc","slide":3,"text":"Research gap: prior work changes the pipeline, not the information budget","textPreview":"Research gap: prior work changes the pipeline, not the information budget","textChars":73,"textLines":1,"bbox":[64,42,1060,54]}
+{"kind":"textbox","id":"sh/cn2l0j6x","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1160,48,56,30]}
+{"kind":"shape","id":"sh/dobmtoni","slide":3,"bbox":[64,132,8,80]}
+{"kind":"textbox","id":"sh/yp432to3","slide":3,"text":"Traditional teleoperation","textPreview":"Traditional teleoperation","textChars":25,"textLines":1,"bbox":[92,132,250,34]}
+{"kind":"textbox","id":"sh/zqd4vy58","slide":3,"text":"Full human pose is retargeted to robot pose","textPreview":"Full human pose is retargeted to robot pose","textChars":43,"textLines":1,"bbox":[340,132,415,80]}
+{"kind":"textbox","id":"sh/0rml436t","slide":3,"text":"Embodiment mismatch can distort contacts","textPreview":"Embodiment mismatch can distort contacts","textChars":40,"textLines":1,"bbox":[790,132,410,80]}
+{"kind":"shape","id":"sh/lsvmx8ne","slide":3,"bbox":[92,227,1108,1]}
+{"kind":"shape","id":"sh/et03q9oj","slide":3,"bbox":[64,244,8,80]}
+{"kind":"textbox","id":"sh/fu9kjup4","slide":3,"text":"DexUMI / DOGlove","textPreview":"DexUMI / DOGlove","textChars":16,"textLines":1,"bbox":[92,244,250,34]}
+{"kind":"textbox","id":"sh/b6dsjato","slide":3,"text":"Hardware improves feasible, precise demonstrations","textPreview":"Hardware improves feasible, precise demonstrations","textChars":50,"textLines":1,"bbox":[340,244,415,80]}
+{"kind":"textbox","id":"sh/q54bq5cj","slide":3,"text":"Focus: collection quality and transfer","textPreview":"Focus: collection quality and transfer","textChars":38,"textLines":1,"bbox":[790,244,410,80]}
+{"kind":"shape","id":"sh/d8valkbu","slide":3,"bbox":[92,339,1108,1]}
+{"kind":"shape","id":"sh/c7mtsfu9","slide":3,"bbox":[64,356,8,80]}
+{"kind":"textbox","id":"sh/3itsfats","slide":3,"text":"TypeTele / Dexplore","textPreview":"TypeTele / Dexplore","textChars":19,"textLines":1,"bbox":[92,356,250,34]}
+{"kind":"textbox","id":"sh/2hkbm5c7","slide":3,"text":"Types or soft references relax exact pose matching","textPreview":"Types or soft references relax exact pose matching","textChars":50,"textLines":1,"bbox":[340,356,415,80]}
+{"kind":"textbox","id":"sh/p4vah0by","slide":3,"text":"Focus: better guidance under mismatch","textPreview":"Focus: better guidance under mismatch","textChars":37,"textLines":1,"bbox":[790,356,410,80]}
+{"kind":"shape","id":"sh/o32tofud","slide":3,"bbox":[92,451,1108,1]}
+{"kind":"shape","id":"sh/fetsbqtw","slide":3,"bbox":[64,468,8,80]}
+{"kind":"textbox","id":"sh/edkrilcb","slide":3,"text":"UniDex","textPreview":"UniDex","textChars":6,"textLines":1,"bbox":[92,468,250,34]}
+{"kind":"textbox","id":"sh/i90bulw3","slide":3,"text":"Unified action space and VLA scale across hands","textPreview":"Unified action space and VLA scale across hands","textChars":47,"textLines":1,"bbox":[340,468,415,80]}
+{"kind":"textbox","id":"sh/ja9c3qxo","slide":3,"text":"Focus: generalization and data scale","textPreview":"Focus: generalization and data scale","textChars":36,"textLines":1,"bbox":[790,468,410,80]}
+{"kind":"shape","id":"sh/4bitwve9","slide":3,"bbox":[64,602,1152,58]}
+{"kind":"textbox","id":"sh/5cru50fe","slide":3,"text":"Open question","textPreview":"Open question","textChars":13,"textLines":1,"bbox":[86,614,150,34]}
+{"kind":"textbox","id":"sh/6dkby5wz","slide":3,"text":"How much intermediate human information is actually necessary?","textPreview":"How much intermediate human information is actually necessary?","textChars":62,"textLines":1,"bbox":[245,607,920,42]}
+{"kind":"textbox","id":"sh/retc7qdk","slide":3,"text":"Sources: TypeTele (Lin et al., 2025); DexUMI (Xu et al., 2025); Dexplore (Xu et al., 2025); DOGlove (Zhang et al., 2025); UniDex (Zhang et al., 2026).","textPreview":"Sources: TypeTele (Lin et al., 2025); DexUMI (Xu et al., 2025); Dexplore (Xu et al., 2025); DOGlove (Zhang et al., 2025); UniDex (Zhang e...","textChars":150,"textLines":1,"bbox":[64,682,1090,18]}
+{"kind":"notes","id":"nt/yek60p","slide":3,"text":"Literature sources from the supplied folder: TypeTele: Releasing Dexterity in Teleoperation by Dexterous Manipulation Types; DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation; Dexplore: Scalable Neural Control for Dexterous Manipulation from Reference-Scoped Exploration; DOGlove: Dexterous Manipulation with a Low-Cost Open-Source Haptic Force Feedback Glove; UniDex: A Robot Foundation Suite for Universal Dexterous Hand Control from Egocentric Human Videos."}
+{"kind":"slide","id":"sl/2ungsl","slide":4,"title":"Literature map along the representation abstraction axis","textShapes":20}
+{"kind":"textbox","id":"sh/ps7290be","slide":4,"text":"Literature map along the representation abstraction axis","textPreview":"Literature map along the representation abstraction axis","textChars":56,"textLines":1,"bbox":[64,42,1060,54]}
+{"kind":"textbox","id":"sh/25gjyls3","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1160,48,56,30]}
+{"kind":"textbox","id":"sh/3qpk7qto","slide":4,"text":"MORE HUMAN DETAIL","textPreview":"MORE HUMAN DETAIL","textChars":17,"textLines":1,"bbox":[82,114,300,28]}
+{"kind":"textbox","id":"sh/g3e1wbax","slide":4,"text":"LESS HUMAN DETAIL","textPreview":"LESS HUMAN DETAIL","textChars":17,"textLines":1,"bbox":[930,114,260,28]}
+{"kind":"shape","id":"sh/14n25gbi","slide":4,"bbox":[100,184,1080,6]}
+{"kind":"shape","id":"sh/u1wjulsr","slide":4,"bbox":[100,169,20,36]}
+{"kind":"textbox","id":"sh/f25k36tc","slide":4,"text":"Full pose","textPreview":"Full pose","textChars":9,"textLines":1,"bbox":[95,230,245,38]}
+{"kind":"textbox","id":"sh/sze1sba1","slide":4,"text":"DexUMI / DOGlove","textPreview":"DexUMI / DOGlove","textChars":16,"textLines":1,"bbox":[95,281,245,48]}
+{"kind":"textbox","id":"sh/t0n21gbm","slide":4,"text":"Precise demonstrations","textPreview":"Precise demonstrations","textChars":22,"textLines":1,"bbox":[95,342,235,60]}
+{"kind":"shape","id":"sh/twnql4v2","slide":4,"bbox":[370,169,20,36]}
+{"kind":"textbox","id":"sh/sve9sjex","slide":4,"text":"Fingertip geometry","textPreview":"Fingertip geometry","textChars":18,"textLines":1,"bbox":[365,230,245,38]}
+{"kind":"textbox","id":"sh/ru58jedc","slide":4,"text":"Common retargeting signal","textPreview":"Common retargeting signal","textChars":25,"textLines":1,"bbox":[365,281,245,48]}
+{"kind":"textbox","id":"sh/6tw7q9wr","slide":4,"text":"Contact-relevant structure","textPreview":"Contact-relevant structure","textChars":26,"textLines":1,"bbox":[365,342,235,60]}
+{"kind":"shape","id":"sh/5snqh4v6","slide":4,"bbox":[640,169,20,36]}
+{"kind":"textbox","id":"sh/4repozel","slide":4,"text":"Synergy / type","textPreview":"Synergy / type","textChars":14,"textLines":1,"bbox":[635,230,245,38]}
+{"kind":"textbox","id":"sh/jq58fud0","slide":4,"text":"TypeTele; latent skill codes","textPreview":"TypeTele; latent skill codes","textChars":28,"textLines":1,"bbox":[635,281,245,48]}
+{"kind":"textbox","id":"sh/ipc7mpwf","slide":4,"text":"Compressed intent","textPreview":"Compressed intent","textChars":17,"textLines":1,"bbox":[635,342,235,60]}
+{"kind":"shape","id":"sh/ho3qdkva","slide":4,"bbox":[910,169,20,36]}
+{"kind":"textbox","id":"sh/w3upkzep","slide":4,"text":"Task goal only","textPreview":"Task goal only","textChars":14,"textLines":1,"bbox":[905,230,245,38]}
+{"kind":"textbox","id":"sh/8jihgjqh","slide":4,"text":"VLA instruction + object state","textPreview":"VLA instruction + object state","textChars":30,"textLines":1,"bbox":[905,281,245,48]}
+{"kind":"textbox","id":"sh/9kripo72","slide":4,"text":"No human motion","textPreview":"No human motion","textChars":15,"textLines":1,"bbox":[905,342,235,60]}
+{"kind":"shape","id":"sh/mh0zet8r","slide":4,"bbox":[64,445,1152,128]}
+{"kind":"textbox","id":"sh/7i90nepc","slide":4,"text":"Our experiment","textPreview":"Our experiment","textChars":14,"textLines":1,"bbox":[90,467,200,30]}
+{"kind":"textbox","id":"sh/kfyhcjql","slide":4,"text":"A controlled comparison across the same axis","textPreview":"A controlled comparison across the same axis","textChars":44,"textLines":1,"bbox":[90,502,470,42]}
+{"kind":"textbox","id":"sh/lgrilo76","slide":4,"text":"The study tests whether performance saturates before full hand pose. A positive result would identify the smallest useful interface between high-level intent and dexterous control.","textPreview":"The study tests whether performance saturates before full hand pose. A positive result would identify the smallest useful interface betwe...","textChars":180,"textLines":1,"bbox":[590,472,570,82]}
+{"kind":"textbox","id":"sh/ytgza98f","slide":4,"text":"The axis organizes representation content, not hardware quality or overall system capability.","textPreview":"The axis organizes representation content, not hardware quality or overall system capability.","textChars":93,"textLines":1,"bbox":[64,682,1090,18]}
+{"kind":"notes","id":"nt/2ungsl","slide":4,"text":"The abstraction axis is the synthesis of the supplied literature. TypeTele supports manipulation types as an abstraction. Dexplore supports soft reference guidance and compact latent skill conditioning. DexUMI and DOGlove represent rich human-state capture. UniDex motivates a language-conditioned, cross-hand control endpoint."}
+{"kind":"slide","id":"sl/v2a790","slide":5,"title":"Controlled comparison of four manipulation-intent representations","textShapes":13}
+{"kind":"textbox","id":"sh/x472ts7y","slide":5,"text":"Controlled comparison of four manipulation-intent representations","textPreview":"Controlled comparison of four manipulation-intent representations","textChars":65,"textLines":1,"bbox":[64,42,1060,54]}
+{"kind":"textbox","id":"sh/a1w3ydon","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1160,48,56,30]}
+{"kind":"textbox","id":"sh/b25krip8","slide":5,"text":"Task + object goal","textPreview":"Task + object goal","textChars":18,"textLines":1,"bbox":[700,118,230,72]}
+{"kind":"textbox","id":"sh/k7yl4n6p","slide":5,"text":"Robot + object state","textPreview":"Robot + object state","textChars":20,"textLines":1,"bbox":[970,118,230,72]}
+{"kind":"textbox","id":"sh/l872xs7a","slide":5,"text":"Object-only\n0 human dims","textPreview":"Object-only | 0 human dims","textChars":24,"textLines":2,"bbox":[100,115,235,72]}
+{"kind":"textbox","id":"sh/y5g32xoj","slide":5,"text":"Fingertips\nmedium dimension","textPreview":"Fingertips | medium dimension","textChars":27,"textLines":2,"bbox":[100,225,235,72]}
+{"kind":"textbox","id":"sh/z6pkvip4","slide":5,"text":"PCA synergy\nlow dimension","textPreview":"PCA synergy | low dimension","textChars":25,"textLines":2,"bbox":[100,335,235,72]}
+{"kind":"textbox","id":"sh/0bu1s36l","slide":5,"text":"Full hand\nhigh dimension","textPreview":"Full hand | high dimension","textChars":24,"textLines":2,"bbox":[100,445,235,72]}
+{"kind":"textbox","id":"sh/1cn2l876","slide":5,"text":"Goal-conditioned PPO","textPreview":"Goal-conditioned PPO","textChars":20,"textLines":1,"bbox":[700,285,250,92]}
+{"kind":"textbox","id":"sh/dkzadovi","slide":5,"text":"16-DoF Allegro\nCube reorientation","textPreview":"16-DoF Allegro | Cube reorientation","textChars":33,"textLines":2,"bbox":[1040,285,185,92]}
+{"kind":"shape","id":"sh/cjq94jex","slide":5,"bbox":[335,151,365,180]}
+{"kind":"shape","id":"sh/rihsbedc","slide":5,"bbox":[335,261,365,70]}
+{"kind":"shape","id":"sh/qh8r29wr","slide":5,"bbox":[335,331,365,40]}
+{"kind":"shape","id":"sh/l8jahove","slide":5,"bbox":[335,331,365,150]}
+{"kind":"shape","id":"sh/07a98jet","slide":5,"bbox":[950,331,90,0]}
+{"kind":"shape","id":"sh/zm1sfed8","slide":5,"bbox":[815,190,10,95]}
+{"kind":"shape","id":"sh/ylsr6twn","slide":5,"bbox":[825,190,260,95]}
+{"kind":"shape","id":"sh/9c3al8va","slide":5,"bbox":[72,566,1163,62]}
+{"kind":"textbox","id":"sh/8ba9c3e5","slide":5,"text":"Fixed across conditions","textPreview":"Fixed across conditions","textChars":23,"textLines":1,"bbox":[94,578,220,34]}
+{"kind":"textbox","id":"sh/sr2l4bqd","slide":5,"text":"robot state  •  object state  •  reward  •  PPO  •  action space  •  training budget","textPreview":"robot state  •  object state  •  reward  •  PPO  •  action space  •  training budget","textChars":84,"textLines":1,"bbox":[315,575,885,38]}
+{"kind":"textbox","id":"sh/tsb2xg7y","slide":5,"text":"Only the manipulation-intent representation changes.","textPreview":"Only the manipulation-intent representation changes.","textChars":52,"textLines":1,"bbox":[64,682,1090,18]}
+{"kind":"notes","id":"nt/v2a790","slide":5,"text":"Proposed system. Four conditions share the same task, state inputs, reward, PPO implementation, action space and budget. Object-only is the zero-human-information baseline. The other three increase or compress tracked hand information."}
+{"kind":"slide","id":"sl/sqeyby","slide":6,"title":"Palm-normalized hand synergies isolate compact intent","textShapes":17}
+{"kind":"textbox","id":"sh/rid8vu9s","slide":6,"text":"Palm-normalized hand synergies isolate compact intent","textPreview":"Palm-normalized hand synergies isolate compact intent","textChars":53,"textLines":1,"bbox":[64,42,1060,54]}
+{"kind":"textbox","id":"sh/sj6pozad","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1160,48,56,30]}
+{"kind":"textbox","id":"sh/dkfqx4ry","slide":6,"text":"Quest hand tracking\npᵢ in world frame","textPreview":"Quest hand tracking | pᵢ in world frame","textChars":37,"textLines":2,"bbox":[72,155,250,90]}
+{"kind":"textbox","id":"sh/it47ipsb","slide":6,"text":"Palm-frame normalization\np̃ᵢ = Rₚₐₗₘ⁻¹(pᵢ − pₚₐₗₘ)","textPreview":"Palm-frame normalization | p̃ᵢ = Rₚₐₗₘ⁻¹(pᵢ − pₚₐₗₘ)","textChars":50,"textLines":2,"bbox":[395,155,335,90]}
+{"kind":"textbox","id":"sh/3ud8ru9g","slide":6,"text":"PCA encoding\nzₜ = Wₖᵀ(hₜ − μ)","textPreview":"PCA encoding | zₜ = Wₖᵀ(hₜ − μ)","textChars":29,"textLines":2,"bbox":[803,155,300,90]}
+{"kind":"shape","id":"sh/4vmpkfa1","slide":6,"bbox":[322,200,73,0]}
+{"kind":"shape","id":"sh/5wvqtkrm","slide":6,"bbox":[730,200,73,0]}
+{"kind":"shape","id":"sh/2poru9sf","slide":6,"bbox":[1125,160,88,80]}
+{"kind":"textbox","id":"sh/nqh83e90","slide":6,"text":"k = 4","textPreview":"k = 4","textChars":5,"textLines":1,"bbox":[1136,178,66,45]}
+{"kind":"textbox","id":"sh/r25w3ylg","slide":6,"text":"Information supplied to the policy","textPreview":"Information supplied to the policy","textChars":34,"textLines":1,"bbox":[72,310,500,36]}
+{"kind":"textbox","id":"sh/61wvut4v","slide":6,"text":"Full hand","textPreview":"Full hand","textChars":9,"textLines":1,"bbox":[72,370,180,30]}
+{"kind":"shape","id":"sh/to7e5o36","slide":6,"bbox":[260,374,850,22]}
+{"kind":"textbox","id":"sh/s3ydwjm1","slide":6,"text":"high","textPreview":"high","textChars":4,"textLines":1,"bbox":[1080,370,120,30]}
+{"kind":"textbox","id":"sh/fqpw7ylc","slide":6,"text":"Fingertips","textPreview":"Fingertips","textChars":10,"textLines":1,"bbox":[72,432,180,30]}
+{"kind":"shape","id":"sh/epgvyt4r","slide":6,"bbox":[260,436,650,22]}
+{"kind":"textbox","id":"sh/1s7e983i","slide":6,"text":"medium","textPreview":"medium","textChars":6,"textLines":1,"bbox":[1080,432,120,30]}
+{"kind":"textbox","id":"sh/gryd03mx","slide":6,"text":"PCA synergy","textPreview":"PCA synergy","textChars":11,"textLines":1,"bbox":[72,494,180,30]}
+{"kind":"shape","id":"sh/3upwbilo","slide":6,"bbox":[260,498,390,22]}
+{"kind":"textbox","id":"sh/2tgf2d43","slide":6,"text":"low","textPreview":"low","textChars":3,"textLines":1,"bbox":[1080,494,120,30]}
+{"kind":"textbox","id":"sh/ypkzahob","slide":6,"text":"Object-only","textPreview":"Object-only","textChars":11,"textLines":1,"bbox":[72,556,180,30]}
+{"kind":"shape","id":"sh/zqtg325w","slide":6,"bbox":[260,560,120,22]}
+{"kind":"textbox","id":"sh/kr2hc761","slide":6,"text":"zero","textPreview":"zero","textChars":4,"textLines":1,"bbox":[1080,556,120,30]}
+{"kind":"shape","id":"sh/lsby5cnm","slide":6,"bbox":[72,632,1140,36]}
+{"kind":"textbox","id":"sh/ql0z6xoz","slide":6,"text":"Wrist tracking defines the coordinate frame; the fixed-palm Allegro task does not treat wrist motion as a control variable.","textPreview":"Wrist tracking defines the coordinate frame; the fixed-palm Allegro task does not treat wrist motion as a control variable.","textChars":123,"textLines":1,"bbox":[90,636,1100,26]}
+{"kind":"textbox","id":"sh/bm9gz25k","slide":6,"text":"Primary synergy setting: k = 4. A PCA-dimension ablation can test the compression-performance trade-off.","textPreview":"Primary synergy setting: k = 4. A PCA-dimension ablation can test the compression-performance trade-off.","textChars":104,"textLines":1,"bbox":[64,682,1090,18]}
+{"kind":"notes","id":"nt/sqeyby","slide":6,"text":"Representation design. Hand points are transformed from world coordinates into a palm-centered coordinate frame. PCA is fitted on normalized hand vectors. The main low-dimensional condition uses k=4; the exact hand vector h_t should be fixed before data collection and reported in the method section."}
+{"kind":"slide","id":"sl/rcg4cq","slide":7,"title":"Evaluation separates final performance from learning speed","textShapes":21}
+{"kind":"textbox","id":"sh/2h4futkv","slide":7,"text":"Evaluation separates final performance from learning speed","textPreview":"Evaluation separates final performance from learning speed","textChars":58,"textLines":1,"bbox":[64,42,1060,54]}
+{"kind":"textbox","id":"sh/pkfyp8jm","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1160,48,56,30]}
+{"kind":"textbox","id":"sh/4jmxw321","slide":7,"text":"Success rate","textPreview":"Success rate","textChars":12,"textLines":1,"bbox":[72,145,300,34]}
+{"kind":"textbox","id":"sh/fudwjelk","slide":7,"text":"SR","textPreview":"SR","textChars":2,"textLines":1,"bbox":[72,194,300,70]}
+{"kind":"shape","id":"sh/ut4fq9kz","slide":7,"bbox":[72,278,300,2]}
+{"kind":"textbox","id":"sh/hwvylojq","slide":7,"text":"Final task completion across held-out episodes","textPreview":"Final task completion across held-out episodes","textChars":46,"textLines":1,"bbox":[72,300,300,86]}
+{"kind":"textbox","id":"sh/gvmxsj25","slide":7,"text":"Sample efficiency","textPreview":"Sample efficiency","textChars":17,"textLines":1,"bbox":[430,145,300,34]}
+{"kind":"textbox","id":"sh/7qtwfel8","slide":7,"text":"N₈₀","textPreview":"N₈₀","textChars":3,"textLines":1,"bbox":[430,194,300,70]}
+{"kind":"shape","id":"sh/6pkfm9k3","slide":7,"bbox":[430,278,300,2]}
+{"kind":"textbox","id":"sh/on2x0fq1","slide":7,"text":"Steps required to reach 80% success","textPreview":"Steps required to reach 80% success","textChars":35,"textLines":1,"bbox":[430,300,300,86]}
+{"kind":"textbox","id":"sh/pobe9krm","slide":7,"text":"Learning-curve AUC","textPreview":"Learning-curve AUC","textChars":18,"textLines":1,"bbox":[788,145,300,34]}
+{"kind":"textbox","id":"sh/2l0fy58v","slide":7,"text":"AUC = ∫ SR(n) dn","textPreview":"AUC = ∫ SR(n) dn","textChars":16,"textLines":1,"bbox":[788,194,300,70]}
+{"kind":"shape","id":"sh/nmtw7a9g","slide":7,"bbox":[788,278,300,2]}
+{"kind":"textbox","id":"sh/0zixwfqp","slide":7,"text":"Performance accumulated over the full training budget","textPreview":"Performance accumulated over the full training budget","textChars":53,"textLines":1,"bbox":[788,300,300,86]}
+{"kind":"shape","id":"sh/10re50ra","slide":7,"bbox":[72,420,1140,1]}
+{"kind":"textbox","id":"sh/ex0vu58z","slide":7,"text":"Experiment scale","textPreview":"Experiment scale","textChars":16,"textLines":1,"bbox":[72,452,240,34]}
+{"kind":"shape","id":"sh/fy9w3a9k","slide":7,"bbox":[300,438,220,72]}
+{"kind":"textbox","id":"sh/kvmx8zq9","slide":7,"text":"1 seed","textPreview":"1 seed","textChars":6,"textLines":1,"bbox":[315,448,190,26]}
+{"kind":"textbox","id":"sh/lgveh4ru","slide":7,"text":"debugging","textPreview":"debugging","textChars":9,"textLines":1,"bbox":[315,478,190,22]}
+{"kind":"shape","id":"sh/tcrel4zy","slide":7,"bbox":[560,438,220,72]}
+{"kind":"textbox","id":"sh/8bixszid","slide":7,"text":"3 seeds","textPreview":"3 seeds","textChars":7,"textLines":1,"bbox":[575,448,190,26]}
+{"kind":"textbox","id":"sh/7a9wju1s","slide":7,"text":"pilot","textPreview":"pilot","textChars":5,"textLines":1,"bbox":[575,478,190,22]}
+{"kind":"shape","id":"sh/690fqp07","slide":7,"bbox":[820,438,220,72]}
+{"kind":"textbox","id":"sh/l8rehkjm","slide":7,"text":"5 seeds","textPreview":"5 seeds","textChars":7,"textLines":1,"bbox":[835,448,190,26]}
+{"kind":"textbox","id":"sh/k7ydofi1","slide":7,"text":"final","textPreview":"final","textChars":5,"textLines":1,"bbox":[835,478,190,22]}
+{"kind":"textbox","id":"sh/j6pwfu1w","slide":7,"text":"Secondary checks","textPreview":"Secondary checks","textChars":16,"textLines":1,"bbox":[72,560,210,28]}
+{"kind":"textbox","id":"sh/y5gvmp0b","slide":7,"text":"final orientation error   /   robustness to tracking noise   /   representation dimension","textPreview":"final orientation error   /   robustness to tracking noise   /   representation dimension","textChars":89,"textLines":1,"bbox":[292,554,890,38]}
+{"kind":"textbox","id":"sh/xk7edkjq","slide":7,"text":"Report mean and uncertainty across seeds; use identical evaluation episodes for all conditions.","textPreview":"Report mean and uncertainty across seeds; use identical evaluation episodes for all conditions.","textChars":95,"textLines":1,"bbox":[64,682,1090,18]}
+{"kind":"notes","id":"nt/rcg4cq","slide":7,"text":"Primary metrics: success rate, N80 and learning-curve AUC. Secondary analyses test final orientation error, tracking-noise robustness and representation dimension. One seed is only for debugging, three for a pilot, and five for the final comparison."}
+{"kind":"slide","id":"sl/esnzdq","slide":8,"title":"Twelve-week execution plan and expected contribution","textShapes":22}
+{"kind":"textbox","id":"sh/r2tw3at0","slide":8,"text":"Twelve-week execution plan and expected contribution","textPreview":"Twelve-week execution plan and expected contribution","textChars":52,"textLines":1,"bbox":[64,42,1060,54]}
+{"kind":"textbox","id":"sh/s32xwfal","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1160,48,56,30]}
+{"kind":"textbox","id":"sh/dobe50bq","slide":8,"text":"1–3","textPreview":"1–3","textChars":3,"textLines":1,"bbox":[72,128,90,58]}
+{"kind":"shape","id":"sh/ix0fqls3","slide":8,"bbox":[175,136,12,42]}
+{"kind":"textbox","id":"sh/3y9wzqto","slide":8,"text":"Build baseline","textPreview":"Build baseline","textChars":14,"textLines":1,"bbox":[215,128,250,30]}
+{"kind":"textbox","id":"sh/4z2xsva9","slide":8,"text":"RL/PPO, Isaac Lab, Allegro task, object-only","textPreview":"RL/PPO, Isaac Lab, Allegro task, object-only","textChars":44,"textLines":1,"bbox":[470,128,710,58]}
+{"kind":"textbox","id":"sh/50be10bu","slide":8,"text":"4–6","textPreview":"4–6","textChars":3,"textLines":1,"bbox":[72,218,90,58]}
+{"kind":"shape","id":"sh/ut0fmls7","slide":8,"bbox":[175,226,12,42]}
+{"kind":"textbox","id":"sh/vu9wvqts","slide":8,"text":"Add intent","textPreview":"Add intent","textChars":10,"textLines":1,"bbox":[215,218,250,30]}
+{"kind":"textbox","id":"sh/n2143uhk","slide":8,"text":"Quest preprocessing, fingertips, PCA synergy","textPreview":"Quest preprocessing, fingertips, PCA synergy","textChars":44,"textLines":1,"bbox":[470,218,710,58]}
+{"kind":"textbox","id":"sh/m1s3upgz","slide":8,"text":"7–10","textPreview":"7–10","textChars":4,"textLines":1,"bbox":[72,308,90,58]}
+{"kind":"shape","id":"sh/94jm5kza","slide":8,"bbox":[175,316,12,42]}
+{"kind":"textbox","id":"sh/o3alwzyp","slide":8,"text":"Run study","textPreview":"Run study","textChars":9,"textLines":1,"bbox":[215,308,250,30]}
+{"kind":"textbox","id":"sh/b6147uhg","slide":8,"text":"Freeze setup, full-hand baseline, multi-seed runs, ablation","textPreview":"Freeze setup, full-hand baseline, multi-seed runs, ablation","textChars":59,"textLines":1,"bbox":[470,308,710,58]}
+{"kind":"textbox","id":"sh/a5s3ypgv","slide":8,"text":"11–12","textPreview":"11–12","textChars":5,"textLines":1,"bbox":[72,398,90,58]}
+{"kind":"shape","id":"sh/x83m94zm","slide":8,"bbox":[175,406,12,42]}
+{"kind":"textbox","id":"sh/w7al0zy1","slide":8,"text":"Validate and report","textPreview":"Validate and report","textChars":19,"textLines":1,"bbox":[215,398,250,30]}
+{"kind":"textbox","id":"sh/rahkvahc","slide":8,"text":"Real-data replay or demo, analysis, presentation","textPreview":"Real-data replay or demo, analysis, presentation","textChars":48,"textLines":1,"bbox":[470,398,710,58]}
+{"kind":"shape","id":"sh/q983m50r","slide":8,"bbox":[72,500,1140,1]}
+{"kind":"textbox","id":"sh/e1gfqx4b","slide":8,"text":"Expected contribution","textPreview":"Expected contribution","textChars":21,"textLines":1,"bbox":[72,528,280,34]}
+{"kind":"shape","id":"sh/f2pgj25w","slide":8,"bbox":[385,524,36,36]}
+{"kind":"textbox","id":"sh/g3yxs7mh","slide":8,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[385,524,36,36]}
+{"kind":"textbox","id":"sh/14rylcn2","slide":8,"text":"Controlled evidence on the value of intermediate manipulation intent","textPreview":"Controlled evidence on the value of intermediate manipulation intent","textChars":68,"textLines":1,"bbox":[385,566,235,70]}
+{"kind":"shape","id":"sh/6dgfmx4f","slide":8,"bbox":[653,524,36,36]}
+{"kind":"textbox","id":"sh/repwf250","slide":8,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[653,524,36,36]}
+{"kind":"textbox","id":"sh/sfyxo7ml","slide":8,"text":"A compression test for low-dimensional hand synergies","textPreview":"A compression test for low-dimensional hand synergies","textChars":53,"textLines":1,"bbox":[653,566,235,70]}
+{"kind":"shape","id":"sh/t07yhsn6","slide":8,"bbox":[921,524,36,36]}
+{"kind":"textbox","id":"sh/i9wfid4j","slide":8,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[921,524,36,36]}
+{"kind":"textbox","id":"sh/ja5wbi5o","slide":8,"text":"A candidate interface between task-level language and high-dimensional control","textPreview":"A candidate interface between task-level language and high-dimensional control","textChars":78,"textLines":1,"bbox":[921,566,235,70]}
+{"kind":"textbox","id":"sh/l4vixg76","slide":8,"text":"Primary cluster window: weeks 7–10. Local GPU work covers setup, debugging and single-seed pilots.","textPreview":"Primary cluster window: weeks 7–10. Local GPU work covers setup, debugging and single-seed pilots.","textChars":98,"textLines":1,"bbox":[64,682,1090,18]}
+{"kind":"notes","id":"nt/esnzdq","slide":8,"text":"Timeline assumes the existing fixed-palm cube reorientation task. The strongest contribution is not VR control hardware. It is a controlled study of the interface: task intent to compact manipulation intent to dexterous control."}
