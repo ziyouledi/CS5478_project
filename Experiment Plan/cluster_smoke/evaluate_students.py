@@ -135,7 +135,8 @@ def main(env_cfg, agent_cfg: dict) -> None:
         tracker.active = True
         holder["tracker"] = tracker
         steps = 0
-        with torch.inference_mode():
+        # no_grad, not inference_mode: env buffers touched here are reset in place for the next checkpoint.
+        with torch.no_grad():
             while not tracker.all_finished:
                 if steps >= max_steps or not simulation_app.is_running():
                     raise RuntimeError(f"{int((~tracker.finished).sum())} envs unfinished after {steps} steps")
