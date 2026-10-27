@@ -6,6 +6,7 @@ Inputs (in data/):
   expert_eval.json                evaluate_students.py output for the expert run        (optional)
   student_evals/*.json            evaluate_students.py outputs for student runs          (optional)
   learning_curves_successes.json  analyze_learning_curves.py output                      (optional)
+Speaker notes are read from milestone_script_2min.md.
 When the learning-curve inputs are missing, the results panel shows a labelled placeholder and the
 numbers read "[pending]". Re-run after the evaluation jobs finish to fill them in.
 """
@@ -243,7 +244,7 @@ def slide_progress(prs, layout, curves):
 
     stats = [
         ("163.8 M", "expert training transitions"),
-        ("26.2", "expert successes per episode\n(1,024 eval episodes)"),
+        (f"{curves['reference']:.1f}" if curves else "26.2", "expert successes per episode\n(1,024 eval episodes)"),
         ("5×10⁻⁶", "max error: rebuilt expert vs\nrecorded actions"),
         (f"{n_done} / 21", "Stage 1 runs trained\nand evaluated"),
     ]
@@ -266,7 +267,8 @@ def slide_progress(prs, layout, curves):
 
 def slide_results(prs, layout, curves, pca):
     slide = new_slide(prs, layout)
-    header(slide, "Early results: first curves and the expert's actions", "09")
+    header(slide, "Early results: Wrist-2 sits inside Blind's seed noise" if curves
+           else "Early results: first curves and the expert's actions", "09")
 
     # Left: learning curves.
     card(slide, 0.5, 1.05, 4.4, 3.95, name="Learning curve card")
@@ -279,15 +281,17 @@ def slide_results(prs, layout, curves, pca):
             [("expert · Blind (3 seeds) · Wrist-2 (seed 0)", {"size": 8, "color": MUTED})],
             [("filled when evaluation job 1024771 finishes", {"size": 8, "color": MUTED})],
         ], size=10, bold=True, color=MUTED, align=PP_ALIGN.CENTER)
-        blind_n80 = blind_auc = wrist_n80 = PENDING
+        blind_n80 = blind_auc = wrist_n80 = wrist_auc = PENDING
     else:
         reference = curves["reference"]
         data = XyChartData()
-        expert = data.add_series("Expert (seed 0)")
+        replica = [s for s in curves["students"] if s[2] == curves["expert"]]
+        students = [s for s in curves["students"] if s[2] != curves["expert"]]
+        expert = data.add_series("Expert = Blind · seed 0" if replica else "Expert (seed 0)")
         for iteration, value in curves["expert"]:
             expert.add_data_point(iteration, value / reference)
         order = []
-        for intent, seed, points in curves["students"]:
+        for intent, seed, points in students:
             label = f"{intent.capitalize()} · seed {seed}"
             series = data.add_series(label)
             for iteration, value in points:
@@ -301,7 +305,7 @@ def slide_results(prs, layout, curves, pca):
         frame.name = "Learning curve chart"
         chart = frame.chart
         style_chart(chart, "PPO iteration", "successes / expert final", 5000, 1.1, 1000, 0.2)
-        palette = {"blind": [MUTED, RGBColor(0x8E, 0x99, 0xB0), RGBColor(0xB4, 0xBD, 0xCE)], "wrist-2": [ORANGE]}
+        palette = {"blind": [MUTED, RGBColor(0x9A, 0xA4, 0xBA)], "wrist-2": [ORANGE]}
         seen = {}
         plots = list(chart.plots[0].series)
         style_series(plots[0], NAVY, width=2.25)
@@ -315,15 +319,18 @@ def slide_results(prs, layout, curves, pca):
         wrist = conditions.get("wrist-2", {})
         blind_values = [v for v in blind.get("n80_iterations_values", []) if v is not None]
         blind_n80 = (f"{min(blind_values):,.0f}–{max(blind_values):,.0f}" if blind_values else "not reached")
-        blind_auc = f"{blind['auc_normalized_mean']:.2f}" if blind else PENDING
+        blind_aucs = [r["auc_normalized"] for r in curves["summary"]["runs"] if r["intent"] == "blind"]
+        blind_auc = f"{min(blind_aucs):.2f}–{max(blind_aucs):.2f}" if blind_aucs else PENDING
+        wrist_auc = next((f"{r['auc_normalized']:.2f}" for r in curves["summary"]["runs"] if r["intent"] == "wrist-2"),
+                         PENDING)
         wrist_values = wrist.get("n80_iterations_values", [None])
         wrist_n80 = fmt_iterations(wrist_values[0]) if wrist else PENDING
     text(slide, 0.68, 4.2, 4.1, 0.7, [
         [("N₈₀ (iterations): ", {"bold": True, "color": NAVY}),
          (f"Blind {blind_n80} across 3 seeds · Wrist-2 {wrist_n80} (1 seed)", {"color": MUTED})],
-        [("Blind AUC: ", {"bold": True, "color": NAVY}),
-         (f"{blind_auc}. Blind uses the expert's exact setup, so its seed spread is our noise floor.",
-          {"color": MUTED})],
+        [("AUC: ", {"bold": True, "color": NAVY}),
+         (f"Blind {blind_auc} · Wrist-2 {wrist_auc}. Blind seed 0 retrains the expert bit for bit (same "
+          "checkpoint hash).", {"color": MUTED})],
     ], size=8.5)
 
     # Right: PCA spectrum.
@@ -354,8 +361,8 @@ def slide_results(prs, layout, curves, pca):
         [("k = 2 → ", {"bold": True, "color": NAVY}), (f"{robot20[2]:.0%}", {"bold": True, "color": BLUE}),
          ("   k = 4 → ", {"bold": True, "color": NAVY}), (f"{robot20[4]:.0%}", {"bold": True, "color": BLUE}),
          ("   95% needs ", {"bold": True, "color": NAVY}), (f"{k95} dims", {"bold": True, "color": BLUE})],
-        [("Why: the expert is near bang-bang. 62% of action entries sit at ±1, and joints flip sign on 20–32% "
-          "of steps.", {"color": MUTED})],
+        [("Not a controller artifact: the measured joint motion is smooth (6% at joint limits) yet needs 15 "
+          "dims. Human data are static grasps.", {"color": MUTED})],
     ], size=8.5)
     slide.notes_slide.notes_text_frame.text = SCRIPT[1]
     return slide
@@ -367,21 +374,18 @@ def slide_challenges(prs, layout):
     text(slide, 1.0, 1.0, 3.6, 0.25, "Challenge", size=9, color=DEEP_ORANGE, bold=True)
     text(slide, 5.25, 1.0, 4.0, 0.25, "Response", size=9, color=BLUE, bold=True)
     rows = [
-        ("Bang-bang expert", "Linear PCA compresses its actions poorly, so low-k hand intent may carry little.",
-         "Run Hand-k as planned and report it as a finding. Fallback intent source: smoothed targets or joint "
-         "positions."),
+        ("High-dimensional expert", "Even its smooth joint motion needs 13–15 dims for 95%; low-k hand intent "
+         "may carry little.",
+         "Run Hand-k as planned; a weak result is itself a finding. M2, a simpler rotation task, tests whether "
+         "motion there compresses better."),
         ("Misleading built-in metric", "Isaac Lab's success metric is a running average: 3.4 vs 16.2 at the "
          "same reward.",
          "Own evaluator: successes counted per episode, one episode per env, identical start states for every "
          "checkpoint."),
-        ("Compute on a shared cluster", "About 1.6 T4-hours per run and 35–40 GPU-hours for Stage 1; GPUs were "
-         "fully booked today.",
-         "Slurm array jobs (4 GPUs max), either GPU partition, fail-fast scripts; evaluation shares the same "
-         "budget."),
-        ("Seed variance", "If Blind seeds spread widely, intent speed-ups could sit inside the noise.",
+        ("Seed variance", "Blind's N₈₀ already varies 2× across 3 seeds; small speed-ups would sit inside it.",
          "Use Blind's seed spread as the noise floor; add seeds to the key conditions if needed."),
     ]
-    y, h, gap = 1.3, 0.78, 0.12
+    y, h, gap = 1.35, 0.95, 0.2
     for index, (title, problem, response) in enumerate(rows):
         top = y + index * (h + gap)
         card(slide, 0.5, top, 4.35, h, fill=LIGHT_ORANGE, line=ORANGE, name=f"Challenge {index + 1}")
@@ -403,7 +407,7 @@ def slide_next(prs, layout):
     phases = [
         ("Now – Oct 31", "Finish Stage 1", "Remaining 17 runs; N₈₀ vs k; hand vs object at equal k", ORANGE, LIGHT_ORANGE, True),
         ("Nov 1 – Nov 10", "Stage 2 · goal hidden", "Asymmetric actor-critic; ~27 runs; Recovery curve", BLUE, LIGHT_BLUE, False),
-        ("Nov 10 – Nov 16", "Extension", "Second task (M2) or human synergy basis (M3)", PURPLE, WHITE, False),
+        ("Nov 10 – Nov 16", "Extension", "Second task (M2): rotation about a fixed axis; does it compress better?", PURPLE, WHITE, False),
         ("Nov 18 · end of Nov", "Demo · report", "Demo on Nov 18; final report at the end of November", NAVY, CARD, False),
     ]
     x, y, w, h, gap = 0.5, 1.4, 2.1, 1.4, 0.2
@@ -422,7 +426,7 @@ def slide_next(prs, layout):
     priorities = [
         ("1", "Stage 1 conclusion: how many intent dimensions speed up learning", ORANGE),
         ("2", "Stage 2 Recovery curve: how much each intent recovers without the goal", BLUE),
-        ("3", "One extension, only if 1 and 2 are on track", PURPLE),
+        ("3", "M2 second task: does intent dimension grow with contact complexity?", PURPLE),
     ]
     for index, (number, label, color) in enumerate(priorities):
         top = 3.4 + index * 0.45
@@ -432,28 +436,21 @@ def slide_next(prs, layout):
     return slide
 
 
-SCRIPT = [
-    # Slide 08, ~25 s
-    "Since the proposal, the whole pipeline runs end to end. The goal-aware expert is trained, 164 million "
-    "transitions, and solves about 26 cube reorientations per episode. From 1.2 million of its actions we built "
-    "the PCA basis, and every intent type is implemented and verified. Stage 1 is now running on the cluster: "
-    "four of the 21 runs are trained and evaluated.",
-    # Slide 09, ~35 s
-    "Two early results. On the left, learning curves relative to the expert. Blind uses the expert's exact setup "
-    "with new seeds, so its seed spread is our noise floor; any intent has to beat it. Wrist-2 has one seed so far, "
-    "so treat it as a preview. On the right, a surprise: two synergies explain over 80 percent of human grasps, but "
-    "our RL expert needs 14 dimensions for 95 percent, because it acts almost bang-bang. So the real test is "
-    "whether a few low-variance directions still carry the useful information.",
-    # Slide 10, ~30 s
-    "Three main challenges. First, that bang-bang expert: we keep the PCA intent as planned and report the result, "
-    "with smoothed targets as a fallback. Second, Isaac Lab's success metric is a running average that reads 3 or "
-    "16 at the same reward, so we built our own per-episode evaluator. Third, compute: each run takes about one "
-    "and a half GPU-hours on a shared cluster, so everything runs as throttled Slurm arrays.",
-    # Slide 11, ~20 s
-    "Next, we finish Stage 1 by October 31, run Stage 2 with the goal hidden until November 10, then one extension "
-    "before the November 18 demo. Priority one is a clean Stage 1 answer; priority two, the Stage 2 recovery "
-    "curve. Thank you.",
-]
+SCRIPT_FILE = HERE / "milestone_script_2min.md"
+
+
+def load_script() -> list[str]:
+    """Speaker notes come from the script document: the paragraph under each "**Slide NN**" heading."""
+    notes: list[str] = []
+    for block in SCRIPT_FILE.read_text(encoding="utf-8").split("**Slide ")[1:]:
+        _, _, body = block.partition("\n")
+        notes.append(" ".join(body.split()))
+    if len(notes) != 4:
+        raise ValueError(f"{SCRIPT_FILE} must have four **Slide NN** sections, found {len(notes)}")
+    return notes
+
+
+SCRIPT = load_script()
 
 
 def main() -> None:

@@ -1,17 +1,25 @@
 # Milestone presentation script (2 min)
 
-**Slide 08** (~26 s)
+Speaker notes in the deck are generated from this file: edit here, then re-run `build_milestone_slides.py`.
 
-Since the proposal, the whole pipeline runs end to end. The goal-aware expert is trained, 164 million transitions, and solves about 26 cube reorientations per episode. From 1.2 million of its actions we built the PCA basis, and every intent type is implemented and verified. Stage 1 is now running on the cluster: four of the 21 runs are trained and evaluated.
+**Slide 08** (~10 s)
 
-**Slide 09** (~38 s)
+In short, the whole pipeline now works: a trained expert, the intent signals, and the first Stage 1 students, so let me go straight to what we found.
 
-Two early results. On the left, learning curves relative to the expert. Blind uses the expert's exact setup with new seeds, so its seed spread is our noise floor; any intent has to beat it. Wrist-2 has one seed so far, so treat it as a preview. On the right, a surprise: two synergies explain over 80 percent of human grasps, but our RL expert needs 14 dimensions for 95 percent, because it acts almost bang-bang. So the real test is whether a few low-variance directions still carry the useful information.
+**Slide 09** (~50 s)
 
-**Slide 10** (~29 s)
+On the left, each curve is a student learning the task. Blind gets no intent; Wrist-2 is also told where the expert wants to move the wrist. First finding: the random seed alone matters a lot. The same Blind setup reaches 80 percent of the expert anywhere between 1,500 and 3,200 iterations. An intent only helps if it beats that spread, and Wrist-2 so far sits inside it.
 
-Three main challenges. First, that bang-bang expert: we keep the PCA intent as planned and report the result, with smoothed targets as a fallback. Second, Isaac Lab's success metric is a running average that reads 3 or 16 at the same reward, so we built our own per-episode evaluator. Third, compute: each run takes about one and a half GPU-hours on a shared cluster, so everything runs as throttled Slurm arrays.
+Second finding, on the right: for human hands, two synergies explain over 80 percent of grasps; for our expert, only 36 percent. But the human data are static grasps. Turning a cube needs fingers that move independently, and even the expert's smooth, measured joint motion is just as high-dimensional. So a small hand intent may help less than we hoped.
 
-**Slide 11** (~18 s)
+**Slide 10** (~40 s)
 
-Next, we finish Stage 1 by October 31, run Stage 2 with the goal hidden until November 10, then one extension before the November 18 demo. Priority one is a clean Stage 1 answer; priority two, the Stage 2 recovery curve. Thank you.
+Three challenges. First, that high dimensionality. We still run the hand intents as planned; if a few dimensions help little, that is itself a finding, and our second task, a simpler rotation, will test whether it compresses better.
+
+Second, Isaac Lab's built-in success number is a running average, so the same policy can read 3 or 16. Our own evaluator counts real successes per episode.
+
+Third, the seed noise you just saw: we keep three seeds per condition and add more where results are close.
+
+**Slide 11** (~10 s)
+
+Next, we finish Stage 1 by October 31, then hide the goal in Stage 2, ahead of the November 18 demo. Thank you.

@@ -1,0 +1,106 @@
+{
+  "record_type": "shadow_student_learning_curve_analysis",
+  "metric": "reward",
+  "metric_key": "mean_episode_reward",
+  "expert_eval": "/Users/luciex/Desktop/5478-robotics/project/Docs/Milestone/data/expert_eval.json",
+  "expert_reference_iteration": 5000.0,
+  "expert_reference_value": 7236.618407698981,
+  "n80_threshold": 5789.294726159185,
+  "transitions_per_iteration": 32768,
+  "n80_definition": "first iteration with metric >= 0.8 * expert reference, linear interpolation between checkpoints; None if never reached",
+  "auc_definition": "trapezoidal mean of metric / expert reference over the evaluated iteration range",
+  "conditions": {
+    "blind": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "num_runs": 3,
+      "num_reached_80": 3,
+      "n80_iterations_mean_reached": 2265.1483473082812,
+      "n80_iterations_values": [
+        1351.5875515789462,
+        3108.3619871164933,
+        2335.4955032294038
+      ],
+      "auc_normalized_mean": 0.7191135523201462,
+      "auc_normalized_std": 0.09621943507114919,
+      "final_normalized_mean": 0.9749022719365431,
+      "final_normalized_std": 0.024141017087401788
+    },
+    "wrist-2": {
+      "seeds": [
+        0
+      ],
+      "num_runs": 1,
+      "num_reached_80": 1,
+      "n80_iterations_mean_reached": 2360.7158358583433,
+      "n80_iterations_values": [
+        2360.7158358583433
+      ],
+      "auc_normalized_mean": 0.698231976636417,
+      "auc_normalized_std": null,
+      "final_normalized_mean": 0.9567835062056707,
+      "final_normalized_std": null
+    }
+  },
+  "runs": [
+    {
+      "intent": "blind",
+      "seed": 0,
+      "evaluation": "Docs/Milestone/data/student_evals/blind-seed0-job1024771_0.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-blind-seed0-job1024454_0/student-stage1-blind-seed0",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7236.618407698981,
+      "final_normalized": 1.0,
+      "reached_80": true,
+      "n80_iterations": 1351.5875515789462,
+      "n80_transitions": 44288820.89013891,
+      "auc_normalized": 0.8194088262647441
+    },
+    {
+      "intent": "blind",
+      "seed": 1,
+      "evaluation": "Docs/Milestone/data/student_evals/blind-seed1-job1024771_1.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-blind-seed1-job1024454_1/student-stage1-blind-seed1",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6888.159674821491,
+      "final_normalized": 0.9518478503016314,
+      "reached_80": true,
+      "n80_iterations": 3108.3619871164933,
+      "n80_transitions": 101854805.59383325,
+      "auc_normalized": 0.6275675675101057
+    },
+    {
+      "intent": "blind",
+      "seed": 2,
+      "evaluation": "Docs/Milestone/data/student_evals/blind-seed2-job1024771_2.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-blind-seed2-job1024454_2/student-stage1-blind-seed2",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7040.209097890164,
+      "final_normalized": 0.9728589655079977,
+      "reached_80": true,
+      "n80_iterations": 2335.4955032294038,
+      "n80_transitions": 76529516.6498211,
+      "auc_normalized": 0.7103642631855888
+    },
+    {
+      "intent": "wrist-2",
+      "seed": 0,
+      "evaluation": "Docs/Milestone/data/student_evals/wrist-2-seed0-job1024771_3.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-wrist-2-seed0-job1024454_3/student-stage1-wrist-2-seed0",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6923.877133190728,
+      "final_normalized": 0.9567835062056707,
+      "reached_80": true,
+      "n80_iterations": 2360.7158358583433,
+      "n80_transitions": 77355936.5094062,
+      "auc_normalized": 0.698231976636417
+    }
+  ]
+}
