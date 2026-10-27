@@ -232,6 +232,50 @@ component's largest-magnitude loading is positive. PCA uses the stored
 reports the fraction of entries outside [-1, 1]. Success requires
 `dataset_checksum_verification=PASS`, `pca_status=PASS`, and `pca_job_status=PASS`.
 
+## Stage 10: action saturation statistics
+
+CPU-only. Reports how often each expert action dimension sits at ±1 and how often
+it switches sign between consecutive steps of the same episode:
+
+```bash
+job_id=$(sbatch --parsable \
+  --export=ALL,VENV_DIR="$HOME/software/isaaclab-stack/env_isaaclab",SAT_DATASET_DIR="$HOME/data/low-dim-intent/datasets/expert-rollout-seed0-job1023537" \
+  13_action_saturation.sbatch)
+```
+
+## Stage 11: intent modules
+
+`intent_modules.py` (torch only) defines `blind`, `hand-K`, `wrist-2`,
+`wrist2-finger-K`, and `obj-1/3/4`. Hand and wrist intents run a frozen copy of
+the expert rebuilt from the checkpoint (`FrozenExpert`) on the student's clipped
+157-D observation. Validate them on recorded rollout data (CPU):
+
+```bash
+P="$HOME/data/low-dim-intent/datasets/action-pca-expert-rollout-seed0-job1023537-job1024096"
+job_id=$(sbatch --parsable \
+  --export=ALL,VENV_DIR="$HOME/software/isaaclab-stack/env_isaaclab",INTENT_PCA_DIR="$P",OBJ_LOOKAHEAD=0.5 \
+  14_validate_intents.sbatch)
+```
+
+Success requires `intent_validation_status=PASS`; the expert must reproduce the
+recorded actions within 1e-4.
+
+## Stage 12: student dry run
+
+`train_student.py` is Isaac Lab's RL-Games `train.py` with
+`IntentRlGamesVecEnvWrapper`, which appends the intent after observation
+clipping. Environment, reward, PPO configuration, and network are unchanged.
+The dry run trains every stage-one intent for 3 iterations on 256 environments
+and stops at the first failure:
+
+```bash
+job_id=$(sbatch --parsable \
+  --export=ALL,ISAACLAB_DIR="$HOME/software/isaaclab-stack/IsaacLab",VENV_DIR="$HOME/software/isaaclab-stack/env_isaaclab",INTENT_PCA_DIR="$P",OBJ_LOOKAHEAD=0.5 \
+  15_student_dry_run.sbatch)
+```
+
+`OBJ_LOOKAHEAD=0.5` is a wiring placeholder, not the chosen experimental value.
+
 ## Useful monitoring commands
 
 ```bash
