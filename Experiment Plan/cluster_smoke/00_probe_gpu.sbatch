@@ -53,6 +53,10 @@ done
 echo "--- storage ---"
 df -h "${HOME}"
 quota -s 2>&1 || true
+echo "SLURM_TMPDIR=${SLURM_TMPDIR:-unset}"
+echo "TMPDIR=${TMPDIR:-unset}"
+df -hT /tmp
+findmnt -T /tmp 2>&1 || true
 
 echo "--- outbound-https ---"
 if command -v curl >/dev/null 2>&1; then
