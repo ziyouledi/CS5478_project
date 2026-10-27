@@ -39,7 +39,12 @@ Verified on the cluster on 2026-10-27 (login-node inspection of `sacct`, logs, a
   - Stored expert actions already lie in [-1, 1] (0 entries outside), so the clipping question is moot.
   - Spectrum is flat: 20-D cumulative variance k=2 35.8%, k=4 56.8%, k=8 81.1%; 95% needs 14 components. 18-D finger: k=2 40.8%, k=4 59.9%, k=8 83.1%; 95% needs 13.
   - Two near-constant actions (`robot0_MFJ2` std 0.003, max −0.277; `robot0_RFJ3` std 0.028) explain the ~0 tail eigenvalues. Wrist loads mainly on PC3 (59% of its squared loading).
-  - Most other action dims have std ≈ 0.7–0.85 on [-1, 1], above a uniform's 0.577, suggesting heavy mass at the action bounds (not yet measured).
+- **Action saturation: measured.** Slurm `1024114` (`COMPLETED 0:0`, checksums PASS, `saturation_job_status=PASS`); summary and plot in `Experiment Plan/results/action-saturation-job1024114/`.
+  - 62.2% of all action entries are at a bound (|a| ≥ 0.99); on average 12.4 of 20 dims are saturated per step.
+  - The expert is near bang-bang with chatter: most active dims flip sign between consecutive control steps 20–32% of the time, mean |Δa| per step ≈ 0.4–0.6. Direct −1↔+1 jumps (both steps saturated) occur 2–18% of the time depending on the joint.
+  - `act_moving_average=1.0`, so these raw actions are the joint position targets with no env-side smoothing.
+  - `MFJ2` is pinned at −1 100% of the time, `RFJ3` 99%; `MFJ3`, `LFJ3`, `THJ2` are > 80% at −1.
+  - Implication for Hand-k: linear PCA on these targets mixes bounded switching with chatter; low-k intents capture limited variance (see PCA bullet). Any decision to change the intent source (e.g. smoothed targets or joint positions) is a scientific change that needs user approval.
 - Then implement and dry-run Hand-k, Wrist-2, and Obj-1/4 intent inputs before launching matched student-policy runs. No modules or student results exist yet.
 - Expert evaluation runs exist under `runs/expert-eval-job{915339,915716,915789,915824}`; which one is the formal 1024-episode evaluation has not been recorded.
 

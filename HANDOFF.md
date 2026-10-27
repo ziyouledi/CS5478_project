@@ -53,6 +53,7 @@ Shadow Hand 的 Isaac Lab 环境、seed-0 PPO expert 训练、best/final checkpo
 | Expert 冻结 | 2026-10-06；`checkpoints/expert-seed0/frozen/`，SHA-256 `b9b7128f151b44c8241603e0138d5110435e70e13fad902431a0bbe96f2074f9` |
 | Pilot rollout ×2 | `1023495`、`1023529`；256 envs × 700 steps = 179,200，各 `COMPLETED 0:0`；两次汇总指标完全一致（确定性复现） |
 | 动作 PCA | `1024096`；CPU 44 秒，数据集 `sha256sum -c` 通过，`pca_status=PASS`；20-D 累计方差 k=2/4/8 = 35.8%/56.8%/81.1%，95% 需 14 维；18-D 手指 k=2/4/8 = 40.8%/59.9%/83.1%，95% 需 13 维；摘要见 `Experiment Plan/results/action-pca-job1024096/` |
+| 动作饱和统计 | `1024114`；62.2% 的动作分量贴在 ±1，平均每步 12.4/20 维饱和；多数活跃维度相邻步符号翻转 20–32%，平均 |Δa| 约 0.4–0.6，近似带抖动的 bang-bang；`MFJ2` 恒为 −1，`RFJ3` 99% 为 −1；`act_moving_average=1.0`，无环境侧平滑 |
 | 正式 PCA rollout | `1023537`；512 envs × 2400 steps = 1,228,800，`COMPLETED 0:0`，用时 2:39，`rollout_collection_status=PASS`、`rollout_job_status=PASS`；2050 个完成 episode，平均 reward 7486.40，平均长度 592.7；数据 806 MB |
 
 正式训练得到 best 和 final 两个 checkpoint。独立确定性评估各跑 1024 episodes：
