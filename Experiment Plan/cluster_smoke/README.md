@@ -276,6 +276,22 @@ job_id=$(sbatch --parsable \
 
 `OBJ_LOOKAHEAD=0.5` is a wiring placeholder, not the chosen experimental value.
 
+## Stage 13: stage-one student training
+
+Array job, one run per task: task `i` trains intent `STUDENT_INTENTS[i / 3]`
+with seed `STUDENT_SEEDS[i % 3]` for `STUDENT_ITERATIONS` PPO iterations on
+2048 environments. The stage-one grid (7 intents × 3 seeds, at most 4 at once):
+
+```bash
+job_id=$(sbatch --parsable --array=0-20%4 \
+  --export=ALL,ISAACLAB_DIR="$HOME/software/isaaclab-stack/IsaacLab",VENV_DIR="$HOME/software/isaaclab-stack/env_isaaclab",INTENT_PCA_DIR="$P",STUDENT_ITERATIONS=5000,OBJ_LOOKAHEAD=0.5 \
+  16_train_student.sbatch)
+```
+
+Each run writes `runs/student-<stage>-<intent>-seed<s>-job<array>_<task>/`
+(RL-Games checkpoints every 200 iterations, tensorboard summaries,
+`params/intent.json`) and requires `student_job_status=PASS`.
+
 ## Useful monitoring commands
 
 ```bash

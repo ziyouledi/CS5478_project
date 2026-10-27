@@ -86,7 +86,7 @@ RL-Games 的批量推理需要 `player.has_batch_dimension = True`。早期评�
 1. ~~**核实 cluster 状态**~~：已于 2026-10-27 完成，见上方结果表。冻结 checkpoint 的 `SHA256SUMS` 存在且与各 rollout manifest 的 `checkpoint_sha256` 一致。
 2. ~~**确认正式 PCA 数据集**~~：job `1023537` 已完成，路径 `~/data/low-dim-intent/datasets/expert-rollout-seed0-job1023537/`。剩余一项：数据目录内的 `sha256sum -c SHA256SUMS` 尚未运行，应放在 PCA 的 Slurm 作业内执行，不在 login node 上读 800 MB。
 3. ~~**生成 PCA 基底**~~（已完成：Slurm `1024096`，输出 `datasets/action-pca-expert-rollout-seed0-job1023537-job1024096/`）。原要求：读取正式数据集的 `actions.npy`，计算 20-D 均值 `μ`、全维主成分 `W_robot`、每维解释方差及累计方差曲线；额外对手指 18-D 动作计算基底供 `Wrist-2 + Finger-k` 使用。固定输入数据集路径、checkpoint hash、列顺序、PCA 符号约定和输出文件校验值。当前仓库没有 PCA 分析脚本或输出。
-4. **实现 intent 与学生实验**（接口已完成：CPU 验证 `1024158` PASS，GPU dry run `1024366` 7 个条件全部 PASS；待定 Obj 前瞻角、训练预算和评估指标后再启动正式训练）：Hand-k、Wrist-2、Obj-1/4，先 shape-level dry run，再固定统一的训练预算、评估方式和 seeds `{0,1,2}`。阶段一 goal 可见，阶段二 M1 隐藏 actor 的 goal。当前对话没有这些模块或训练结果。
+4. **实现 intent 与学生实验**（阶段一 21 个 run 已提交为 Slurm 阵列 `1024454`，5000 iter、最多 4 卡并发、Δθ=0.5、critic 共享；接口已完成：CPU 验证 `1024158` PASS，GPU dry run `1024366` 7 个条件全部 PASS；待定 Obj 前瞻角、训练预算和评估指标后再启动正式训练）：Hand-k、Wrist-2、Obj-1/4，先 shape-level dry run，再固定统一的训练预算、评估方式和 seeds `{0,1,2}`。阶段一 goal 可见，阶段二 M1 隐藏 actor 的 goal。当前对话没有这些模块或训练结果。
 5. **更新排期与仓库**：v3 文首已加排期说明；路线图关口仍需按 11-18 demo / 11 月底 report 重新规划；将实验脚本、配置及小型结果摘要提交 Git。不要把 checkpoint、NumPy 大数组、缓存和完整日志加入 Git。
 
 ## 交接时需要避免的误判
