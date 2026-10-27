@@ -52,6 +52,7 @@ Shadow Hand 的 Isaac Lab 环境、seed-0 PPO expert 训练、best/final checkpo
 | Seed-0 expert 正式训练 | `915072`；5000 iterations / 163,840,000 transitions，Slurm 1:34:11，峰值显存 3738 MiB，`COMPLETED 0:0` |
 | Expert 冻结 | 2026-10-06；`checkpoints/expert-seed0/frozen/`，SHA-256 `b9b7128f151b44c8241603e0138d5110435e70e13fad902431a0bbe96f2074f9` |
 | Pilot rollout ×2 | `1023495`、`1023529`；256 envs × 700 steps = 179,200，各 `COMPLETED 0:0`；两次汇总指标完全一致（确定性复现） |
+| 动作 PCA | `1024096`；CPU 44 秒，数据集 `sha256sum -c` 通过，`pca_status=PASS`；20-D 累计方差 k=2/4/8 = 35.8%/56.8%/81.1%，95% 需 14 维；18-D 手指 k=2/4/8 = 40.8%/59.9%/83.1%，95% 需 13 维；摘要见 `Experiment Plan/results/action-pca-job1024096/` |
 | 正式 PCA rollout | `1023537`；512 envs × 2400 steps = 1,228,800，`COMPLETED 0:0`，用时 2:39，`rollout_collection_status=PASS`、`rollout_job_status=PASS`；2050 个完成 episode，平均 reward 7486.40，平均长度 592.7；数据 806 MB |
 
 正式训练得到 best 和 final 两个 checkpoint。独立确定性评估各跑 1024 episodes：
@@ -83,7 +84,7 @@ RL-Games 的批量推理需要 `player.has_batch_dimension = True`。早期评�
 
 1. ~~**核实 cluster 状态**~~：已于 2026-10-27 完成，见上方结果表。冻结 checkpoint 的 `SHA256SUMS` 存在且与各 rollout manifest 的 `checkpoint_sha256` 一致。
 2. ~~**确认正式 PCA 数据集**~~：job `1023537` 已完成，路径 `~/data/low-dim-intent/datasets/expert-rollout-seed0-job1023537/`。剩余一项：数据目录内的 `sha256sum -c SHA256SUMS` 尚未运行，应放在 PCA 的 Slurm 作业内执行，不在 login node 上读 800 MB。
-3. **生成 PCA 基底**（已提交 Slurm `1024096`，脚本 `analyze_action_pca.py` + `12_action_pca.sbatch`，待验收）：读取正式数据集的 `actions.npy`，计算 20-D 均值 `μ`、全维主成分 `W_robot`、每维解释方差及累计方差曲线；额外对手指 18-D 动作计算基底供 `Wrist-2 + Finger-k` 使用。固定输入数据集路径、checkpoint hash、列顺序、PCA 符号约定和输出文件校验值。当前仓库没有 PCA 分析脚本或输出。
+3. ~~**生成 PCA 基底**~~（已完成：Slurm `1024096`，输出 `datasets/action-pca-expert-rollout-seed0-job1023537-job1024096/`）。原要求：读取正式数据集的 `actions.npy`，计算 20-D 均值 `μ`、全维主成分 `W_robot`、每维解释方差及累计方差曲线；额外对手指 18-D 动作计算基底供 `Wrist-2 + Finger-k` 使用。固定输入数据集路径、checkpoint hash、列顺序、PCA 符号约定和输出文件校验值。当前仓库没有 PCA 分析脚本或输出。
 4. **实现 intent 与学生实验**：Hand-k、Wrist-2、Obj-1/4，先 shape-level dry run，再固定统一的训练预算、评估方式和 seeds `{0,1,2}`。阶段一 goal 可见，阶段二 M1 隐藏 actor 的 goal。当前对话没有这些模块或训练结果。
 5. **更新排期与仓库**：v3 文首已加排期说明；路线图关口仍需按 11-18 demo / 11 月底 report 重新规划；将实验脚本、配置及小型结果摘要提交 Git。不要把 checkpoint、NumPy 大数组、缓存和完整日志加入 Git。
 
