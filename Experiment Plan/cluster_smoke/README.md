@@ -208,6 +208,30 @@ job_id=$(sbatch --parsable \
 echo "${job_id}"
 ```
 
+## Stage 9: action PCA basis
+
+This is a CPU-only job (`normal` partition, no Isaac Sim). It first runs
+`sha256sum -c SHA256SUMS` inside the rollout directory, then computes the 20-D
+robot basis (`mu_robot`, `W_robot`) and the separate 18-D finger basis
+(`mu_finger`, `W_finger`, action columns 2:20) for `Wrist-2 + Finger-k`:
+
+```bash
+job_id=$(sbatch --parsable \
+  --export=ALL,VENV_DIR="$HOME/software/isaaclab-stack/env_isaaclab",PCA_DATASET_DIR="$HOME/data/low-dim-intent/datasets/expert-rollout-seed0-job1023537" \
+  12_action_pca.sbatch)
+echo "${job_id}"
+```
+
+Output goes to `~/data/low-dim-intent/datasets/action-pca-<rollout>-job<JOB_ID>/`:
+`pca_basis.npz`, `summary.json` (provenance, explained variance, components
+needed for 80/90/95/99%, reconstruction checks), `cumulative_variance.csv`,
+`cumulative_variance.png`, and `SHA256SUMS`. Columns of `W` are components in
+descending-variance order; intent is `z_k = W[:, :k].T @ (a - mu)`. Each
+component's largest-magnitude loading is positive. PCA uses the stored
+(unclipped) expert actions unless `PCA_CLIP_ACTIONS` is set; `summary.json`
+reports the fraction of entries outside [-1, 1]. Success requires
+`dataset_checksum_verification=PASS`, `pca_status=PASS`, and `pca_job_status=PASS`.
+
 ## Useful monitoring commands
 
 ```bash

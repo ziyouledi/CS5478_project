@@ -11,8 +11,8 @@ Shadow Hand 的 Isaac Lab 环境、seed-0 PPO expert 训练、best/final checkpo
 - 任务：Isaac Lab 的 `Isaac-Repose-Cube-Shadow-Direct-v0`，用 Shadow Hand 在手内重定向 cube。
 - 核心问题：高层意图传给低层控制器时，手部动作、手腕动作和物体子目标各需要多少维，怎样影响学习效率与性能恢复。
 - 阶段一：goal 可见；比较 Blind、Wrist-2、Hand-2/4/20、Obj-1/4，重点看学习曲线 AUC 与达到 expert 性能 80% 的训练量 N80。
-- 阶段二 M1：actor 隐藏 goal，比较意图维度与性能恢复；计划至少 3 个 seeds（`0, 1, 2`）。M2（第二任务）和 M3（人类 synergy 基底）按时间二选一。
-- 用户后来指定 **2026-10-20 Project Milestone** 和 **2026-11-22 deadline**。原 v3 设计文档仍有“12 月 1 日那周提交”及旧阶段日期；后续排期须以用户后来的日期为准并更新原文。10 月 20 日已过去，本对话没有记录 milestone 的提交结果。
+- 阶段二 M1：actor 隐藏 goal，比较意图维度与性能恢复；计划至少 3 个 seeds（`0, 1, 2`）。M2（第二任务）和 M3（人类 synergy 基底）原计划按时间二选一；用户 2026-10-27 决定暂不砍掉，视进度再定。
+- 当前排期（用户 2026-10-27 确认）：**Project Milestone 2026-10-27**（当日尚未提交）、**Demo 2026-11-18**、**Final report 2026 年 11 月底**。取代此前记录的 10-20 / 11-22，以及 v3 原文中的“12 月 1 日那周”。
 
 完整设计见 [低维意图接口实验设计 v3（分阶段）](Docs/Experiment%20Plan/低维意图接口实验设计%20v3（分阶段）.md)。集群脚本及操作说明见 [cluster_smoke/README.md](Experiment%20Plan/cluster_smoke/README.md)。
 
@@ -83,9 +83,9 @@ RL-Games 的批量推理需要 `player.has_batch_dimension = True`。早期评�
 
 1. ~~**核实 cluster 状态**~~：已于 2026-10-27 完成，见上方结果表。冻结 checkpoint 的 `SHA256SUMS` 存在且与各 rollout manifest 的 `checkpoint_sha256` 一致。
 2. ~~**确认正式 PCA 数据集**~~：job `1023537` 已完成，路径 `~/data/low-dim-intent/datasets/expert-rollout-seed0-job1023537/`。剩余一项：数据目录内的 `sha256sum -c SHA256SUMS` 尚未运行，应放在 PCA 的 Slurm 作业内执行，不在 login node 上读 800 MB。
-3. **生成 PCA 基底**：读取正式数据集的 `actions.npy`，计算 20-D 均值 `μ`、全维主成分 `W_robot`、每维解释方差及累计方差曲线；额外对手指 18-D 动作计算基底供 `Wrist-2 + Finger-k` 使用。固定输入数据集路径、checkpoint hash、列顺序、PCA 符号约定和输出文件校验值。当前仓库没有 PCA 分析脚本或输出。
+3. **生成 PCA 基底**（已提交 Slurm `1024096`，脚本 `analyze_action_pca.py` + `12_action_pca.sbatch`，待验收）：读取正式数据集的 `actions.npy`，计算 20-D 均值 `μ`、全维主成分 `W_robot`、每维解释方差及累计方差曲线；额外对手指 18-D 动作计算基底供 `Wrist-2 + Finger-k` 使用。固定输入数据集路径、checkpoint hash、列顺序、PCA 符号约定和输出文件校验值。当前仓库没有 PCA 分析脚本或输出。
 4. **实现 intent 与学生实验**：Hand-k、Wrist-2、Obj-1/4，先 shape-level dry run，再固定统一的训练预算、评估方式和 seeds `{0,1,2}`。阶段一 goal 可见，阶段二 M1 隐藏 actor 的 goal。当前对话没有这些模块或训练结果。
-5. **更新排期与仓库**：将 v3 文档中的旧截止时间改为 11 月 22 日，并如实记录 10 月 20 日 milestone 状态；将实验脚本、配置及小型结果摘要提交 Git。不要把 checkpoint、NumPy 大数组、缓存和完整日志加入 Git。
+5. **更新排期与仓库**：v3 文首已加排期说明；路线图关口仍需按 11-18 demo / 11 月底 report 重新规划；将实验脚本、配置及小型结果摘要提交 Git。不要把 checkpoint、NumPy 大数组、缓存和完整日志加入 Git。
 
 ## 交接时需要避免的误判
 
