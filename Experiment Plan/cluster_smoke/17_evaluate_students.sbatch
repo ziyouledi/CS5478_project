@@ -12,6 +12,7 @@
 # One run per array task. EVAL_RUN_DIRS is a space-separated list of experiment directories
 # (each containing nn/ and, for students, params/intent.json); task i evaluates entry i.
 # EVAL_INTENT is only needed for runs without params/intent.json (e.g. EVAL_INTENT=blind for the expert).
+# EVAL_TASK selects the gym task (default: Stage 1; Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0 for M2).
 
 set -Eeuo pipefail
 
@@ -36,6 +37,7 @@ run_dir="${run_dirs[${task_id}]}"
 stride="${EVAL_CHECKPOINT_STRIDE:-1}"
 num_envs="${EVAL_NUM_ENVS:-1024}"
 seed="${EVAL_SEED:-20261028}"
+task="${EVAL_TASK:-Isaac-Repose-Cube-Shadow-Direct-v0}"
 job_tag="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID}}_${task_id}"
 output_dir="${HOME}/data/low-dim-intent/runs/eval-$(basename "${run_dir}")-job${job_tag}"
 metadata_dir="${HOME}/data/low-dim-intent/metadata/eval-$(basename "${run_dir}")-job${job_tag}"
@@ -44,7 +46,7 @@ evaluator="${SLURM_SUBMIT_DIR}/evaluate_students.py"
 test -d "${run_dir}/nn"
 test -f "${evaluator}"
 mkdir -p "${output_dir}" "${metadata_dir}" "${XDG_CACHE_HOME}"
-cp "${SLURM_SUBMIT_DIR}"/{evaluate_students.py,student_eval_utils.py,intent_env_wrapper.py,intent_modules.py,17_evaluate_students.sbatch} "${metadata_dir}/"
+cp "${SLURM_SUBMIT_DIR}"/{evaluate_students.py,student_eval_utils.py,intent_env_wrapper.py,intent_modules.py,m2_tasks.py,shadow_zaxis_env.py,17_evaluate_students.sbatch} "${metadata_dir}/"
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
 echo "record_type=shadow_student_evaluation_job"
@@ -54,6 +56,7 @@ echo "array_task_id=${task_id}"
 echo "node=$(hostname -f)"
 echo "gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader | paste -sd ';')"
 echo "run_dir=${run_dir}"
+echo "task=${task}"
 echo "intent_override=${EVAL_INTENT:-none}"
 echo "checkpoint_stride=${stride}"
 echo "num_envs=${num_envs}"
@@ -61,7 +64,7 @@ echo "seed=${seed}"
 echo "output_dir=${output_dir}"
 
 eval_args=(
-    --task Isaac-Repose-Cube-Shadow-Direct-v0
+    --task "${task}"
     --run_dir "${run_dir}"
     --checkpoint_stride "${stride}"
     --num_envs "${num_envs}"

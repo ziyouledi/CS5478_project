@@ -42,6 +42,9 @@ from isaaclab_rl.rl_games import RlGamesGpuEnv, RlGamesVecEnvWrapper
 import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import m2_tasks  # noqa: E402,F401  registers Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0
+
 
 ACTION_NAMES = [
     "robot0_WRJ1",

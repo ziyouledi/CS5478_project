@@ -46,6 +46,7 @@ from isaaclab_rl.rl_games import RlGamesGpuEnv
 import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
+import m2_tasks  # noqa: F401  registers Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0
 from intent_env_wrapper import IntentRlGamesVecEnvWrapper
 from intent_modules import build_intent, sha256
 from student_eval_utils import FirstEpisodeTracker, list_checkpoints

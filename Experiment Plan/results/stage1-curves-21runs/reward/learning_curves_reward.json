@@ -1,0 +1,443 @@
+{
+  "record_type": "shadow_student_learning_curve_analysis",
+  "metric": "reward",
+  "metric_key": "mean_episode_reward",
+  "expert_eval": "/Users/luciex/Desktop/5478-robotics/project/Docs/Milestone/data/expert_eval.json",
+  "expert_reference_iteration": 5000.0,
+  "expert_reference_value": 7236.618407698981,
+  "n80_threshold": 5789.294726159185,
+  "transitions_per_iteration": 32768,
+  "n80_definition": "first iteration with metric >= 0.8 * expert reference, linear interpolation between checkpoints; None if never reached",
+  "auc_definition": "trapezoidal mean of metric / expert reference over the evaluated iteration range",
+  "conditions": {
+    "blind": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "num_runs": 3,
+      "num_reached_80": 3,
+      "n80_iterations_mean_reached": 2265.1483473082812,
+      "n80_iterations_values": [
+        1351.5875515789462,
+        3108.3619871164933,
+        2335.4955032294038
+      ],
+      "auc_normalized_mean": 0.7191135523201462,
+      "auc_normalized_std": 0.09621943507114919,
+      "final_normalized_mean": 0.9749022719365431,
+      "final_normalized_std": 0.024141017087401788
+    },
+    "wrist-2": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "num_runs": 3,
+      "num_reached_80": 3,
+      "n80_iterations_mean_reached": 2185.3409665505856,
+      "n80_iterations_values": [
+        2360.7158358583433,
+        2529.006367581244,
+        1666.30069621217
+      ],
+      "auc_normalized_mean": 0.7298002590195948,
+      "auc_normalized_std": 0.06411280355748196,
+      "final_normalized_mean": 0.9623960597487574,
+      "final_normalized_std": 0.039784848055112766
+    },
+    "hand-2": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "num_runs": 3,
+      "num_reached_80": 3,
+      "n80_iterations_mean_reached": 1734.1456518480518,
+      "n80_iterations_values": [
+        2593.9171548910363,
+        1254.1680266964474,
+        1354.3517739566712
+      ],
+      "auc_normalized_mean": 0.8032673409854807,
+      "auc_normalized_std": 0.08096540727320282,
+      "final_normalized_mean": 0.9810311841697393,
+      "final_normalized_std": 0.07177048111180039
+    },
+    "hand-4": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "num_runs": 3,
+      "num_reached_80": 3,
+      "n80_iterations_mean_reached": 2240.1563175787055,
+      "n80_iterations_values": [
+        1772.6090861447415,
+        2590.4451248765467,
+        2357.414741714828
+      ],
+      "auc_normalized_mean": 0.7178289079130337,
+      "auc_normalized_std": 0.043782946980871006,
+      "final_normalized_mean": 0.9400173236547932,
+      "final_normalized_std": 0.028278169728988403
+    },
+    "hand-20": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "num_runs": 3,
+      "num_reached_80": 3,
+      "n80_iterations_mean_reached": 2000.0474105773574,
+      "n80_iterations_values": [
+        1169.9601845281745,
+        2870.695066261697,
+        1959.4869809422005
+      ],
+      "auc_normalized_mean": 0.7671726442519433,
+      "auc_normalized_std": 0.08302351973429505,
+      "final_normalized_mean": 0.9479875945088169,
+      "final_normalized_std": 0.04667996738892382
+    },
+    "obj-1": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "num_runs": 3,
+      "num_reached_80": 3,
+      "n80_iterations_mean_reached": 1756.697164123066,
+      "n80_iterations_values": [
+        1562.0798361749971,
+        1354.5480141505673,
+        2353.463642043633
+      ],
+      "auc_normalized_mean": 0.7821750932035977,
+      "auc_normalized_std": 0.08315309706272007,
+      "final_normalized_mean": 1.013550995260603,
+      "final_normalized_std": 0.05231916664349734
+    },
+    "obj-4": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "num_runs": 3,
+      "num_reached_80": 3,
+      "n80_iterations_mean_reached": 2520.662729334151,
+      "n80_iterations_values": [
+        3047.586715595492,
+        2610.3223737959834,
+        1904.079098610978
+      ],
+      "auc_normalized_mean": 0.7076855134741945,
+      "auc_normalized_std": 0.06716430716267248,
+      "final_normalized_mean": 0.9299456917069034,
+      "final_normalized_std": 0.0336532095838874
+    }
+  },
+  "runs": [
+    {
+      "intent": "blind",
+      "seed": 0,
+      "evaluation": "Docs/Milestone/data/student_evals/blind-seed0-job1024771_0.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-blind-seed0-job1024454_0/student-stage1-blind-seed0",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7236.618407698981,
+      "final_normalized": 1.0,
+      "reached_80": true,
+      "n80_iterations": 1351.5875515789462,
+      "n80_transitions": 44288820.89013891,
+      "auc_normalized": 0.8194088262647441
+    },
+    {
+      "intent": "blind",
+      "seed": 1,
+      "evaluation": "Docs/Milestone/data/student_evals/blind-seed1-job1024771_1.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-blind-seed1-job1024454_1/student-stage1-blind-seed1",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6888.159674821491,
+      "final_normalized": 0.9518478503016314,
+      "reached_80": true,
+      "n80_iterations": 3108.3619871164933,
+      "n80_transitions": 101854805.59383325,
+      "auc_normalized": 0.6275675675101057
+    },
+    {
+      "intent": "blind",
+      "seed": 2,
+      "evaluation": "Docs/Milestone/data/student_evals/blind-seed2-job1024771_2.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-blind-seed2-job1024454_2/student-stage1-blind-seed2",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7040.209097890164,
+      "final_normalized": 0.9728589655079977,
+      "reached_80": true,
+      "n80_iterations": 2335.4955032294038,
+      "n80_transitions": 76529516.6498211,
+      "auc_normalized": 0.7103642631855888
+    },
+    {
+      "intent": "hand-2",
+      "seed": 0,
+      "evaluation": "Docs/Milestone/data/student_evals/hand-2-seed0-job1025590_2.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-hand-2-seed0-job1024454_6/student-stage1-hand-2-seed0",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6622.62234873322,
+      "final_normalized": 0.9151542855551792,
+      "reached_80": true,
+      "n80_iterations": 2593.9171548910363,
+      "n80_transitions": 84997477.33146948,
+      "auc_normalized": 0.7103139684467752
+    },
+    {
+      "intent": "hand-2",
+      "seed": 1,
+      "evaluation": "Docs/Milestone/data/student_evals/hand-2-seed1-job1028894_0.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-hand-2-seed1-job1024454_7/student-stage1-hand-2-seed1",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7022.59188463896,
+      "final_normalized": 0.9704245116984033,
+      "reached_80": true,
+      "n80_iterations": 1254.1680266964474,
+      "n80_transitions": 41096577.89878919,
+      "auc_normalized": 0.8410751129527949
+    },
+    {
+      "intent": "hand-2",
+      "seed": 2,
+      "evaluation": "Docs/Milestone/data/student_evals/hand-2-seed2-job1028894_1.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-hand-2-seed2-job1024454_8/student-stage1-hand-2-seed2",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7652.830744296216,
+      "final_normalized": 1.0575147552556357,
+      "reached_80": true,
+      "n80_iterations": 1354.3517739566712,
+      "n80_transitions": 44379398.9290122,
+      "auc_normalized": 0.8584129415568718
+    },
+    {
+      "intent": "hand-20",
+      "seed": 0,
+      "evaluation": "Docs/Milestone/data/student_evals/hand-20-seed0-job1028894_5.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-hand-20-seed0-job1024454_12/student-stage1-hand-20-seed0",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7154.871666053679,
+      "final_normalized": 0.988703737430962,
+      "reached_80": true,
+      "n80_iterations": 1169.9601845281745,
+      "n80_transitions": 38337255.32661922,
+      "auc_normalized": 0.8571429261723036
+    },
+    {
+      "intent": "hand-20",
+      "seed": 1,
+      "evaluation": "Docs/Milestone/data/student_evals/hand-20-seed1-job1028894_6.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-hand-20-seed1-job1024454_13/student-stage1-hand-20-seed1",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6491.542420334268,
+      "final_normalized": 0.8970408628190161,
+      "reached_80": true,
+      "n80_iterations": 2870.695066261697,
+      "n80_transitions": 94066935.93126328,
+      "auc_normalized": 0.6935184239997969
+    },
+    {
+      "intent": "hand-20",
+      "seed": 2,
+      "evaluation": "Docs/Milestone/data/student_evals/hand-20-seed2-job1028894_7.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-hand-20-seed2-job1024454_14/student-stage1-hand-20-seed2",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6934.259343690397,
+      "final_normalized": 0.9582181832764726,
+      "reached_80": true,
+      "n80_iterations": 1959.4869809422005,
+      "n80_transitions": 64208469.391514026,
+      "auc_normalized": 0.7508565825837294
+    },
+    {
+      "intent": "hand-4",
+      "seed": 0,
+      "evaluation": "Docs/Milestone/data/student_evals/hand-4-seed0-job1028894_2.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-hand-4-seed0-job1024454_9/student-stage1-hand-4-seed0",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6974.84867671995,
+      "final_normalized": 0.9638270644890524,
+      "reached_80": true,
+      "n80_iterations": 1772.6090861447415,
+      "n80_transitions": 58084854.53479089,
+      "auc_normalized": 0.7668259715187982
+    },
+    {
+      "intent": "hand-4",
+      "seed": 1,
+      "evaluation": "Docs/Milestone/data/student_evals/hand-4-seed1-job1028894_3.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-hand-4-seed1-job1024454_10/student-stage1-hand-4-seed1",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6856.434432454113,
+      "final_normalized": 0.9474638631159005,
+      "reached_80": true,
+      "n80_iterations": 2590.4451248765467,
+      "n80_transitions": 84883705.85195468,
+      "auc_normalized": 0.6825409245560055
+    },
+    {
+      "intent": "hand-4",
+      "seed": 2,
+      "evaluation": "Docs/Milestone/data/student_evals/hand-4-seed2-job1028894_4.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-hand-4-seed2-job1024454_11/student-stage1-hand-4-seed2",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6576.356894574557,
+      "final_normalized": 0.9087610433594264,
+      "reached_80": true,
+      "n80_iterations": 2357.414741714828,
+      "n80_transitions": 77247766.25651148,
+      "auc_normalized": 0.7041198276642974
+    },
+    {
+      "intent": "obj-1",
+      "seed": 0,
+      "evaluation": "Docs/Milestone/data/student_evals/obj-1-seed0-job1028894_8.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-obj-1-seed0-job1024454_15/student-stage1-obj-1-seed0",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7342.764884753712,
+      "final_normalized": 1.014667966593596,
+      "reached_80": true,
+      "n80_iterations": 1562.0798361749971,
+      "n80_transitions": 51186232.071782306,
+      "auc_normalized": 0.8007275398604243
+    },
+    {
+      "intent": "obj-1",
+      "seed": 1,
+      "evaluation": "Docs/Milestone/data/student_evals/obj-1-seed1-job1028894_9.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-obj-1-seed1-job1024454_16/student-stage1-obj-1-seed1",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7709.1893678685665,
+      "final_normalized": 1.0653027330647724,
+      "reached_80": true,
+      "n80_iterations": 1354.5480141505673,
+      "n80_transitions": 44385829.32768579,
+      "auc_normalized": 0.8544849752694631
+    },
+    {
+      "intent": "obj-1",
+      "seed": 2,
+      "evaluation": "Docs/Milestone/data/student_evals/obj-1-seed2-job1028894_10.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-obj-1-seed2-job1024454_17/student-stage1-obj-1-seed2",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6952.0911157112305,
+      "final_normalized": 0.9606822861234408,
+      "reached_80": true,
+      "n80_iterations": 2353.463642043633,
+      "n80_transitions": 77118296.62248577,
+      "auc_normalized": 0.6913127644809057
+    },
+    {
+      "intent": "obj-4",
+      "seed": 0,
+      "evaluation": "Docs/Milestone/data/student_evals/obj-4-seed0-job1028894_11.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-obj-4-seed0-job1024454_18/student-stage1-obj-4-seed0",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6522.6734697805,
+      "final_normalized": 0.9013427408084803,
+      "reached_80": true,
+      "n80_iterations": 3047.586715595492,
+      "n80_transitions": 99863321.49663308,
+      "auc_normalized": 0.6412029415575003
+    },
+    {
+      "intent": "obj-4",
+      "seed": 1,
+      "evaluation": "Docs/Milestone/data/student_evals/obj-4-seed1-job1028894_12.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-obj-4-seed1-job1024454_19/student-stage1-obj-4-seed1",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6668.304117227154,
+      "final_normalized": 0.9214668705113425,
+      "reached_80": true,
+      "n80_iterations": 2610.3223737959834,
+      "n80_transitions": 85535043.54454678,
+      "auc_normalized": 0.7063421947630069
+    },
+    {
+      "intent": "obj-4",
+      "seed": 2,
+      "evaluation": "Docs/Milestone/data/student_evals/obj-4-seed2-job1028894_13.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-obj-4-seed2-job1024454_20/student-stage1-obj-4-seed2",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6998.008745291965,
+      "final_normalized": 0.9670274638008879,
+      "reached_80": true,
+      "n80_iterations": 1904.079098610978,
+      "n80_transitions": 62392863.90328453,
+      "auc_normalized": 0.7755114041020764
+    },
+    {
+      "intent": "wrist-2",
+      "seed": 0,
+      "evaluation": "Docs/Milestone/data/student_evals/wrist-2-seed0-job1024771_3.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-wrist-2-seed0-job1024454_3/student-stage1-wrist-2-seed0",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6923.877133190728,
+      "final_normalized": 0.9567835062056707,
+      "reached_80": true,
+      "n80_iterations": 2360.7158358583433,
+      "n80_transitions": 77355936.5094062,
+      "auc_normalized": 0.698231976636417
+    },
+    {
+      "intent": "wrist-2",
+      "seed": 1,
+      "evaluation": "Docs/Milestone/data/student_evals/wrist-2-seed1-job1025590_0.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-wrist-2-seed1-job1024454_4/student-stage1-wrist-2-seed1",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 6699.049982596275,
+      "final_normalized": 0.9257155214193978,
+      "reached_80": true,
+      "n80_iterations": 2529.006367581244,
+      "n80_transitions": 82870480.6529022,
+      "auc_normalized": 0.6875927263214586
+    },
+    {
+      "intent": "wrist-2",
+      "seed": 2,
+      "evaluation": "Docs/Milestone/data/student_evals/wrist-2-seed2-job1025590_1.json",
+      "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-stage1-wrist-2-seed2-job1024454_5/student-stage1-wrist-2-seed2",
+      "evaluated_checkpoints": 25,
+      "final_iteration": 5000.0,
+      "final_value": 7270.552008637476,
+      "final_normalized": 1.0046891516212038,
+      "reached_80": true,
+      "n80_iterations": 1666.30069621217,
+      "n80_transitions": 54601341.21348038,
+      "auc_normalized": 0.8035760741009089
+    }
+  ]
+}

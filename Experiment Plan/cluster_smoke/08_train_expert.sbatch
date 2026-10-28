@@ -23,6 +23,13 @@ export XDG_CACHE_HOME="${HOME}/data/low-dim-intent/cache/xdg"
 
 num_envs=2048
 seed=0
+# EXPERT_TASK=m2 trains the M2 task (shadow_zaxis_env.py); unset keeps the Stage 1 command unchanged.
+case "${EXPERT_TASK:-stage1}" in
+    stage1) task=Isaac-Repose-Cube-Shadow-Direct-v0; run_prefix=expert; launcher=() ;;
+    m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; run_prefix=expert-m2
+        launcher=("${SLURM_SUBMIT_DIR}/run_with_m2_tasks.py") ;;
+    *) echo "unknown EXPERT_TASK=${EXPERT_TASK}" >&2; exit 2 ;;
+esac
 agent_cfg_file="${ISAACLAB_DIR}/source/isaaclab_tasks/isaaclab_tasks/direct/shadow_hand/agents/rl_games_ppo_cfg.yaml"
 
 read -r horizon_length minibatch_size configured_max_epochs save_frequency < <(
@@ -49,11 +56,14 @@ if (( rollout_batch_size % minibatch_size != 0 )); then
     exit 2
 fi
 
-run_root="${HOME}/data/low-dim-intent/runs/expert-seed${seed}-job${SLURM_JOB_ID}"
-metadata_dir="${HOME}/data/low-dim-intent/metadata/expert-seed${seed}-job${SLURM_JOB_ID}"
+run_root="${HOME}/data/low-dim-intent/runs/${run_prefix}-seed${seed}-job${SLURM_JOB_ID}"
+metadata_dir="${HOME}/data/low-dim-intent/metadata/${run_prefix}-seed${seed}-job${SLURM_JOB_ID}"
 mkdir -p "${run_root}" "${metadata_dir}" "${XDG_CACHE_HOME}"
 cp "${agent_cfg_file}" "${metadata_dir}/rl_games_ppo_cfg.yaml"
 cp "${SLURM_SUBMIT_DIR}/08_train_expert.sbatch" "${metadata_dir}/08_train_expert.sbatch"
+if [[ "${EXPERT_TASK:-stage1}" == m2 ]]; then
+    cp "${SLURM_SUBMIT_DIR}"/{m2_tasks.py,shadow_zaxis_env.py,run_with_m2_tasks.py} "${metadata_dir}/"
+fi
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
 echo "record_type=shadow_expert_train"
@@ -75,6 +85,7 @@ echo "max_iterations=${max_iterations}"
 echo "total_frames=${total_frames}"
 echo "save_frequency=${save_frequency}"
 echo "seed=${seed}"
+echo "task=${task}"
 echo "resume_checkpoint=${CHECKPOINT:-none}"
 echo "run_root=${run_root}"
 echo "metadata_dir=${metadata_dir}"
@@ -90,7 +101,7 @@ nvidia-smi \
 monitor_pid=$!
 
 train_args=(
-    --task Isaac-Repose-Cube-Shadow-Direct-v0
+    --task "${task}"
     --num_envs "${num_envs}"
     --max_iterations "${max_iterations}"
     --seed "${seed}"
@@ -99,10 +110,13 @@ train_args=(
 if [[ -n "${CHECKPOINT:-}" ]]; then
     train_args+=(--checkpoint "${CHECKPOINT}")
 fi
+if [[ "${EXPERT_TASK:-stage1}" == m2 ]]; then
+    train_args+=(agent.params.config.name=shadow_hand_zaxis)
+fi
 
 set +e
 /usr/bin/time -p timeout --signal=INT --kill-after=60s 20700s \
-    ./isaaclab.sh -p scripts/reinforcement_learning/rl_games/train.py "${train_args[@]}" \
+    ./isaaclab.sh -p "${launcher[@]}" scripts/reinforcement_learning/rl_games/train.py "${train_args[@]}" \
     2>&1 | tee "${run_log}"
 command_status=$?
 kill "${monitor_pid}" 2>/dev/null || true

@@ -21,19 +21,26 @@ export PYTHONUNBUFFERED=1
 export OMNI_KIT_ACCEPT_EULA=YES
 export XDG_CACHE_HOME="${HOME}/data/low-dim-intent/cache/xdg"
 
+# ROLLOUT_TASK=m2 collects on the M2 task (shadow_zaxis_env.py); pass ROLLOUT_CHECKPOINT to the M2 expert.
+case "${ROLLOUT_TASK:-stage1}" in
+    stage1) task=Isaac-Repose-Cube-Shadow-Direct-v0; run_prefix=expert-rollout ;;
+    m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; run_prefix=expert-m2-rollout ;;
+    *) echo "unknown ROLLOUT_TASK=${ROLLOUT_TASK}" >&2; exit 2 ;;
+esac
 checkpoint="${ROLLOUT_CHECKPOINT:-${HOME}/data/low-dim-intent/checkpoints/expert-seed0/frozen/expert-seed0.pth}"
 num_envs="${ROLLOUT_NUM_ENVS:-256}"
 vector_steps="${ROLLOUT_VECTOR_STEPS:-700}"
 seed="${ROLLOUT_SEED:-20261007}"
-dataset_dir="${HOME}/data/low-dim-intent/datasets/expert-rollout-seed0-job${SLURM_JOB_ID}"
-run_root="${HOME}/data/low-dim-intent/runs/expert-rollout-seed0-job${SLURM_JOB_ID}"
-metadata_dir="${HOME}/data/low-dim-intent/metadata/expert-rollout-seed0-job${SLURM_JOB_ID}"
+dataset_dir="${HOME}/data/low-dim-intent/datasets/${run_prefix}-seed0-job${SLURM_JOB_ID}"
+run_root="${HOME}/data/low-dim-intent/runs/${run_prefix}-seed0-job${SLURM_JOB_ID}"
+metadata_dir="${HOME}/data/low-dim-intent/metadata/${run_prefix}-seed0-job${SLURM_JOB_ID}"
 collector="${SLURM_SUBMIT_DIR}/collect_shadow_rollout.py"
 
 test -f "${checkpoint}"
 test -f "${collector}"
 mkdir -p "${run_root}" "${metadata_dir}" "${XDG_CACHE_HOME}"
 cp "${collector}" "${metadata_dir}/collect_shadow_rollout.py"
+cp "${SLURM_SUBMIT_DIR}"/{m2_tasks.py,shadow_zaxis_env.py} "${metadata_dir}/"
 cp "${SLURM_SUBMIT_DIR}/11_collect_expert_rollout.sbatch" "${metadata_dir}/11_collect_expert_rollout.sbatch"
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
@@ -45,6 +52,7 @@ echo "partition=${SLURM_JOB_PARTITION}"
 echo "isaaclab_commit=$(git rev-parse HEAD)"
 echo "gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader | paste -sd ';')"
 echo "driver=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | paste -sd ';')"
+echo "task=${task}"
 echo "checkpoint=${checkpoint}"
 echo "checkpoint_sha256=$(sha256sum "${checkpoint}" | awk '{print $1}')"
 echo "num_envs=${num_envs}"
@@ -66,7 +74,7 @@ start_epoch=$(date +%s)
 set +e
 /usr/bin/time -p timeout --signal=INT --kill-after=60s 1500s \
     ./isaaclab.sh -p "${collector}" \
-    --task Isaac-Repose-Cube-Shadow-Direct-v0 \
+    --task "${task}" \
     --checkpoint "${checkpoint}" \
     --output_dir "${dataset_dir}" \
     --num_envs "${num_envs}" \
