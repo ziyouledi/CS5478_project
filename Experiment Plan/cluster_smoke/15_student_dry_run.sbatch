@@ -32,9 +32,15 @@ iterations="${DRY_RUN_ITERATIONS:-3}"
 seed=0
 horizon_length=16
 minibatch_size=$((num_envs * horizon_length))
-frozen_dir="${HOME}/data/low-dim-intent/checkpoints/expert-seed0/frozen"
-checkpoint="${frozen_dir}/expert-seed0.pth"
-expert_sha256=$(awk '$2 == "expert-seed0.pth" {print $1}' "${frozen_dir}/SHA256SUMS")
+stage="${STUDENT_STAGE:-stage1}"
+# STUDENT_STAGE=m2 trains on the M2 task (shadow_zaxis_env.py) with the frozen M2 expert.
+case "${stage}" in
+    m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; expert_name=expert-m2-seed0 ;;
+    *) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0 ;;
+esac
+frozen_dir="${HOME}/data/low-dim-intent/checkpoints/${expert_name}/frozen"
+checkpoint="${frozen_dir}/${expert_name}.pth"
+expert_sha256=$(awk -v name="${expert_name}.pth" '$2 == name {print $1}' "${frozen_dir}/SHA256SUMS")
 pca_basis="${INTENT_PCA_DIR}/pca_basis.npz"
 run_root="${HOME}/data/low-dim-intent/runs/student-dry-run-job${SLURM_JOB_ID}"
 metadata_dir="${HOME}/data/low-dim-intent/metadata/student-dry-run-job${SLURM_JOB_ID}"
@@ -43,9 +49,10 @@ trainer="${SLURM_SUBMIT_DIR}/train_student.py"
 test -f "${checkpoint}"
 test -n "${expert_sha256}"
 test -f "${pca_basis}"
+if [[ -n "${JOINT_PCA_DIR:-}" ]]; then test -f "${JOINT_PCA_DIR}/joint_basis.npz"; fi
 test -f "${trainer}"
 mkdir -p "${run_root}" "${metadata_dir}" "${XDG_CACHE_HOME}"
-cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_modules.py,15_student_dry_run.sbatch} "${metadata_dir}/"
+cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_modules.py,m2_tasks.py,shadow_zaxis_env.py,15_student_dry_run.sbatch} "${metadata_dir}/"
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
 echo "record_type=shadow_student_dry_run_job"
@@ -54,6 +61,10 @@ echo "job_id=${SLURM_JOB_ID}"
 echo "node=$(hostname -f)"
 echo "isaaclab_commit=$(git rev-parse HEAD)"
 echo "gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader | paste -sd ';')"
+echo "stage=${stage}"
+echo "task=${task}"
+echo "expert_checkpoint=${checkpoint}"
+echo "joint_pca_dir=${JOINT_PCA_DIR:-none}"
 echo "intents=${intents}"
 echo "num_envs=${num_envs}"
 echo "iterations=${iterations}"
@@ -66,15 +77,19 @@ failed=0
 for intent in ${intents}; do
     name="dry-${intent}-seed${seed}"
     log="${run_root}/${name}.log"
+    case "${intent}" in
+        joint-*) intent_basis="${JOINT_PCA_DIR:?joint-K intents need JOINT_PCA_DIR}/joint_basis.npz" ;;
+        *) intent_basis="${pca_basis}" ;;
+    esac
     start_epoch=$(date +%s)
     set +e
     timeout --signal=INT --kill-after=30s 600s \
         ./isaaclab.sh -p "${trainer}" \
-        --task Isaac-Repose-Cube-Shadow-Direct-v0 \
+        --task "${task}" \
         --intent "${intent}" \
         --expert_checkpoint "${checkpoint}" \
         --expert_sha256 "${expert_sha256}" \
-        --pca_basis "${pca_basis}" \
+        --pca_basis "${intent_basis}" \
         --obj_lookahead "${OBJ_LOOKAHEAD}" \
         --num_envs "${num_envs}" \
         --seed "${seed}" \

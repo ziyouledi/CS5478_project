@@ -40,10 +40,19 @@ fi
 intent="${intents[$((task_id / ${#seeds[@]}))]}"
 seed="${seeds[$((task_id % ${#seeds[@]}))]}"
 
-frozen_dir="${HOME}/data/low-dim-intent/checkpoints/expert-seed0/frozen"
-checkpoint="${frozen_dir}/expert-seed0.pth"
-expert_sha256=$(awk '$2 == "expert-seed0.pth" {print $1}' "${frozen_dir}/SHA256SUMS")
-pca_basis="${INTENT_PCA_DIR}/pca_basis.npz"
+# STUDENT_STAGE=m2 trains on the M2 task (shadow_zaxis_env.py) with the frozen M2 expert.
+case "${stage}" in
+    m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; expert_name=expert-m2-seed0 ;;
+    *) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0 ;;
+esac
+frozen_dir="${HOME}/data/low-dim-intent/checkpoints/${expert_name}/frozen"
+checkpoint="${frozen_dir}/${expert_name}.pth"
+expert_sha256=$(awk -v name="${expert_name}.pth" '$2 == name {print $1}' "${frozen_dir}/SHA256SUMS")
+# joint-K intents use the joint-position basis (20_fit_joint_basis.sbatch); all others the action PCA.
+case "${intent}" in
+    joint-*) pca_basis="${JOINT_PCA_DIR:?joint-K intents need JOINT_PCA_DIR}/joint_basis.npz" ;;
+    *) pca_basis="${INTENT_PCA_DIR}/pca_basis.npz" ;;
+esac
 job_tag="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID}}_${task_id}"
 name="student-${stage}-${intent}-seed${seed}"
 run_root="${HOME}/data/low-dim-intent/runs/${name}-job${job_tag}"
@@ -55,7 +64,7 @@ test -n "${expert_sha256}"
 test -f "${pca_basis}"
 test -f "${trainer}"
 mkdir -p "${run_root}" "${metadata_dir}" "${XDG_CACHE_HOME}"
-cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_modules.py,16_train_student.sbatch} "${metadata_dir}/"
+cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_modules.py,m2_tasks.py,shadow_zaxis_env.py,16_train_student.sbatch} "${metadata_dir}/"
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
 echo "record_type=shadow_student_train_job"
@@ -67,6 +76,8 @@ echo "node=$(hostname -f)"
 echo "isaaclab_commit=$(git rev-parse HEAD)"
 echo "gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader | paste -sd ';')"
 echo "stage=${stage}"
+echo "task=${task}"
+echo "expert_checkpoint=${checkpoint}"
 echo "intent=${intent}"
 echo "seed=${seed}"
 echo "num_envs=${num_envs}"
@@ -89,7 +100,7 @@ start_epoch=$(date +%s)
 set +e
 /usr/bin/time -p timeout --signal=INT --kill-after=60s 10500s \
     ./isaaclab.sh -p "${trainer}" \
-    --task Isaac-Repose-Cube-Shadow-Direct-v0 \
+    --task "${task}" \
     --intent "${intent}" \
     --expert_checkpoint "${checkpoint}" \
     --expert_sha256 "${expert_sha256}" \

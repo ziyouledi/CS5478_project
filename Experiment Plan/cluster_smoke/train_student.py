@@ -23,7 +23,7 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--task", default="Isaac-Repose-Cube-Shadow-Direct-v0")
 parser.add_argument("--agent", default="rl_games_cfg_entry_point")
-parser.add_argument("--intent", required=True, help="blind | hand-K | wrist-2 | wrist2-finger-K | obj-1|3|4")
+parser.add_argument("--intent", required=True, help="blind | hand-K | joint-K | wrist-2 | wrist2-finger-K | obj-1|3|4")
 parser.add_argument("--expert_checkpoint", default=None)
 parser.add_argument("--expert_sha256", default=None)
 parser.add_argument("--pca_basis", default=None)
@@ -52,6 +52,7 @@ from isaaclab_rl.rl_games import RlGamesGpuEnv, RlGamesVecEnvWrapper
 import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
+import m2_tasks  # noqa: F401  registers Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0
 from intent_modules import OBS_DIM, IntentModule, build_intent
 
 

@@ -19,9 +19,14 @@ export PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 
 dataset_dir="${INTENT_DATASET_DIR:-${HOME}/data/low-dim-intent/datasets/expert-rollout-seed0-job1023537}"
-frozen_dir="${HOME}/data/low-dim-intent/checkpoints/expert-seed0/frozen"
-checkpoint="${frozen_dir}/expert-seed0.pth"
-expert_sha256=$(awk '$2 == "expert-seed0.pth" {print $1}' "${frozen_dir}/SHA256SUMS")
+expert_name="${INTENT_EXPERT:-expert-seed0}"  # expert-m2-seed0 for the M2 rollout
+frozen_dir="${HOME}/data/low-dim-intent/checkpoints/${expert_name}/frozen"
+checkpoint="${frozen_dir}/${expert_name}.pth"
+expert_sha256=$(awk -v name="${expert_name}.pth" '$2 == name {print $1}' "${frozen_dir}/SHA256SUMS")
+joint_args=()
+if [[ -n "${JOINT_PCA_DIR:-}" ]]; then
+    joint_args=(--joint_basis "${JOINT_PCA_DIR}/joint_basis.npz")
+fi
 pca_basis="${INTENT_PCA_DIR}/pca_basis.npz"
 metadata_dir="${HOME}/data/low-dim-intent/metadata/intent-check-job${SLURM_JOB_ID}"
 
@@ -43,6 +48,7 @@ echo "expert_sha256=${expert_sha256}"
 echo "pca_basis=${pca_basis}"
 echo "pca_basis_check=$(cd "${INTENT_PCA_DIR}" && sha256sum -c --strict SHA256SUMS >/dev/null && echo PASS)"
 echo "obj_lookahead=${OBJ_LOOKAHEAD}"
+echo "joint_pca_dir=${JOINT_PCA_DIR:-none}"
 
 set +e
 python "${SLURM_SUBMIT_DIR}/validate_intent_modules.py" \
@@ -51,6 +57,7 @@ python "${SLURM_SUBMIT_DIR}/validate_intent_modules.py" \
     --expert_checkpoint "${checkpoint}" \
     --expert_sha256 "${expert_sha256}" \
     --obj_lookahead "${OBJ_LOOKAHEAD}" \
+    "${joint_args[@]}" \
     --output_json "${metadata_dir}/intent_validation.json" \
     2>&1 | tee "${metadata_dir}/validate.log"
 command_status=${PIPESTATUS[0]}

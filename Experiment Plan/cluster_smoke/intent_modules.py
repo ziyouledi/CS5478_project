@@ -5,6 +5,8 @@ k-D vector that is appended to the student's observation:
 
 * ``blind``            0-D, no intent.
 * ``hand-K``           first K principal components of the frozen expert's 20-D action.
+* ``joint-K``          the expert's 20-D action projected on the first K components of its measured
+                       actuated joint positions (basis from fit_joint_basis.py; same normalized units).
 * ``wrist-2``          the expert's two wrist targets, uncompressed.
 * ``wrist2-finger-K``  wrist targets plus the first K components of the 18-D finger PCA.
 * ``obj-1``            remaining rotation angle to the goal.
@@ -160,13 +162,13 @@ class FrozenExpert(nn.Module):
 @dataclass(frozen=True)
 class IntentSpec:
     name: str
-    kind: str  # blind | hand | wrist | wrist_finger | obj
+    kind: str  # blind | hand | joint | wrist | wrist_finger | obj
     k: int = 0
     dim: int = 0
 
     @property
     def needs_expert(self) -> bool:
-        return self.kind in ("hand", "wrist", "wrist_finger")
+        return self.kind in ("hand", "joint", "wrist", "wrist_finger")
 
     @property
     def needs_lookahead(self) -> bool:
@@ -184,6 +186,11 @@ def parse_intent(name: str) -> IntentSpec:
         if not 1 <= k <= ACTION_DIM:
             raise ValueError(f"hand-k needs 1 <= k <= {ACTION_DIM}: {name}")
         return IntentSpec(name, "hand", k, k)
+    if m := re.fullmatch(r"joint-(\d+)", name):
+        k = int(m.group(1))
+        if not 1 <= k <= ACTION_DIM:
+            raise ValueError(f"joint-k needs 1 <= k <= {ACTION_DIM}: {name}")
+        return IntentSpec(name, "joint", k, k)
     if m := re.fullmatch(r"wrist2-finger-(\d+)", name):
         k = int(m.group(1))
         if not 1 <= k <= ACTION_DIM - 2:
@@ -206,7 +213,7 @@ class IntentModule(nn.Module):
         super().__init__()
         self.spec = spec
         self.expert = expert
-        uses_pca = spec.kind in ("hand", "wrist_finger")
+        uses_pca = spec.kind in ("hand", "joint", "wrist_finger")
         self.pca_basis = str(pca_basis) if uses_pca and pca_basis is not None else None
         self.pca_basis_sha256 = sha256(pca_basis) if uses_pca and pca_basis is not None else None
         self.obj_lookahead = obj_lookahead
@@ -221,6 +228,9 @@ class IntentModule(nn.Module):
             basis = np.load(pca_basis)
             if spec.kind == "hand":
                 mu, w = basis["mu_robot"], basis["W_robot"][:, : spec.k]
+            elif spec.kind == "joint":
+                # Separate keys, so an action-PCA file cannot be passed to joint-K by mistake or vice versa.
+                mu, w = basis["mu_joint"], basis["W_joint"][:, : spec.k]
             else:
                 mu, w = basis["mu_finger"], basis["W_finger"][:, : spec.k]
             self.register_buffer("pca_mu", torch.as_tensor(mu, dtype=torch.float32))
@@ -256,7 +266,7 @@ class IntentModule(nn.Module):
         action = self.expert(obs)
         if kind == "wrist":
             return action[:, WRIST]
-        if kind == "hand":
+        if kind in ("hand", "joint"):
             return (action - self.pca_mu) @ self.pca_w
         return torch.cat([action[:, WRIST], (action[:, FINGERS] - self.pca_mu) @ self.pca_w], dim=1)
 

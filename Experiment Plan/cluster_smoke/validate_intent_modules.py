@@ -23,6 +23,7 @@ from intent_modules import (
 
 STAGE_ONE_INTENTS = ["blind", "wrist-2", "hand-2", "hand-4", "hand-20", "obj-1", "obj-4"]
 EXTRA_INTENTS = ["hand-8", "wrist2-finger-2", "obj-3"]
+JOINT_INTENTS = ["joint-2", "joint-4", "joint-20"]
 EXPERT_TOLERANCE = 1e-4
 
 
@@ -33,6 +34,7 @@ def main() -> None:
     parser.add_argument("--expert_checkpoint", required=True)
     parser.add_argument("--expert_sha256", required=True)
     parser.add_argument("--obj_lookahead", type=float, required=True)
+    parser.add_argument("--joint_basis", default=None, help="joint_basis.npz from fit_joint_basis.py; adds joint-K checks")
     parser.add_argument("--num_rows", type=int, default=131072)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--output_json", required=True)
@@ -63,6 +65,9 @@ def main() -> None:
         obj_lookahead=args.obj_lookahead,
     )
     modules = {name: build_intent(name, **common) for name in STAGE_ONE_INTENTS + EXTRA_INTENTS}
+    if args.joint_basis:
+        joint_common = {**common, "pca_basis": Path(args.joint_basis)}
+        modules.update({name: build_intent(name, **joint_common) for name in JOINT_INTENTS})
     expert = modules["hand-20"].expert
     report["expert_layer_sizes"] = expert.layer_sizes
 
@@ -81,6 +86,28 @@ def main() -> None:
     relative = np.abs(sample_var - basis["eigenvalues_robot"]) / np.maximum(basis["eigenvalues_robot"], 1e-3)
     report["hand20_latent_variance_rel_error_top8"] = relative[:8].tolist()
     check("hand20_latent_variance_rel_error_top8_max", float(relative[:8].max()), 0.05)
+
+    # 2b. Joint-K: the same expert action in the joint-position basis, with its own npz keys.
+    if args.joint_basis:
+        joint_basis = np.load(args.joint_basis)
+        wq = torch.as_tensor(joint_basis["W_joint"], dtype=torch.float32)
+        muq = torch.as_tensor(joint_basis["mu_joint"], dtype=torch.float32)
+        check("joint_basis_orthonormal", float((wq.T @ wq - torch.eye(wq.shape[1])).abs().max()), 1e-5)
+        j20 = modules["joint-20"](obs)
+        check("joint20_reconstruction_max_abs", float((j20 @ wq.T + muq - expert_action).abs().max()), 1e-5)
+        check("joint20_matches_formula", float((j20 - (expert_action - muq) @ wq).abs().max()), 1e-5)
+        for k in (2, 4):
+            check(f"joint{k}_prefix_of_joint20", float((modules[f"joint-{k}"](obs) - j20[:, :k]).abs().max()), 1e-6)
+        wrong_files = 0
+        for name, path in (("joint-2", Path(args.pca_basis)), ("hand-2", Path(args.joint_basis))):
+            try:
+                build_intent(name, **{**common, "pca_basis": path})
+            except KeyError:
+                wrong_files += 1
+        check("wrong_basis_file_rejected_missing", float(2 - wrong_files), 0.0)
+        report["joint_basis"] = {"path": str(Path(args.joint_basis).resolve()),
+                                 "joint20_latent_std_top4": j20.std(dim=0)[:4].tolist(),
+                                 "hand20_latent_std_top4": z20.std(dim=0)[:4].tolist()}
 
     # 3. Wrist intents.
     check("wrist2_equals_expert_wrist", float((modules["wrist-2"](obs) - expert_action[:, WRIST]).abs().max()), 0.0)
