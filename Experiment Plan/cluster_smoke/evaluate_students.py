@@ -98,7 +98,9 @@ def main(env_cfg, agent_cfg: dict) -> None:
     clip_obs = agent_cfg["params"]["env"].get("clip_observations", math.inf)
     clip_actions = agent_cfg["params"]["env"].get("clip_actions", math.inf)
     base_env = gym.make(args_cli.task, cfg=env_cfg, render_mode=None)
-    env = IntentRlGamesVecEnvWrapper(base_env, rl_device, clip_obs, clip_actions, intent)
+    # The actor gets the same (goal-hidden) input as in training; the critic is not used here.
+    goal_hidden = bool(record.get("goal_hidden", False))
+    env = IntentRlGamesVecEnvWrapper(base_env, rl_device, clip_obs, clip_actions, intent, goal_hidden=goal_hidden)
     vecenv.register(
         "IsaacRlgWrapper", lambda config_name, num_actors, **kwargs: RlGamesGpuEnv(config_name, num_actors, **kwargs)
     )
@@ -169,6 +171,8 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "run_dir": str(run_dir),
         "intent_record": record,
         "intent_dim": intent.dim,
+        "goal_hidden": goal_hidden,
+        "actor_obs_dim": env.actor_obs_dim,
         "deterministic": True,
         "seed": args_cli.seed,
         "episodes_per_checkpoint": args_cli.num_envs,

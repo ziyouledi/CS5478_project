@@ -5,6 +5,10 @@ Adapted from Isaac Lab v2.3.1 scripts/reinforcement_learning/rl_games/train.py. 
 reward, PPO configuration and network are unchanged; only the policy observation grows from
 157-D to 157 + intent_dim. The intent is computed from the clipped 157-D observation of the
 student's own state (see intent_modules.py).
+
+Stage 2 M1 adds two flags (see intent_env_wrapper.py): ``--goal_hidden`` gives the actor the
+149-D goal-free observation plus the intent, and ``--asymmetric_critic`` adds a central value net
+on the full clipped 157-D observation.
 """
 
 from __future__ import annotations
@@ -28,6 +32,12 @@ parser.add_argument("--expert_checkpoint", default=None)
 parser.add_argument("--expert_sha256", default=None)
 parser.add_argument("--pca_basis", default=None)
 parser.add_argument("--obj_lookahead", type=float, default=None, help="Subgoal lookahead angle in radians.")
+parser.add_argument("--goal_hidden", action="store_true", help="Stage 2 M1: remove the goal fields from the actor input.")
+parser.add_argument(
+    "--asymmetric_critic",
+    action="store_true",
+    help="Add an RL-Games central value net that sees the full clipped 157-D observation (no intent).",
+)
 parser.add_argument("--num_envs", type=int, default=2048)
 parser.add_argument("--seed", type=int, required=True)
 parser.add_argument("--max_iterations", type=int, required=True)
@@ -41,55 +51,44 @@ app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
 import gymnasium as gym
-import numpy as np
-import torch
 from rl_games.common import env_configurations, vecenv
 from rl_games.common.algo_observer import IsaacAlgoObserver
 from rl_games.torch_runner import Runner
 
 from isaaclab.utils.io import dump_yaml
-from isaaclab_rl.rl_games import RlGamesGpuEnv, RlGamesVecEnvWrapper
+from isaaclab_rl.rl_games import RlGamesGpuEnv
 import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
 import m2_tasks  # noqa: F401  registers Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0
-from intent_modules import OBS_DIM, IntentModule, build_intent
+from intent_env_wrapper import IntentRlGamesVecEnvWrapper
+from intent_modules import build_intent
 
 
-class IntentRlGamesVecEnvWrapper(RlGamesVecEnvWrapper):
-    """RL-Games wrapper that appends an intent vector after the standard observation clipping.
-
-    The base wrapper reads the observation space from the unwrapped env, so a gym
-    ObservationWrapper cannot change the network input size; this subclass does it here.
-    Intent values are not clipped.
-    """
-
-    def __init__(self, env, rl_device: str, clip_obs: float, clip_actions: float, intent: IntentModule):
-        self._intent = intent
-        self._checked_shape = False
-        super().__init__(env, rl_device, clip_obs, clip_actions)
-
-    @property
-    def observation_space(self):
-        base = super().observation_space
-        if base.shape != (OBS_DIM,):
-            raise ValueError(f"Expected a {OBS_DIM}-D policy observation, got {base.shape}")
-        low = np.concatenate([base.low, np.full(self._intent.dim, -np.inf, dtype=np.float32)])
-        high = np.concatenate([base.high, np.full(self._intent.dim, np.inf, dtype=np.float32)])
-        # The base wrapper type-checks against legacy gym.spaces.Box, not gymnasium's; keep its class.
-        return type(base)(low, high, dtype=np.float32)
-
-    def _process_obs(self, obs_dict):
-        processed = super()._process_obs(obs_dict)
-        obs = processed["obs"]
-        intent = self._intent(obs)
-        processed["obs"] = torch.cat([obs, intent], dim=1) if self._intent.dim else obs
-        if not self._checked_shape:
-            print(f"student_obs_shape={tuple(processed['obs'].shape)} intent_dim={self._intent.dim}")
-            if processed["obs"].shape[1] != OBS_DIM + self._intent.dim or not torch.isfinite(intent).all():
-                raise RuntimeError("Student observation shape or intent values are invalid")
-            self._checked_shape = True
-        return processed
+# Stage 2 M1 critic, copied from Isaac Lab's shadow_hand/agents/rl_games_ppo_ff_cfg.yaml except
+# mini_epochs 5 (FF uses 4) to match the Stage 1 actor, whose PPO settings stay unchanged.
+CENTRAL_VALUE_CONFIG = {
+    "minibatch_size": 32768,
+    "mini_epochs": 5,
+    "learning_rate": 5e-4,
+    "lr_schedule": "adaptive",
+    "schedule_type": "standard",
+    "kl_threshold": 0.016,
+    "clip_value": True,
+    "normalize_input": True,
+    "truncate_grads": True,
+    "network": {
+        "name": "actor_critic",
+        "central_value": True,
+        "mlp": {
+            "units": [512, 512, 256, 128],
+            "activation": "elu",
+            "d2rl": False,
+            "initializer": {"name": "default"},
+            "regularizer": {"name": "None"},
+        },
+    },
+}
 
 
 @hydra_task_config(args_cli.task, args_cli.agent)
@@ -104,6 +103,9 @@ def main(env_cfg, agent_cfg: dict) -> None:
     env_cfg.seed = args_cli.seed
 
     config = agent_cfg["params"]["config"]
+    if args_cli.asymmetric_critic:
+        # Same minibatch as the actor, so a minibatch_size override (dry run) applies to both.
+        config["central_value_config"] = {**CENTRAL_VALUE_CONFIG, "minibatch_size": config["minibatch_size"]}
     rollout_batch = args_cli.num_envs * int(config["horizon_length"])
     if rollout_batch % int(config["minibatch_size"]) != 0:
         raise ValueError(f"num_envs * horizon_length = {rollout_batch} is not divisible by minibatch_size")
@@ -131,16 +133,27 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "num_envs": args_cli.num_envs,
         "max_iterations": args_cli.max_iterations,
         "transitions_per_iteration": rollout_batch,
-        "student_obs_dim": OBS_DIM + intent.dim,
+        "goal_hidden": args_cli.goal_hidden,
+        "asymmetric_critic": args_cli.asymmetric_critic,
     }
-    (log_dir / "params" / "intent.json").write_text(json.dumps(intent_record, indent=2) + "\n", encoding="utf-8")
-    for key, value in intent_record.items():
-        print(f"student_{key}={value}")
 
     clip_obs = agent_cfg["params"]["env"].get("clip_observations", math.inf)
     clip_actions = agent_cfg["params"]["env"].get("clip_actions", math.inf)
     env = gym.make(args_cli.task, cfg=env_cfg, render_mode=None)
-    env = IntentRlGamesVecEnvWrapper(env, rl_device, clip_obs, clip_actions, intent)
+    env = IntentRlGamesVecEnvWrapper(
+        env,
+        rl_device,
+        clip_obs,
+        clip_actions,
+        intent,
+        goal_hidden=args_cli.goal_hidden,
+        asymmetric_critic=args_cli.asymmetric_critic,
+    )
+    intent_record["student_obs_dim"] = env.actor_obs_dim
+    intent_record["critic_states_dim"] = env.rlg_num_states
+    (log_dir / "params" / "intent.json").write_text(json.dumps(intent_record, indent=2) + "\n", encoding="utf-8")
+    for key, value in intent_record.items():
+        print(f"student_{key}={value}")
 
     vecenv.register(
         "IsaacRlgWrapper", lambda config_name, num_actors, **kwargs: RlGamesGpuEnv(config_name, num_actors, **kwargs)

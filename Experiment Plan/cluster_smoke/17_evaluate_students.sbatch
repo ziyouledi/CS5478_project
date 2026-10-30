@@ -13,6 +13,7 @@
 # (each containing nn/ and, for students, params/intent.json); task i evaluates entry i.
 # EVAL_INTENT is only needed for runs without params/intent.json (e.g. EVAL_INTENT=blind for the expert).
 # EVAL_TASK selects the gym task (default: Stage 1; Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0 for M2).
+# Stage 2 M1 runs use the default task; the evaluator reads goal_hidden from params/intent.json.
 
 set -Eeuo pipefail
 

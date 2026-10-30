@@ -292,6 +292,24 @@ Each run writes `runs/student-<stage>-<intent>-seed<s>-job<array>_<task>/`
 (RL-Games checkpoints every 200 iterations, tensorboard summaries,
 `params/intent.json`) and requires `student_job_status=PASS`.
 
+## Stage 14: Stage 2 M1 (goal hidden)
+
+`STUDENT_STAGE=m1` (in `15` and `16`) uses the Stage 1 task and expert and
+passes `--goal_hidden --asymmetric_critic`: the actor sees the 157-D
+observation without `goal_rot` and the object-to-goal quaternion
+(`[64:72]`, 149-D) plus the intent; an RL-Games central value net sees the
+full clipped 157-D observation. Intents are still computed from the full
+observation. `STUDENT_STAGE=m1-gate` passes only `--asymmetric_critic`
+(goal-visible gate run). Both flags are recorded in `params/intent.json`, and
+`evaluate_students.py` applies the same actor mask. Design and step order:
+[`../M1_PLAN.md`](../M1_PLAN.md).
+
+```bash
+# Dry run of the 9 M1 conditions, then the goal-visible gate.
+sbatch --export=ALL,ISAACLAB_DIR=...,VENV_DIR=...,INTENT_PCA_DIR="$P",OBJ_LOOKAHEAD=0.5,STUDENT_STAGE=m1,DRY_RUN_INTENTS="blind hand-2 hand-4 hand-8 hand-20 wrist-2 wrist2-finger-2 obj-1 obj-4" 15_student_dry_run.sbatch
+sbatch --export=ALL,ISAACLAB_DIR=...,VENV_DIR=...,INTENT_PCA_DIR="$P",OBJ_LOOKAHEAD=0.5,STUDENT_STAGE=m1-gate,DRY_RUN_INTENTS=blind 15_student_dry_run.sbatch
+```
+
 ## Useful monitoring commands
 
 ```bash

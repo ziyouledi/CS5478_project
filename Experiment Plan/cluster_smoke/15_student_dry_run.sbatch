@@ -34,9 +34,17 @@ horizon_length=16
 minibatch_size=$((num_envs * horizon_length))
 stage="${STUDENT_STAGE:-stage1}"
 # STUDENT_STAGE=m2 trains on the M2 task (shadow_zaxis_env.py) with the frozen M2 expert.
+# STUDENT_STAGE=m1 is Stage 2 M1: Stage 1 task and expert, goal hidden from the actor, asymmetric
+# critic. STUDENT_STAGE=m1-gate keeps the goal visible with the same asymmetric critic (M1 gate run).
+student_flags=()
 case "${stage}" in
     m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; expert_name=expert-m2-seed0 ;;
-    *) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0 ;;
+    m1) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0
+        student_flags=(--goal_hidden --asymmetric_critic) ;;
+    m1-gate) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0
+        student_flags=(--asymmetric_critic) ;;
+    stage1) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0 ;;
+    *) echo "unknown STUDENT_STAGE=${stage}" >&2; exit 2 ;;
 esac
 frozen_dir="${HOME}/data/low-dim-intent/checkpoints/${expert_name}/frozen"
 checkpoint="${frozen_dir}/${expert_name}.pth"
@@ -52,7 +60,7 @@ test -f "${pca_basis}"
 if [[ -n "${JOINT_PCA_DIR:-}" ]]; then test -f "${JOINT_PCA_DIR}/joint_basis.npz"; fi
 test -f "${trainer}"
 mkdir -p "${run_root}" "${metadata_dir}" "${XDG_CACHE_HOME}"
-cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_modules.py,m2_tasks.py,shadow_zaxis_env.py,15_student_dry_run.sbatch} "${metadata_dir}/"
+cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_env_wrapper.py,intent_modules.py,m2_tasks.py,shadow_zaxis_env.py,15_student_dry_run.sbatch} "${metadata_dir}/"
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
 echo "record_type=shadow_student_dry_run_job"
@@ -63,6 +71,7 @@ echo "isaaclab_commit=$(git rev-parse HEAD)"
 echo "gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader | paste -sd ';')"
 echo "stage=${stage}"
 echo "task=${task}"
+echo "student_flags=${student_flags[*]:-none}"
 echo "expert_checkpoint=${checkpoint}"
 echo "joint_pca_dir=${JOINT_PCA_DIR:-none}"
 echo "intents=${intents}"
@@ -90,6 +99,7 @@ for intent in ${intents}; do
         --expert_checkpoint "${checkpoint}" \
         --expert_sha256 "${expert_sha256}" \
         --pca_basis "${intent_basis}" \
+        "${student_flags[@]}" \
         --obj_lookahead "${OBJ_LOOKAHEAD}" \
         --num_envs "${num_envs}" \
         --seed "${seed}" \

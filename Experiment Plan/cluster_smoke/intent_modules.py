@@ -34,6 +34,10 @@ OBJECT_ROT = slice(51, 55)
 GOAL_ROT = slice(64, 68)
 WRIST = slice(0, 2)
 FINGERS = slice(2, 20)
+# Stage 2 M1 hides the goal from the actor: goal_rot [64:68] and quat_mul(object_rot, conj(goal_rot))
+# [68:72]. in_hand_pos [61:64] is a fixed target position and stays.
+GOAL_FIELDS = slice(64, 72)
+GOAL_HIDDEN_OBS_DIM = OBS_DIM - (GOAL_FIELDS.stop - GOAL_FIELDS.start)
 EXPERT_OBS_EPSILON = 1e-5
 EXPERT_OBS_NORM_CLIP = 5.0
 
@@ -281,6 +285,13 @@ class IntentModule(nn.Module):
         if self.spec.k == 4:
             return canonical_quat(subgoal)
         return quat_to_rotvec(quat_mul(subgoal, quat_conjugate(object_rot)))
+
+
+def hide_goal(obs: torch.Tensor) -> torch.Tensor:
+    """Removes the goal fields from [N, 157] observations, giving the [N, 149] goal-hidden actor input."""
+    if obs.ndim != 2 or obs.shape[1] != OBS_DIM:
+        raise ValueError(f"hide_goal expects [N, {OBS_DIM}] observations, got {tuple(obs.shape)}")
+    return torch.cat([obs[:, : GOAL_FIELDS.start], obs[:, GOAL_FIELDS.stop :]], dim=1)
 
 
 def build_intent(
