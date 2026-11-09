@@ -1,0 +1,202 @@
+#!/usr/bin/env python3
+"""Record a demo video of one Shadow Hand policy checkpoint (expert or student).
+
+Loads the run the same way as evaluate_students.py (intent, goal mask and bases from
+params/intent.json), wraps the env in gymnasium RecordVideo as Isaac Lab's play.py does, and
+films environment 0 with a close-up camera for ``--video_steps`` control steps (60 Hz) with the
+deterministic policy. Prints the success count of every env-0 episode inside the clip so the video
+can be captioned. Rendering only; no metric here replaces the per-episode evaluation.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import os
+import sys
+import traceback
+from pathlib import Path
+
+from isaaclab.app import AppLauncher
+
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--task", default="Isaac-Repose-Cube-Shadow-Direct-v0")
+parser.add_argument("--agent", default="rl_games_cfg_entry_point")
+parser.add_argument("--run_dir", default=None, help="Experiment dir with nn/ and, for students, params/intent.json")
+parser.add_argument("--checkpoint", default=None, help="Explicit .pth; default: last periodic checkpoint in run_dir/nn")
+parser.add_argument("--iteration", type=int, default=None, help="Periodic checkpoint iteration to use instead of the last")
+parser.add_argument("--intent", default=None, help="Override when params/intent.json is absent, e.g. blind for the expert")
+parser.add_argument("--num_envs", type=int, default=4)
+parser.add_argument("--seed", type=int, default=20261028)
+parser.add_argument("--video_steps", type=int, default=600, help="Control steps to record (600 = one 10 s episode)")
+parser.add_argument("--eye", type=float, nargs=3, default=(0.45, -1.05, 0.95), help="Camera position, env-0 frame")
+parser.add_argument("--lookat", type=float, nargs=3, default=(-0.08, -0.40, 0.60), help="Camera target, env-0 frame")
+parser.add_argument("--name", default=None, help="Video file prefix; default: run or checkpoint name")
+parser.add_argument("--output_dir", required=True)
+AppLauncher.add_app_launcher_args(parser)
+args_cli, hydra_args = parser.parse_known_args()
+args_cli.enable_cameras = True
+sys.argv = [sys.argv[0], *hydra_args]
+
+app_launcher = AppLauncher(args_cli)
+simulation_app = app_launcher.app
+
+import gymnasium as gym
+import torch
+from rl_games.common import env_configurations, vecenv
+from rl_games.torch_runner import Runner
+
+from isaaclab_rl.rl_games import RlGamesGpuEnv
+import isaaclab_tasks  # noqa: F401
+from isaaclab_tasks.utils.hydra import hydra_task_config
+
+import m2_tasks  # noqa: F401  registers Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0
+from intent_env_wrapper import IntentRlGamesVecEnvWrapper
+from intent_modules import build_intent, sha256
+from student_eval_utils import list_checkpoints
+
+
+def load_intent_record(run_dir: Path | None) -> dict:
+    record_path = run_dir / "params" / "intent.json" if run_dir is not None else None
+    if record_path is not None and record_path.is_file():
+        record = json.loads(record_path.read_text(encoding="utf-8"))
+        if args_cli.intent is not None and args_cli.intent != record["intent"]:
+            raise ValueError(f"--intent {args_cli.intent} conflicts with {record_path}: {record['intent']}")
+        return record
+    if args_cli.intent is None:
+        raise FileNotFoundError("params/intent.json is missing; pass --intent explicitly")
+    return {"intent": args_cli.intent}
+
+
+def resolve_checkpoint(run_dir: Path | None) -> Path:
+    if args_cli.checkpoint:
+        return Path(args_cli.checkpoint).expanduser().resolve()
+    if run_dir is None:
+        raise ValueError("Pass --run_dir or --checkpoint")
+    checkpoints = dict(list_checkpoints(run_dir / "nn"))
+    if not checkpoints:
+        raise FileNotFoundError(f"No periodic checkpoints in {run_dir / 'nn'}")
+    iteration = args_cli.iteration if args_cli.iteration is not None else max(checkpoints)
+    if iteration not in checkpoints:
+        raise ValueError(f"No checkpoint for iteration {iteration}; have {sorted(checkpoints)}")
+    return checkpoints[iteration]
+
+
+@hydra_task_config(args_cli.task, args_cli.agent)
+def main(env_cfg, agent_cfg: dict) -> None:
+    run_dir = Path(args_cli.run_dir).expanduser().resolve() if args_cli.run_dir else None
+    output_dir = Path(args_cli.output_dir).expanduser().resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    checkpoint = resolve_checkpoint(run_dir)
+    record = load_intent_record(run_dir)
+    pca_basis = record.get("pca_basis")
+    if pca_basis and record.get("pca_basis_sha256") and sha256(Path(pca_basis)) != record["pca_basis_sha256"]:
+        raise ValueError(f"PCA basis {pca_basis} changed since training")
+    name = args_cli.name or (run_dir.name if run_dir is not None else checkpoint.stem)
+
+    env_cfg.scene.num_envs = args_cli.num_envs
+    env_cfg.seed = args_cli.seed
+    env_cfg.viewer.origin_type = "env"
+    env_cfg.viewer.env_index = 0
+    env_cfg.viewer.eye = tuple(args_cli.eye)
+    env_cfg.viewer.lookat = tuple(args_cli.lookat)
+    config = agent_cfg["params"]["config"]
+    config["num_actors"] = args_cli.num_envs
+    config["device"] = args_cli.device
+    config["device_name"] = args_cli.device
+    agent_cfg["params"]["seed"] = args_cli.seed
+    rl_device = config["device"]
+
+    intent = build_intent(
+        record["intent"],
+        expert_checkpoint=Path(record["expert_checkpoint"]) if record.get("expert_checkpoint") else None,
+        expert_sha256=record.get("expert_checkpoint_sha256"),
+        pca_basis=Path(pca_basis) if pca_basis else None,
+        obj_lookahead=record.get("obj_lookahead_rad"),
+    ).to(rl_device)
+
+    clip_obs = agent_cfg["params"]["env"].get("clip_observations", math.inf)
+    clip_actions = agent_cfg["params"]["env"].get("clip_actions", math.inf)
+    base_env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array")
+    base_env = gym.wrappers.RecordVideo(
+        base_env,
+        video_folder=str(output_dir),
+        name_prefix=name,
+        step_trigger=lambda step: step == 0,
+        video_length=args_cli.video_steps,
+        disable_logger=True,
+    )
+    goal_hidden = bool(record.get("goal_hidden", False))
+    env = IntentRlGamesVecEnvWrapper(base_env, rl_device, clip_obs, clip_actions, intent, goal_hidden=goal_hidden)
+    vecenv.register(
+        "IsaacRlgWrapper", lambda config_name, num_actors, **kwargs: RlGamesGpuEnv(config_name, num_actors, **kwargs)
+    )
+    env_configurations.register("rlgpu", {"vecenv_type": "IsaacRlgWrapper", "env_creator": lambda **kwargs: env})
+
+    # Same capture point as the evaluator: env-0 success counter just before it is zeroed on reset.
+    unwrapped = env.unwrapped
+    episodes: list[int] = []
+    original_reset_idx = unwrapped._reset_idx
+
+    def reset_idx_with_record(env_ids):
+        ids = torch.arange(unwrapped.num_envs, device=unwrapped.device) if env_ids is None else env_ids
+        if bool((torch.as_tensor(ids, device=unwrapped.device) == 0).any()):
+            episodes.append(int(unwrapped.successes[0].item()))
+        original_reset_idx(env_ids)
+
+    runner = Runner()
+    runner.load(agent_cfg)
+    player = runner.create_player()
+    player.restore(str(checkpoint))
+    player.reset()
+    player.has_batch_dimension = True
+
+    obs = env.reset_with_seed(args_cli.seed)
+    episodes.clear()  # drop the initial reset
+    unwrapped._reset_idx = reset_idx_with_record
+    with torch.no_grad():
+        for _ in range(args_cli.video_steps):
+            actions = player.get_action(player.obs_to_torch(obs["obs"]), is_deterministic=True)
+            obs, _, _, _ = env.step(actions)
+    unfinished = int(unwrapped.successes[0].item())
+    control_hz = 1.0 / unwrapped.step_dt
+    env.close()  # flushes the RecordVideo file
+
+    videos = sorted(str(path) for path in output_dir.glob(f"{name}*.mp4"))
+    report = {
+        "record_type": "shadow_policy_video",
+        "task": args_cli.task,
+        "run_dir": str(run_dir) if run_dir is not None else None,
+        "checkpoint": str(checkpoint),
+        "checkpoint_sha256": sha256(checkpoint),
+        "intent_record": record,
+        "goal_hidden": goal_hidden,
+        "seed": args_cli.seed,
+        "video_steps": args_cli.video_steps,
+        "control_hz": control_hz,
+        "camera": {"origin": "env 0", "eye": list(args_cli.eye), "lookat": list(args_cli.lookat)},
+        "env0_completed_episode_successes": episodes,
+        "env0_successes_in_unfinished_episode": unfinished,
+        "videos": videos,
+    }
+    (output_dir / f"{name}.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    print(f"video_env0_episode_successes={episodes} unfinished={unfinished}")
+    print(f"video_files={videos}")
+    if not videos:
+        raise RuntimeError(f"No video written to {output_dir}")
+    print("video_record_status=PASS")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except BaseException:
+        # Same reasoning as train_student.py: do not hang in simulation_app.close() after a failure.
+        traceback.print_exc()
+        print("video_record_status=FAIL", flush=True)
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(1)
+    simulation_app.close()
