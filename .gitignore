@@ -38,3 +38,4 @@ cache
 # Raw per-checkpoint evaluation reports (kept on the cluster; summaries are committed)
 Docs/Milestone/data/expert_eval.json
 Docs/Milestone/data/student_evals/
+Docs/Milestone/data/student_evals_m2/

@@ -26,7 +26,7 @@ METRICS = {
     "successes": "mean_successes_per_episode",
     "reward": "mean_episode_reward",
 }
-CONDITION_ORDER = ["blind", "wrist-2", "hand-2", "hand-4", "hand-20", "obj-1", "obj-4"]
+CONDITION_ORDER = ["blind", "wrist-2", "hand-2", "hand-4", "hand-20", "obj-1", "obj-4", "joint-2", "joint-4"]
 
 
 def load_curve(path: Path, metric_key: str) -> tuple[dict, np.ndarray, np.ndarray]:
@@ -67,6 +67,7 @@ def main() -> None:
     parser.add_argument("--transitions_per_iteration", type=int, default=2048 * 16)
     parser.add_argument("--output_dir", required=True)
     parser.add_argument("--skip_plot", action="store_true")
+    parser.add_argument("--stage_label", default="Stage-1", help="plot title prefix, e.g. M2")
     args = parser.parse_args()
 
     metric_key = METRICS[args.metric]
@@ -166,7 +167,7 @@ def main() -> None:
             axis.plot(grid, np.nanmean(stacked, axis=0), color=color, label=f"{intent} (n={len(group)})")
             axis.fill_between(grid, np.nanmin(stacked, axis=0), np.nanmax(stacked, axis=0), color=color, alpha=0.15)
         axis.axhline(0.8, color="0.5", ls="--", lw=1)
-        axis.set(xlabel="PPO iteration", ylabel=f"{args.metric} / expert final", title=f"Stage-1 learning curves ({args.metric})")
+        axis.set(xlabel="PPO iteration", ylabel=f"{args.metric} / expert final", title=f"{args.stage_label} learning curves ({args.metric})")
         axis.grid(alpha=0.3)
         axis.legend(fontsize=8)
         fig.savefig(output_dir / f"learning_curves_{args.metric}.png", dpi=150)
