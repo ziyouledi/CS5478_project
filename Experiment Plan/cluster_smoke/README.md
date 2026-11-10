@@ -310,6 +310,25 @@ sbatch --export=ALL,ISAACLAB_DIR=...,VENV_DIR=...,INTENT_PCA_DIR="$P",OBJ_LOOKAH
 sbatch --export=ALL,ISAACLAB_DIR=...,VENV_DIR=...,INTENT_PCA_DIR="$P",OBJ_LOOKAHEAD=0.5,STUDENT_STAGE=m1-gate,DRY_RUN_INTENTS=blind 15_student_dry_run.sbatch
 ```
 
+## Stage 15: rate sweep step 0, offline intent hold analysis
+
+Plan: `../RATE_SWEEP_PLAN.md`. `analyze_intent_hold.py` (CPU, torch + numpy) applies
+a zero-order hold of N control steps to each intent signal on a recorded expert
+rollout and reports how stale it becomes (hold error, autocorrelation, expert
+action variance still reconstructed, quaternion angle error). It fails if hold 1
+does not reproduce the PCA cumulative variance.
+
+```bash
+P="$HOME/data/low-dim-intent/datasets/action-pca-expert-rollout-seed0-job1023537-job1024096"
+job_id=$(sbatch --parsable \
+  --export=ALL,VENV_DIR="$HOME/software/isaaclab-stack/env_isaaclab",INTENT_PCA_DIR="$P",OBJ_LOOKAHEAD=0.5 \
+  22_intent_hold.sbatch)
+```
+
+Optional: `HOLD_DATASET_DIR` (default: Stage 1 rollout `1023537`), `HOLD_STEPS`
+(default `1,2,3,6,12,30,60,120`). Output:
+`datasets/intent-hold-<rollout>-job<id>/{summary.json,intent_hold.csv,intent_hold.png}`.
+
 ## Useful monitoring commands
 
 ```bash
