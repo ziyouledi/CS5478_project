@@ -14,7 +14,8 @@
 # VIDEO_TASK selects the gym task (default Stage 1; Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0 for M2).
 # Optional: VIDEO_ITERATION (periodic checkpoint, default last), VIDEO_INTENT (runs without
 # intent.json, e.g. blind for the expert), VIDEO_STEPS (default 600 = one episode),
-# VIDEO_EYE / VIDEO_LOOKAT ("x y z" in the env-0 frame).
+# VIDEO_EYE / VIDEO_LOOKAT ("x y z" in the env-0 frame), VIDEO_NUM_ENVS (default 4; 1 keeps
+# neighbouring hands out of the shot).
 
 set -Eeuo pipefail
 
@@ -63,6 +64,7 @@ video_args=(
     --output_dir "${output_dir}"
     --headless
 )
+if [[ -n "${VIDEO_NUM_ENVS:-}" ]]; then video_args+=(--num_envs "${VIDEO_NUM_ENVS}"); fi
 if [[ -n "${VIDEO_ITERATION:-}" ]]; then video_args+=(--iteration "${VIDEO_ITERATION}"); fi
 if [[ -n "${VIDEO_INTENT:-}" ]]; then video_args+=(--intent "${VIDEO_INTENT}"); fi
 if [[ -n "${VIDEO_EYE:-}" ]]; then read -r -a eye <<< "${VIDEO_EYE}"; video_args+=(--eye "${eye[@]}"); fi
