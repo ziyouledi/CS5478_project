@@ -51,11 +51,29 @@ User decision 2026-10-30: proceed to Stage 2 M1. The extra-seed work for Stage 1
 - [x] 3. Gate run: goal-visible asymmetric `blind` seed 0, 5000 iterations, plus its evaluation.
   - Submitted 2026-11-10 (cluster code == `9b17103`, checksums checked): training `1103415` (`16`, `--array=0-0`, `STUDENT_STAGE=m1-gate`, blind, seed 0, 5000 it, 2048 envs; running on xgpf2; output `runs/student-m1-gate-blind-seed0-job1103415_0/`), full-curve evaluation `1103416` (`17`, `afterok`, 25 checkpoints, 1024 envs, seed 20261028; output `runs/eval-student-m1-gate-blind-seed0-job1103416_0/`). Pass if final (ep_5000) successes/episode ≥ 23.50 (0.9 × 26.11).
   - **Result: PASS.** `1103415` COMPLETED 0:0 (1:47:34, `student_job_status=PASS`), `1103416` COMPLETED/PASS (25 checkpoints). Final ep_5000 = **25.755** successes/episode (0.986 of P_E), reward 7134, fall 6.3%. N80 2375 iterations, AUC 0.649; Stage 1 blind seeds 0–2 (symmetric critic): final 0.947–1.0, N80 1546–3189, AUC 0.598–0.800, so the asymmetric critic is inside the blind seed spread. Training is ~15% slower (1:47 vs ~1:34). Summary: `Experiment Plan/results/m1-gate-job1103416/`.
-- [ ] 4. Grid: array of 27 runs, `--array=0-26%4`.
+- [x] 4. Grid: array of 27 runs, `--array=0-26%4`.
   - Submitted 2026-11-10: training `1104420` (`16`, `--array=0-26%4`, `STUDENT_STAGE=m1`, intents `blind hand-2 hand-4 hand-8 hand-20 wrist-2 wrist2-finger-2 obj-1 obj-4` × seeds `0 1 2`, task i → intent i//3, seed i%3; Stage 1 PCA `job1024096`; 5000 it, 2048 envs, Δθ 0.5; cluster code == `1235046`). Outputs `runs/student-m1-<intent>-seed<s>-job1104420_<i>/`. Task 0 header checked (m1, both flags). Submitted only.
   - Cluster limit: **32 queued jobs per user** (each array task counts; `AssocMaxSubmitJobLimit`). So evaluation goes in batches with `aftercorr:1104420` and the same `EVAL_RUN_DIRS` list (saved on the cluster as `~/cluster_smoke/m1_grid_eval_dirs_1104420.txt`, 27 entries, index i ↔ training task i): batch 1 = `1104422` (`--array=0-4%4`). Submit the remaining indices 5–26 as queue room frees up (keep queued ≤ 32 and running GPUs ≤ 4).
   - 2026-11-10 07:28: tasks 0–3 trained and evaluated (all PASS). Batch 1 evaluations overlapped 4 running training tasks (up to ~6 GPUs, over the 4-GPU cap). Fix: training throttle lowered to %3 (`scontrol update JobId=1104420 ArrayTaskThrottle=3`), evaluations run one at a time (1104422 throttle 1). Batch 2 = `1104730` (`--array=5-12%1 --dependency=aftercorr:1104420,afterany:1104422`). Next batches: same pattern with `afterany:<previous eval batch>`.
   - 2026-11-10 18:53: training 0–22 PASS, evaluations 0–12 PASS. Final batch = `1108150` (`--array=13-26%1 --dependency=aftercorr:1104420`); training 23–26 still running/pending (ETA ~21:00).
   - 2026-11-10 20:54: `1108150` was stuck on `aftercorr:1104420_*(unfulfilled)`: Slurm does not resolve `aftercorr` for training tasks that had already completed before the dependent array was submitted. Training 0–25 PASS; dependencies on eval tasks 13–25 cleared by hand (`scontrol update JobId=1108150_<i> Dependency=`, only after checking `student_job_status=PASS`), task 26 set to `afterok:1104420_26`. Lesson: submit `aftercorr` evaluations while the training tasks are still pending or running. Evaluations 13–26: throttle raised to %3 at 20:59 (1 training + 3 eval = 4 GPUs), ETA ~22:00.
-- [ ] 5. Evaluation: array of 27 (`17_evaluate_students.sbatch`), the same evaluation settings as Stage 1.
-- [ ] 6. Analysis: N80, AUC and Recovery per condition; tests vs Blind-B; commit the results and update `CONTEXT.md`.
+- [x] 5. Evaluation: array of 27 (`17_evaluate_students.sbatch`), the same evaluation settings as Stage 1.
+- [x] 4/5 result (verified 2026-11-10 23:01): training `1104420` 27/27 COMPLETED with `student_job_status=PASS`; evaluations `1104422` (0–4), `1104730` (5–12), `1108150` (13–26) 27/27 COMPLETED with `student_eval_job_status=PASS` (25 checkpoints × 1024 episodes each).
+- [x] 6. Analysis: N80, AUC and Recovery per condition; tests vs Blind-B; commit the results and update `CONTEXT.md`.
+  - Output: `Experiment Plan/results/m1-curves-27runs/` (runs_successes.csv, learning curves json/png, `stats_vs_blind.json` + `stats_vs_blind.py`). Raw evaluation.json files in `Docs/Milestone/data/m1_evals/` (gitignored).
+  - P_E = 26.11 (Stage 1 expert), P(Blind-B) = 0.006 successes/episode. Recovery = (final − P_B)/(P_E − P_B) per seed. Welch t vs blind, uncorrected, n = 3 per condition; blind has ~zero variance, so this is effectively a one-sample test against 0.
+
+    | Condition | Recovery (final) mean ± sd | AUC mean ± sd | seeds reaching 0.8·P_E (N80) | p final | p AUC |
+    |---|---|---|---|---|---|
+    | blind | 0.000 ± 0.000 | 0.000 | 0/3 | – | – |
+    | obj-1 | 0.001 ± 0.001 | 0.000 | 0/3 | 0.28 | 0.26 |
+    | wrist-2 | 0.292 ± 0.250 | 0.154 ± 0.141 | 0/3 | 0.18 | 0.20 |
+    | obj-4 | 0.328 ± 0.116 | 0.110 ± 0.047 | 0/3 | 0.039 | 0.056 |
+    | hand-2 | 0.504 ± 0.079 | 0.367 ± 0.084 | 0/3 | 0.008 | 0.017 |
+    | wrist2-finger-2 | 0.550 ± 0.080 | 0.356 ± 0.052 | 0/3 | 0.007 | 0.007 |
+    | hand-4 | 0.714 ± 0.213 | 0.510 ± 0.165 | 1/3 (2481) | 0.028 | 0.033 |
+    | hand-20 | 0.805 ± 0.017 | 0.574 ± 0.023 | 2/3 (4186, 4879) | 0.0001 | 0.0005 |
+    | hand-8 | 0.866 ± 0.112 | 0.623 ± 0.073 | 2/3 (3480, 2423) | 0.006 | 0.005 |
+
+  - Reading: with the goal hidden, the blind student learns nothing (≈0 successes), so the intent is the only goal channel. Hand-intent recovery rises with k from 2 to 8 (0.50 → 0.71 → 0.87), and hand-20 (0.81) is no better than hand-8. obj-1 carries no goal information in practice (≈0); obj-4 recovers only 0.33. With 8 tests, Bonferroni α = 0.00625: hand-8 and hand-20 pass on both metrics; hand-2 and wrist2-finger-2 are borderline; the rest do not. n = 3, so treat the ordering among hand-4/8/20 as a trend.
+  - Analysis fix: the first pass globbed `*-job11*.json` and picked up the goal-visible gate run (`gate-blind-seed0-job1103416_0.json`) as a 4th blind run; rerun with `*-job110[48]*.json` (27 files).
