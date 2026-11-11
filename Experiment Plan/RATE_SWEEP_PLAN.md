@@ -155,3 +155,10 @@ Findings:
   - hand-2, N = 6: 0.001 / 0.046 / 0.043, mean 0.03 [2–3%].
   - hand-8, N = 6: 0.295 / 0.090 / 0.149, mean **0.18** [1–2%]; evaluation-only hold gave 0.03 [62%]. Training under hold removes the falls and recovers part of the performance, still far below hand-8 at 60 Hz (0.87).
 - 21:10: batch 2 training SUBMITTED = `1116466` (`--array=21-38%3`, `afterany:1111584`), queue then 32/32. Eval-dir list `~/cluster_smoke/rate_sweep_grid_eval_dirs_1116466.txt` (use indices 21–38). Batch 2 evaluations NOT yet submitted: when queue room allows (after `1116420`/`1116422` drain, ~23:30), submit `17` with that list, `--array=21-38%1`, `aftercorr:1116466` for tasks still unfinished and no dependency for finished ones. Batch 2 ETA ≈ 6 waves × 1:47 ≈ 11 h from ~21:15 (≈ 08:00 11-12).
+
+### Step 2 status 2026-11-12 01:45
+
+- Batch 1 COMPLETE: `1111584` 0–20 and evaluations `1111585` (0–8), `1116420` (9–17), `1116422` (18–20): 21 + 21 COMPLETED, all `job_status=PASS`.
+- Batch 2 training `1116466`: 21–26 COMPLETED/PASS, 27–29 running, 30–38 pending (ETA ≈ 08:00–09:00 11-12).
+- Batch 2 evaluations SUBMITTED 01:45 with `~/cluster_smoke/submit_rate_sweep_b2_evals.sh` (classifies each training task by `sacct` state): `1117654` = indices 21–26 (finished, no dependency, %1); `1117655` = 27–38 (`aftercorr:1116466,afterany:1117654`, %1). Queue 30/32. SSH to `xlogin` failed 01:38 (kex closed after the `stujump` hop) and recovered by 01:40; first two submission attempts submitted nothing (script bugs, verified with `squeue`/`sacct`).
+- Whole grid is now submitted. Next: when `1117655` finishes, step 3 analysis.
