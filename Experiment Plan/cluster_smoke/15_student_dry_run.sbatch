@@ -11,6 +11,7 @@
 
 # End-to-end dry run: every stage-one intent trains a student for a few PPO iterations with a
 # small environment count. Checks wiring (shapes, expert on GPU, logging), not learning.
+# DRY_RUN_HOLDS (default "1") lists intent holds; every intent runs once per hold (rate sweep).
 
 set -Eeuo pipefail
 
@@ -29,6 +30,7 @@ export XDG_CACHE_HOME="${HOME}/data/low-dim-intent/cache/xdg"
 intents="${DRY_RUN_INTENTS:-blind wrist-2 hand-2 hand-4 hand-20 obj-1 obj-4}"
 num_envs="${DRY_RUN_NUM_ENVS:-256}"
 iterations="${DRY_RUN_ITERATIONS:-3}"
+holds="${DRY_RUN_HOLDS:-1}"
 seed=0
 horizon_length=16
 minibatch_size=$((num_envs * horizon_length))
@@ -77,14 +79,16 @@ echo "joint_pca_dir=${JOINT_PCA_DIR:-none}"
 echo "intents=${intents}"
 echo "num_envs=${num_envs}"
 echo "iterations=${iterations}"
+echo "holds=${holds}"
 echo "minibatch_size=${minibatch_size}"
 echo "expert_sha256=${expert_sha256}"
 echo "pca_basis=${pca_basis}"
 echo "obj_lookahead=${OBJ_LOOKAHEAD}"
 
 failed=0
+for hold in ${holds}; do
 for intent in ${intents}; do
-    name="dry-${intent}-seed${seed}"
+    name="dry-${intent}-hold${hold}-seed${seed}"
     log="${run_root}/${name}.log"
     case "${intent}" in
         joint-*) intent_basis="${JOINT_PCA_DIR:?joint-K intents need JOINT_PCA_DIR}/joint_basis.npz" ;;
@@ -101,6 +105,7 @@ for intent in ${intents}; do
         --pca_basis "${intent_basis}" \
         "${student_flags[@]}" \
         --obj_lookahead "${OBJ_LOOKAHEAD}" \
+        --intent_hold "${hold}" \
         --num_envs "${num_envs}" \
         --seed "${seed}" \
         --max_iterations "${iterations}" \
@@ -113,6 +118,11 @@ for intent in ${intents}; do
     set -e
     elapsed=$(( $(date +%s) - start_epoch ))
     shape=$(grep -m1 -o 'student_obs_shape=([0-9, ]*) intent_dim=[0-9]*' "${log}" || echo "student_obs_shape=missing")
+    logged_hold=$(grep -m1 -o 'intent_hold=[0-9]*' "${log}" || echo "intent_hold=missing")
+    if [[ "${logged_hold}" != "intent_hold=${hold}" ]]; then
+        echo "logged ${logged_hold} does not match requested hold ${hold}" >&2
+        status=3
+    fi
     epochs=$(grep -c "fps step:" "${log}" || true)
     if [[ "${status}" -eq 0 ]] && grep -q "student_train_status=PASS" "${log}"; then
         result=PASS
@@ -121,12 +131,13 @@ for intent in ${intents}; do
         failed=$((failed + 1))
         tail -40 "${log}" >&2
     fi
-    echo "dry_run intent=${intent} status=${result} exit=${status} elapsed_s=${elapsed} reported_epochs=${epochs} ${shape}"
+    echo "dry_run intent=${intent} hold=${hold} status=${result} exit=${status} elapsed_s=${elapsed} reported_epochs=${epochs} ${shape}"
     cp "${log}" "${metadata_dir}/"
     if [[ "${result}" == FAIL ]]; then
-        echo "dry_run_stopped_after=${intent}"
-        break
+        echo "dry_run_stopped_after=${intent} hold=${hold}"
+        break 2
     fi
+done
 done
 
 echo "dry_run_failures=${failed}"

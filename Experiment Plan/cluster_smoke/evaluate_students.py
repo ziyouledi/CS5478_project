@@ -27,6 +27,9 @@ parser.add_argument("--agent", default="rl_games_cfg_entry_point")
 parser.add_argument("--run_dir", required=True, help="Experiment dir containing nn/ and, for students, params/intent.json")
 parser.add_argument("--intent", default=None, help="Override when params/intent.json is absent, e.g. blind for the expert")
 parser.add_argument("--checkpoint_stride", type=int, default=1)
+parser.add_argument("--last_checkpoint_only", action="store_true", help="Evaluate only the final periodic checkpoint")
+parser.add_argument("--intent_hold", type=int, default=None,
+                    help="Refresh the intent every N episode steps (zero-order hold); default: intent.json value or 1")
 parser.add_argument("--num_envs", type=int, default=1024, help="Episodes per checkpoint (one per environment)")
 parser.add_argument("--seed", type=int, default=20261028)
 parser.add_argument("--output_dir", required=True)
@@ -72,6 +75,8 @@ def main(env_cfg, agent_cfg: dict) -> None:
     checkpoints = list_checkpoints(run_dir / "nn", args_cli.checkpoint_stride)
     if not checkpoints:
         raise FileNotFoundError(f"No periodic checkpoints in {run_dir / 'nn'}")
+    if args_cli.last_checkpoint_only:
+        checkpoints = checkpoints[-1:]
 
     record = load_intent_record(run_dir)
     pca_basis = record.get("pca_basis")
@@ -100,7 +105,11 @@ def main(env_cfg, agent_cfg: dict) -> None:
     base_env = gym.make(args_cli.task, cfg=env_cfg, render_mode=None)
     # The actor gets the same (goal-hidden) input as in training; the critic is not used here.
     goal_hidden = bool(record.get("goal_hidden", False))
-    env = IntentRlGamesVecEnvWrapper(base_env, rl_device, clip_obs, clip_actions, intent, goal_hidden=goal_hidden)
+    trained_hold = int(record.get("intent_hold", 1))
+    intent_hold = trained_hold if args_cli.intent_hold is None else args_cli.intent_hold
+    env = IntentRlGamesVecEnvWrapper(
+        base_env, rl_device, clip_obs, clip_actions, intent, goal_hidden=goal_hidden, intent_hold=intent_hold
+    )
     vecenv.register(
         "IsaacRlgWrapper", lambda config_name, num_actors, **kwargs: RlGamesGpuEnv(config_name, num_actors, **kwargs)
     )
@@ -172,6 +181,9 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "intent_record": record,
         "intent_dim": intent.dim,
         "goal_hidden": goal_hidden,
+        "intent_hold": intent_hold,
+        "intent_hold_trained": trained_hold,
+        "intent_hold_rule": "intent recomputed when episode step % intent_hold == 0, held otherwise",
         "actor_obs_dim": env.actor_obs_dim,
         "deterministic": True,
         "seed": args_cli.seed,
@@ -179,6 +191,7 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "episode_rule": "first episode of each environment",
         "success_source": "env.successes captured before _reset_idx",
         "checkpoint_stride": args_cli.checkpoint_stride,
+        "last_checkpoint_only": args_cli.last_checkpoint_only,
         "checkpoints": results,
     }
     (output_dir / "evaluation.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

@@ -12,6 +12,8 @@
 # One student run per array task. Task index i maps to
 #   intent = STUDENT_INTENTS[i / num_seeds], seed = STUDENT_SEEDS[i % num_seeds].
 # Submit the stage-one grid (7 intents x 3 seeds) with --array=0-20%<max concurrent>.
+# STUDENT_INTENT_HOLD=N (rate sweep) refreshes the intent every N episode steps; N != 1 adds -holdN to the run name.
+# A STUDENT_INTENTS entry may carry its own hold as intent:N (e.g. "goal-4:1 hand-8:6"), overriding STUDENT_INTENT_HOLD.
 
 set -Eeuo pipefail
 
@@ -31,6 +33,7 @@ read -r -a intents <<< "${STUDENT_INTENTS:-blind wrist-2 hand-2 hand-4 hand-20 o
 read -r -a seeds <<< "${STUDENT_SEEDS:-0 1 2}"
 stage="${STUDENT_STAGE:-stage1}"
 obj_lookahead="${OBJ_LOOKAHEAD:-0.5}"
+intent_hold="${STUDENT_INTENT_HOLD:-1}"
 num_envs=2048
 task_id="${SLURM_ARRAY_TASK_ID:-0}"
 if (( task_id >= ${#intents[@]} * ${#seeds[@]} )); then
@@ -38,6 +41,14 @@ if (( task_id >= ${#intents[@]} * ${#seeds[@]} )); then
     exit 2
 fi
 intent="${intents[$((task_id / ${#seeds[@]}))]}"
+if [[ "${intent}" == *:* ]]; then
+    intent_hold="${intent##*:}"
+    intent="${intent%%:*}"
+fi
+if ! [[ "${intent_hold}" =~ ^[1-9][0-9]*$ ]]; then
+    echo "invalid intent hold '${intent_hold}'" >&2
+    exit 2
+fi
 seed="${seeds[$((task_id % ${#seeds[@]}))]}"
 
 # STUDENT_STAGE=m2 trains on the M2 task (shadow_zaxis_env.py) with the frozen M2 expert.
@@ -62,7 +73,9 @@ case "${intent}" in
     *) pca_basis="${INTENT_PCA_DIR}/pca_basis.npz" ;;
 esac
 job_tag="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID}}_${task_id}"
-name="student-${stage}-${intent}-seed${seed}"
+hold_tag=""
+if [[ "${intent_hold}" != "1" ]]; then hold_tag="-hold${intent_hold}"; fi
+name="student-${stage}-${intent}${hold_tag}-seed${seed}"
 run_root="${HOME}/data/low-dim-intent/runs/${name}-job${job_tag}"
 metadata_dir="${HOME}/data/low-dim-intent/metadata/${name}-job${job_tag}"
 trainer="${SLURM_SUBMIT_DIR}/train_student.py"
@@ -94,6 +107,7 @@ echo "iterations=${STUDENT_ITERATIONS}"
 echo "expert_sha256=${expert_sha256}"
 echo "pca_basis=${pca_basis}"
 echo "obj_lookahead=${obj_lookahead}"
+echo "intent_hold=${intent_hold}"
 echo "run_root=${run_root}"
 
 run_log="${run_root}/train.log"
@@ -116,6 +130,7 @@ set +e
     --pca_basis "${pca_basis}" \
     "${student_flags[@]}" \
     --obj_lookahead "${obj_lookahead}" \
+    --intent_hold "${intent_hold}" \
     --num_envs "${num_envs}" \
     --seed "${seed}" \
     --max_iterations "${STUDENT_ITERATIONS}" \

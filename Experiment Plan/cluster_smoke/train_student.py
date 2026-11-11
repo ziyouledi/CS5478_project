@@ -9,6 +9,9 @@ student's own state (see intent_modules.py).
 Stage 2 M1 adds two flags (see intent_env_wrapper.py): ``--goal_hidden`` gives the actor the
 149-D goal-free observation plus the intent, and ``--asymmetric_critic`` adds a central value net
 on the full clipped 157-D observation.
+
+Rate sweep: ``--intent_hold N`` refreshes the intent only every N episode steps (zero-order hold,
+see intent_env_wrapper.py); it is written to params/intent.json and the evaluator reads it back.
 """
 
 from __future__ import annotations
@@ -27,7 +30,7 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--task", default="Isaac-Repose-Cube-Shadow-Direct-v0")
 parser.add_argument("--agent", default="rl_games_cfg_entry_point")
-parser.add_argument("--intent", required=True, help="blind | hand-K | joint-K | wrist-2 | wrist2-finger-K | obj-1|3|4")
+parser.add_argument("--intent", required=True, help="blind | hand-K | joint-K | wrist-2 | wrist2-finger-K | obj-1|3|4 | goal-4")
 parser.add_argument("--expert_checkpoint", default=None)
 parser.add_argument("--expert_sha256", default=None)
 parser.add_argument("--pca_basis", default=None)
@@ -38,6 +41,7 @@ parser.add_argument(
     action="store_true",
     help="Add an RL-Games central value net that sees the full clipped 157-D observation (no intent).",
 )
+parser.add_argument("--intent_hold", type=int, default=1, help="Refresh the intent every N episode steps (1 = every step).")
 parser.add_argument("--num_envs", type=int, default=2048)
 parser.add_argument("--seed", type=int, required=True)
 parser.add_argument("--max_iterations", type=int, required=True)
@@ -135,6 +139,7 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "transitions_per_iteration": rollout_batch,
         "goal_hidden": args_cli.goal_hidden,
         "asymmetric_critic": args_cli.asymmetric_critic,
+        "intent_hold": args_cli.intent_hold,
     }
 
     clip_obs = agent_cfg["params"]["env"].get("clip_observations", math.inf)
@@ -148,6 +153,7 @@ def main(env_cfg, agent_cfg: dict) -> None:
         intent,
         goal_hidden=args_cli.goal_hidden,
         asymmetric_critic=args_cli.asymmetric_critic,
+        intent_hold=args_cli.intent_hold,
     )
     intent_record["student_obs_dim"] = env.actor_obs_dim
     intent_record["critic_states_dim"] = env.rlg_num_states

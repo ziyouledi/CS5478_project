@@ -12,6 +12,7 @@ k-D vector that is appended to the student's observation:
 * ``obj-1``            remaining rotation angle to the goal.
 * ``obj-3``            rotation vector from the current cube orientation to the subgoal.
 * ``obj-4``            subgoal quaternion slerp(q_obj, q_goal, min(1, lookahead / theta_remain)).
+* ``goal-4``           the goal quaternion itself, w >= 0 (goal-level interface; no expert, no lookahead).
 
 Quaternions follow Isaac Lab's (w, x, y, z) convention.
 """
@@ -166,7 +167,7 @@ class FrozenExpert(nn.Module):
 @dataclass(frozen=True)
 class IntentSpec:
     name: str
-    kind: str  # blind | hand | joint | wrist | wrist_finger | obj
+    kind: str  # blind | hand | joint | wrist | wrist_finger | obj | goal
     k: int = 0
     dim: int = 0
 
@@ -200,6 +201,8 @@ def parse_intent(name: str) -> IntentSpec:
         if not 1 <= k <= ACTION_DIM - 2:
             raise ValueError(f"wrist2-finger-k needs 1 <= k <= 18: {name}")
         return IntentSpec(name, "wrist_finger", k, 2 + k)
+    if name == "goal-4":
+        return IntentSpec(name, "goal", 4, 4)
     if m := re.fullmatch(r"obj-([134])", name):
         k = int(m.group(1))
         return IntentSpec(name, "obj", k, k)
@@ -266,6 +269,8 @@ class IntentModule(nn.Module):
             return obs.new_zeros((obs.shape[0], 0))
         if kind == "obj":
             return self._object_intent(obs)
+        if kind == "goal":
+            return canonical_quat(obs[:, GOAL_ROT])
 
         action = self.expert(obs)
         if kind == "wrist":

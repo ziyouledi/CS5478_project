@@ -14,6 +14,8 @@
 # EVAL_INTENT is only needed for runs without params/intent.json (e.g. EVAL_INTENT=blind for the expert).
 # EVAL_TASK selects the gym task (default: Stage 1; Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0 for M2).
 # Stage 2 M1 runs use the default task; the evaluator reads goal_hidden from params/intent.json.
+# EVAL_INTENT_HOLD=N overrides the intent hold (refresh every N episode steps; rate sweep step 1);
+# it is added to the output directory name as -holdN. EVAL_LAST_ONLY=1 evaluates only the final checkpoint.
 
 set -Eeuo pipefail
 
@@ -40,8 +42,9 @@ num_envs="${EVAL_NUM_ENVS:-1024}"
 seed="${EVAL_SEED:-20261028}"
 task="${EVAL_TASK:-Isaac-Repose-Cube-Shadow-Direct-v0}"
 job_tag="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID}}_${task_id}"
-output_dir="${HOME}/data/low-dim-intent/runs/eval-$(basename "${run_dir}")-job${job_tag}"
-metadata_dir="${HOME}/data/low-dim-intent/metadata/eval-$(basename "${run_dir}")-job${job_tag}"
+hold_tag="${EVAL_INTENT_HOLD:+-hold${EVAL_INTENT_HOLD}}"
+output_dir="${HOME}/data/low-dim-intent/runs/eval-$(basename "${run_dir}")${hold_tag}-job${job_tag}"
+metadata_dir="${HOME}/data/low-dim-intent/metadata/eval-$(basename "${run_dir}")${hold_tag}-job${job_tag}"
 evaluator="${SLURM_SUBMIT_DIR}/evaluate_students.py"
 
 test -d "${run_dir}/nn"
@@ -60,6 +63,8 @@ echo "run_dir=${run_dir}"
 echo "task=${task}"
 echo "intent_override=${EVAL_INTENT:-none}"
 echo "checkpoint_stride=${stride}"
+echo "intent_hold_override=${EVAL_INTENT_HOLD:-none}"
+echo "last_checkpoint_only=${EVAL_LAST_ONLY:-0}"
 echo "num_envs=${num_envs}"
 echo "seed=${seed}"
 echo "output_dir=${output_dir}"
@@ -73,6 +78,12 @@ eval_args=(
     --output_dir "${output_dir}"
     --headless
 )
+if [[ -n "${EVAL_INTENT_HOLD:-}" ]]; then
+    eval_args+=(--intent_hold "${EVAL_INTENT_HOLD}")
+fi
+if [[ "${EVAL_LAST_ONLY:-0}" == "1" ]]; then
+    eval_args+=(--last_checkpoint_only)
+fi
 if [[ -n "${EVAL_INTENT:-}" ]]; then
     eval_args+=(--intent "${EVAL_INTENT}")
 fi
