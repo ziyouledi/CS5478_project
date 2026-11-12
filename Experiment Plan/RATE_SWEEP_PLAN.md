@@ -46,12 +46,12 @@ Not in scope here: delay (intent computed from an observation d steps old), quan
   - Code: hold option in `intent_env_wrapper.py` (default N = 1, behaviour unchanged) and an `EVAL_INTENT_HOLD` override in `evaluate_students.py` / `17`.
   - Check: N = 1 reproduces the recorded M1 final value within the evaluator's order effect (~0.5%).
   - Caveat: these students were trained at 60 Hz, so the result is a lower bound for step 2.
-- [ ] 2. **Training grid.**
+- [x] 2. **Training grid.** DONE 2026-11-12: 39/39 training + evaluation PASS (training `1111584`, `1116466`; evaluations `1111585`, `1116420`, `1116422`, `1117654`, `1117655`).
   - Code: `goal-4` in `intent_modules.py`; `--intent_hold` in `train_student.py`, written to `intent.json` and read by the evaluator; `STUDENT_INTENT_HOLD` in `15`/`16`. CPU test of the hold logic, then a GPU dry run (256 envs × 3 iterations) for every (intent, N) pair.
   - Conditions (N set decided by the user 2026-11-11 after step 0/1: **6, 12, 30**, not 6, 30, 120): hand-2, hand-8, obj-4, goal-4 × N = 6, 12, 30 × 3 seeds = 36 runs, plus goal-4 at N = 1 × 3 seeds = **39 runs**. hand-2, hand-8, obj-4 at N = 1 are the existing M1 runs.
   - Cost: an M1 run takes about 1:47. With 3 training slots and 1 evaluation slot, 39 runs take about 23 hours of wall time. Evaluations (12 min each) fit in the fourth slot. Submit in batches under the 32-job limit, with `aftercorr` evaluations submitted while training is still pending.
   - Pruning rule: if steps 0 and 1 show that hand-k keeps its information at N = 30 and 120 (the prediction is wrong), drop hand-2 and keep hand-8, obj-4, goal-4 (30 runs).
-- [ ] 3. **Analysis.** Recovery, AUC and N80 per (intent, N); Recovery against update rate, one line per intent; Welch tests against the same intent at N = 1. Copy summaries to `results/rate-sweep-*/`, update `CONTEXT.md`.
+- [x] 3. **Analysis.** DONE 2026-11-12, see Log (`analyze_rate_sweep.py`, `results/rate-sweep-grid-39runs/`). Recovery, AUC and N80 per (intent, N); Recovery against update rate, one line per intent; Welch tests against the same intent at N = 1. Copy summaries to `results/rate-sweep-*/`, update `CONTEXT.md`.
 
 ## Reading the result
 
@@ -162,3 +162,32 @@ Findings:
 - Batch 2 training `1116466`: 21–26 COMPLETED/PASS, 27–29 running, 30–38 pending (ETA ≈ 08:00–09:00 11-12).
 - Batch 2 evaluations SUBMITTED 01:45 with `~/cluster_smoke/submit_rate_sweep_b2_evals.sh` (classifies each training task by `sacct` state): `1117654` = indices 21–26 (finished, no dependency, %1); `1117655` = 27–38 (`aftercorr:1116466,afterany:1117654`, %1). Queue 30/32. SSH to `xlogin` failed 01:38 (kex closed after the `stujump` hop) and recovered by 01:40; first two submission attempts submitted nothing (script bugs, verified with `squeue`/`sacct`).
 - Whole grid is now submitted. Next: when `1117655` finishes, step 3 analysis.
+
+### Step 2 complete (verified 2026-11-12 08:41)
+
+- Batch 2 training `1116466` 21–38: 18/18 COMPLETED 0:0, `student_job_status=PASS` (last 08:11). Evaluations `1117654` (21–26) and `1117655` (27–38): 18/18 COMPLETED 0:0, `student_eval_job_status=PASS` (last 08:37). Queue empty. Whole grid: 39 training + 39 evaluations PASS.
+
+### Step 3 (2026-11-12): DONE, `rate_sweep_analysis_status=PASS`
+
+- Evaluation copies: `Docs/Milestone/data/rate_sweep_grid_evals/` (39 files, gitignored; renamed `<intent>[-holdN]-seed<s>-job<eval>_<i>.json`). N = 1 for hand-2 / hand-8 / obj-4 from the M1 grid (`Docs/Milestone/data/m1_evals/`). Script `cluster_smoke/analyze_rate_sweep.py` (checks: 48 runs, 3 seeds per (intent, N), 25 checkpoints ending at 5000, evaluated hold = trained hold). Output `results/rate-sweep-grid-39runs/` (summary.json, runs.csv, recovery_vs_rate.png, learning_curves_by_rate.png).
+
+Recovery (final checkpoint, mean ± sd over seeds 0–2), AUC in brackets; trained under the hold; p = Welch vs the same intent at N = 1, uncorrected:
+
+| Intent | 60 Hz (N=1) | 10 Hz (N=6) | 5 Hz (N=12) | 2 Hz (N=30) |
+|---|---|---|---|---|
+| hand-2 | 0.504 ± 0.079 [0.37] | 0.030 ± 0.025 [0.02], p = 0.005 | 0.002 [0.00], p = 0.008 | 0.001 [0.00], p = 0.008 |
+| hand-8 | **0.866 ± 0.112** [0.62] | 0.178 ± 0.105 [0.09], p = 0.002 | 0.096 ± 0.033 [0.05], p = 0.004 | 0.021 ± 0.017 [0.01], p = 0.005 |
+| obj-4 | 0.328 ± 0.116 [0.11] | 0.217 ± 0.031 [0.08], p = 0.24 | 0.132 ± 0.080 [0.05], p = 0.08 | 0.019 ± 0.006 [0.01], p = 0.04 |
+| goal-4 | 0.771 ± 0.076 [0.45] | **0.707 ± 0.011** [0.42], p = 0.28 | **0.648 ± 0.017** [0.40], p = 0.10 | **0.426 ± 0.028** [0.27], p = 0.009 |
+| ceiling | 1 | 1 | 1 | 0.77 |
+| step 1 (eval-only hold) | | hand-2 0.005, hand-8 0.028, obj-4 0.231 | | hand-2 0.001, hand-8 0.000, obj-4 0.053 |
+
+Findings:
+
+1. **The ranking reverses below 60 Hz, now with students trained under the hold.** At 60 Hz hand-8 and goal-4 are not distinguishable (0.87 vs 0.77, p = 0.30). At 10, 5 and 2 Hz goal-4 is first and every other interface is below it with p ≤ 0.012 (Welch vs goal-4 at the same N). At 2 Hz goal-4 keeps 0.43, the others ≤ 0.02.
+2. **Action-level intents collapse even when the student is trained under the hold.** hand-8 keeps 21% of its 60 Hz Recovery at 10 Hz, 11% at 5 Hz, 2% at 2 Hz; hand-2 is ≤ 0.03 from 10 Hz down. Training under the hold mainly removes the falls (hand-8 at 10 Hz: 62% falls evaluation-only → 2% trained) and lifts hand-8 from 0.03 to 0.18; it does not rescue the interface.
+3. **obj-4 degrades gradually** (0.33 → 0.22 → 0.13 → 0.02) and is never better than goal-4. Training under the hold gives nothing over evaluation-only hold (0.22 vs 0.23 at 10 Hz).
+4. **goal-4 degrades slowly** (−8% at 10 Hz, −16% at 5 Hz, −45% at 2 Hz relative to 60 Hz) and stays below the one-goal-per-refresh ceiling (2 Hz: 0.43 vs 0.77). Its seed spread is the smallest of all groups (sd 0.01–0.03). goal-4 learning curves are still rising at iteration 5000 at every N, so its final values are lower bounds for longer training.
+5. N80 (0.8 P_E) is reached only at 60 Hz (hand-8 2/3, goal-4 1/3); AUC follows the same ordering as Recovery.
+
+Reading (per "Reading the result"): hand-8 falls below goal-4 from 10 Hz on → action-level interfaces need a fast upstream; on this task only the goal-level interface survives a slow channel. Caveats: one task, 3 seeds, uncorrected tests; goal-4 is the goal itself (the hidden variable of M1), so this compares interface levels, not compression of an expert; a language model would also add latency and noise, not tested here (delay/quantisation are listed under "after 11-18").
