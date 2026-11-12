@@ -12,6 +12,8 @@
 # End-to-end dry run: every stage-one intent trains a student for a few PPO iterations with a
 # small environment count. Checks wiring (shapes, expert on GPU, logging), not learning.
 # DRY_RUN_HOLDS (default "1") lists intent holds; every intent runs once per hold (rate sweep).
+# DRY_RUN_RESUME_FROM=<periodic checkpoint> (rate sweep phase 2) resumes every run from that checkpoint for
+# DRY_RUN_ITERATIONS more epochs; set DRY_RUN_INTENTS / DRY_RUN_HOLDS / STUDENT_STAGE to match its run (seed 0).
 
 set -Eeuo pipefail
 
@@ -38,9 +40,12 @@ stage="${STUDENT_STAGE:-stage1}"
 # STUDENT_STAGE=m2 trains on the M2 task (shadow_zaxis_env.py) with the frozen M2 expert.
 # STUDENT_STAGE=m1 is Stage 2 M1: Stage 1 task and expert, goal hidden from the actor, asymmetric
 # critic. STUDENT_STAGE=m1-gate keeps the goal visible with the same asymmetric critic (M1 gate run).
+# STUDENT_STAGE=m2-hidden is M1's setting on the M2 task and expert (rate sweep phase 2).
 student_flags=()
 case "${stage}" in
     m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; expert_name=expert-m2-seed0 ;;
+    m2-hidden) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; expert_name=expert-m2-seed0
+        student_flags=(--goal_hidden --asymmetric_critic) ;;
     m1) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0
         student_flags=(--goal_hidden --asymmetric_critic) ;;
     m1-gate) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0
@@ -52,6 +57,19 @@ frozen_dir="${HOME}/data/low-dim-intent/checkpoints/${expert_name}/frozen"
 checkpoint="${frozen_dir}/${expert_name}.pth"
 expert_sha256=$(awk -v name="${expert_name}.pth" '$2 == name {print $1}' "${frozen_dir}/SHA256SUMS")
 pca_basis="${INTENT_PCA_DIR}/pca_basis.npz"
+# The action PCA must come from the same task's expert rollout (M2 basis directories contain "expert-m2").
+case "${stage}" in
+    m2*) [[ "${INTENT_PCA_DIR}" == *expert-m2* ]] || { echo "STUDENT_STAGE=${stage} needs the M2 action PCA" >&2; exit 2; } ;;
+    *) [[ "${INTENT_PCA_DIR}" != *expert-m2* ]] || { echo "STUDENT_STAGE=${stage} must not use the M2 action PCA" >&2; exit 2; } ;;
+esac
+resume_args=()
+resume_epoch=0
+if [[ -n "${DRY_RUN_RESUME_FROM:-}" ]]; then
+    test -f "${DRY_RUN_RESUME_FROM}"
+    resume_epoch=$(basename "${DRY_RUN_RESUME_FROM}" | sed -n 's/.*_ep_\([0-9]*\)_.*/\1/p')
+    test -n "${resume_epoch}"
+    resume_args=(--checkpoint "${DRY_RUN_RESUME_FROM}")
+fi
 run_root="${HOME}/data/low-dim-intent/runs/student-dry-run-job${SLURM_JOB_ID}"
 metadata_dir="${HOME}/data/low-dim-intent/metadata/student-dry-run-job${SLURM_JOB_ID}"
 trainer="${SLURM_SUBMIT_DIR}/train_student.py"
@@ -62,7 +80,7 @@ test -f "${pca_basis}"
 if [[ -n "${JOINT_PCA_DIR:-}" ]]; then test -f "${JOINT_PCA_DIR}/joint_basis.npz"; fi
 test -f "${trainer}"
 mkdir -p "${run_root}" "${metadata_dir}" "${XDG_CACHE_HOME}"
-cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_env_wrapper.py,intent_modules.py,m2_tasks.py,shadow_zaxis_env.py,15_student_dry_run.sbatch} "${metadata_dir}/"
+cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_env_wrapper.py,intent_modules.py,student_eval_utils.py,m2_tasks.py,shadow_zaxis_env.py,15_student_dry_run.sbatch} "${metadata_dir}/"
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
 echo "record_type=shadow_student_dry_run_job"
@@ -84,6 +102,8 @@ echo "minibatch_size=${minibatch_size}"
 echo "expert_sha256=${expert_sha256}"
 echo "pca_basis=${pca_basis}"
 echo "obj_lookahead=${OBJ_LOOKAHEAD}"
+echo "resume_from=${DRY_RUN_RESUME_FROM:-none}"
+echo "resume_start_epoch=${resume_epoch}"
 
 failed=0
 for hold in ${holds}; do
@@ -106,9 +126,10 @@ for intent in ${intents}; do
         "${student_flags[@]}" \
         --obj_lookahead "${OBJ_LOOKAHEAD}" \
         --intent_hold "${hold}" \
+        "${resume_args[@]}" \
         --num_envs "${num_envs}" \
         --seed "${seed}" \
-        --max_iterations "${iterations}" \
+        --max_iterations "$((resume_epoch + iterations))" \
         --train_dir "${run_root}" \
         --experiment_name "${name}" \
         --headless \
@@ -124,6 +145,15 @@ for intent in ${intents}; do
         status=3
     fi
     epochs=$(grep -c "fps step:" "${log}" || true)
+    if [[ -n "${DRY_RUN_RESUME_FROM:-}" ]]; then
+        # train_student.py prints this line (start of line) after checking the restored weights.
+        resume_line=$(grep -m1 '^resume_start_epoch=' "${log}" || echo "resume_start_epoch=missing")
+        echo "dry_run_resume ${resume_line}"
+        if [[ "${resume_line}" != "resume_start_epoch=${resume_epoch} "* ]]; then
+            echo "resumed run did not report start epoch ${resume_epoch}" >&2
+            status=4
+        fi
+    fi
     if [[ "${status}" -eq 0 ]] && grep -q "student_train_status=PASS" "${log}"; then
         result=PASS
     else

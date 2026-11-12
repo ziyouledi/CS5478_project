@@ -191,3 +191,90 @@ Findings:
 5. N80 (0.8 P_E) is reached only at 60 Hz (hand-8 2/3, goal-4 1/3); AUC follows the same ordering as Recovery.
 
 Reading (per "Reading the result"): hand-8 falls below goal-4 from 10 Hz on → action-level interfaces need a fast upstream; on this task only the goal-level interface survives a slow channel. Caveats: one task, 3 seeds, uncorrected tests; goal-4 is the goal itself (the hidden variable of M1), so this compares interface levels, not compression of an expert; a language model would also add latency and noise, not tested here (delay/quantisation are listed under "after 11-18").
+
+---
+
+# Phase 2 (approved by the user 2026-11-12): second task, longer training, more seeds
+
+Budget: about 40 h wall clock on the cluster, 4 GPUs (3 training + 1 evaluation), ≤ 32 queued jobs. 57 training runs × ~1:47 = 19 waves ≈ 34 h, plus queueing and reruns. Target: everything finished by 2026-11-14 morning; demo 2026-11-18. Tick each step off with its job ID, as in phase 1.
+
+## Questions
+
+1. Does the reversal (action-level best at 60 Hz, goal-level best below) repeat on a second task (M2, goal = 1-DoF yaw)?
+2. On a task whose goal has 1 DoF, is a 2-D goal intent as good as the 4-D quaternion at every rate?
+3. Is goal-4 at 2 Hz limited by training length (ceiling 0.77, measured 0.43, curves still rising)?
+4. Are the phase 1 contrasts stable with 5 seeds?
+5. What latency and precision does the goal channel tolerate (evaluation only)?
+6. Pilot: can a 1-bit slow selector switch between the two frozen experts (evaluation only)?
+
+## New definitions (scientific changes, approved 2026-11-12)
+
+1. **Stage `m2-hidden`.** Task `Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0`, expert `expert-m2-seed0` (`35dc6eb1…`), goal hidden from the actor (same fields `[64:72]`), asymmetric critic, same PPO settings as M1. Action PCA for hand-8 = the M2 basis `action-pca-expert-m2-rollout-seed0-job1033178-job1033179`.
+   - Reference values: P_E = 31.14 (M2 expert, `1032490`); P_B = final successes/episode of the `m2-hidden` blind runs (measured in block 1).
+   - Ceiling at hold N: min(1, (600/N)/31.14) → 1, 1, 1, 0.64 for N = 1, 6, 12, 30.
+2. **`goal-yaw` (2-D).** (sin ψ, cos ψ), ψ = rotation angle of the goal quaternion about world z: ψ = 2·atan2(q_z, q_w) on `obs[64:68]`. Only meaningful on the M2 task, where goals are pure yaw. The validator must check on M2 rollout data that the goal quaternion has |q_x|, |q_y| below 1e-3 and that (sin ψ, cos ψ) reconstructs it.
+3. **Extended training.** Resume the existing goal-4 runs from their `ep_5000` checkpoint and train to iteration 10000 (RL-Games checkpoint load; seeds unchanged). Recovery still uses P_E = 26.11 from the 5000-iteration expert, so values above the 5000-iteration ones are "longer student training", not "better than the expert". If resume does not reproduce the `ep_5000` evaluation at the start (dry-run check), fall back to training 10000 iterations from scratch and drop block 4 seeds to pay for it.
+4. **Delay d (evaluation only).** The actor sees the intent computed d control steps earlier (per environment; at episode start the first value is used until d steps have passed). d = 0, 6, 30, 60, 120 steps = 0, 0.1, 0.5, 1, 2 s. No hold (N = 1).
+5. **Quantisation b (evaluation only).** Each intent component is clipped to [−1, 1] and rounded to 2^b levels; b = 8, 4, 3, 2. No delay.
+6. **Skill-switch pilot (evaluation only).** Mixed-goal task: each new goal is pure yaw with probability 0.5, otherwise a Stage 1 random orientation. Controllers, all with the goal visible: Stage 1 expert only; M2 expert only; oracle selector (M2 expert for yaw goals, Stage 1 expert otherwise) with selector hold N = 1, 6, 30. No real model in the loop. Known weakness: yaw goals are a subset of Stage 1 goals, so this tests hand-off into the M2 expert from states it never saw, not composition of complementary skills.
+
+## Blocks (training), in submission order
+
+| Block | Stage | Conditions | Runs | Wall |
+|---|---|---|---|---|
+| 1 | `m2-hidden` | blind; goal-4 × N 1, 6, 12, 30; goal-yaw × N 1, 6, 12, 30; seeds 0–2 | 27 | 16 h |
+| 2 | `m1` resume | goal-4 × N 1, 12, 30, seeds 0–2, iterations 5000 → 10000 | 9 | 5.5 h |
+| 3 | `m2-hidden` | hand-8 × N 1, 6, 30, seeds 0–2 | 9 | 5.5 h |
+| 4 | `m1` | goal-4 and hand-8 × N 1, 6, 30, seeds 3, 4 | 12 | 7 h |
+
+All other settings as in phase 1: 5000 iterations, 2048 envs, evaluation `17` with 25 checkpoints × 1024 envs, seed 20261028 (block 2: checkpoints 5200–10000).
+
+If time runs out, cut from the bottom: block 4, then block 3, then goal-4 on M2 at N = 6 and 12.
+
+## Steps
+
+- [x] P0. **Code and dry runs.** DONE 2026-11-12: validations `1118902`/`1118903`, dry runs `1118971`/`1118972`, evaluations `1118973`–`1118976`; see Phase 2 log.
+  - `intent_modules.py`: `goal-yaw` (kind `goal`, k = 2). `validate_intent_modules.py`: goal-yaw checks on the M2 rollout `1033178`.
+  - `16`/`15`: `STUDENT_STAGE=m2-hidden`; `16`: `STUDENT_RESUME_FROM` (list of checkpoints, one per array task) → `train_student.py --checkpoint`, `--max_iterations 10000`; seeds list override for block 4 (`STUDENT_SEEDS="3 4"`).
+  - `intent_env_wrapper.py`: `intent_delay`, `intent_bits` (evaluation only, defaults off); `evaluate_students.py`/`17`: `EVAL_INTENT_DELAY`, `EVAL_INTENT_BITS`, output-dir suffix.
+  - CPU tests: goal-yaw formula and wrap-around, delay buffer (per-env reset), quantiser, grid index mapping for every block.
+  - GPU dry run (256 envs × 3 it): `m2-hidden` × {blind, goal-4, goal-yaw, hand-8} × holds; a resume dry run that loads one goal-4 `ep_5000` checkpoint, logs the starting epoch, and whose first evaluation matches the recorded `ep_5000` value within 1%.
+  - Sync (compare remote with HEAD first), checksums.
+- [ ] P1. **Delay × quantisation** on the three goal-4 N = 1 final checkpoints (`1111584` tasks 0–2): 5 delays + 4 bit depths, last checkpoint only. Also hand-8 N = 1 (M1 grid) at the same delays as a contrast. Analysis: Recovery vs delay, Recovery vs bits.
+- [ ] P2. **Block 1** training + evaluations (batches under the 32-job limit; submit `aftercorr` evaluations while training is pending).
+- [ ] P3. **Block 2**, then **block 3**, then **block 4**, each with its evaluations.
+- [ ] P4. **Skill-switch pilot**: mixed-goal environment (`m2_tasks.py`), selector wrapper, evaluation only. Start after P2 is submitted; lowest priority.
+- [ ] P5. **Analysis**: extend `analyze_rate_sweep.py` to a task column; Recovery vs rate per task with ceilings; goal-yaw vs goal-4; 5000 vs 10000 iterations; 5-seed tests for phase 1 contrasts. Update `CONTEXT.md`.
+
+## Reading the result
+
+- M2: goal-yaw ≈ goal-4 at every rate → the goal channel needs only the task's goal DoF; with phase 1 this gives two points for "goal bandwidth = events/s × DoF" (Stage 1: 2.7 Hz × 3; M2: measure events/s from `1033178`, expected ≈ 3.1 Hz × 1).
+- M2: hand-8 collapses below 60 Hz again → the reversal is not specific to Stage 1.
+- Block 2: N = 30 rises towards 0.77 while N = 1 saturates → the 2 Hz gap was training time; both rise in parallel → it was not.
+- P1: the delay at which goal-4 loses half its Recovery is the latency budget for an upstream model on this task.
+
+## Phase 2 log
+
+### P0 (2026-11-12): DONE
+
+- Code (all defaults leave phase 1 behaviour unchanged):
+  - `intent_modules.py`: `goal-yaw` (kind `goal`, k = 2, `goal_yaw()` = (sin ψ, cos ψ), ψ = 2·atan2(q_z, q_w); q and −q agree). `IntentChannel` (pure torch) now holds the zero-order hold (moved unchanged from the wrapper), the delay ring buffer (slot t mod (d+1); output = intent of episode step max(t − d, 0)) and the quantiser (clip to [−1, 1], round to 2^b evenly spaced levels including ±1). At most one of hold / delay / bits may be active (raises otherwise).
+  - `intent_env_wrapper.py`: `intent_delay`, `intent_bits` via `IntentChannel`, keyed on `episode_length_buf` as before; logged in the first-observation line.
+  - `evaluate_students.py` / `17`: `--intent_delay` / `--intent_bits` ← `EVAL_INTENT_DELAY` / `EVAL_INTENT_BITS` (output suffix `-delayD` / `-bitsB`; recorded in `evaluation.json` with their rules). The evaluator now fails if `--task` differs from the training task in `intent.json`.
+  - `train_student.py --checkpoint`: resume. Checks the source run's `intent.json` (intent, task, seed, goal_hidden, asymmetric_critic, intent_hold, expert and PCA hashes, lookahead; num_envs may differ) and that the checkpoint epoch < `--max_iterations`; restores like RL-Games `run_train` and fails unless the restored actor-critic and central value net equal the checkpoint exactly and the epoch matches. Provenance (`resume_from`, sha256, start epoch) goes into `intent.json`. RL-Games 1.6.1 restores weights, normalizers, central value net, optimizer, epoch and frame, but **not the adaptive learning rate**: it restarts at 5e-4 and the KL schedule re-adapts it per minibatch (Isaac Lab's own resume behaves the same).
+  - `16`: `STUDENT_STAGE=m2-hidden` (ZAxis task, M2 expert, `--goal_hidden --asymmetric_critic`); `STUDENT_RESUME_FROM` (one checkpoint per array task, count must equal intents × seeds; run name suffix `-resume`); `STUDENT_SEEDS` already existed; guard: m2* stages need an `expert-m2` action PCA dir, other stages must not use one; `STUDENT_PRINT_PLAN=1` prints the task mapping and exits. `15`: `m2-hidden`, same PCA guard, `DRY_RUN_RESUME_FROM` (runs `start epoch + DRY_RUN_ITERATIONS`, checks the logged start epoch). `14` / validator: goal-4 checks always; `CHECK_GOAL_YAW=1` adds |q_x|, |q_y| < 1e-3, unit norm and goal-quaternion reconstruction from (sin ψ, cos ψ) within 1e-5.
+- CPU tests (scratchpad) 37/37 PASS: goal-yaw formula for q and −q, wrap-around at ±π, angles beyond ±π; hold identical to the phase 1 implementation (N = 6, 12, 30, random per-env resets); delay d = 1, 6, 30, 60, 120 against a per-episode history reference with resets; quantiser b = 8, 4, 3, 2 (2^b levels, endpoints, error ≤ half a step); invalid combinations rejected.
+- Grid mapping (`STUDENT_PRINT_PLAN=1`, all blocks) PASS; out-of-range index and five bad configurations rejected (wrong PCA for m2-hidden / m1, wrong resume count, unknown stage, hold 0). Proposed block 1 order (cut list last): `blind goal-4:1 goal-yaw:1 goal-4:30 goal-yaw:30 goal-yaw:6 goal-yaw:12 goal-4:6 goal-4:12`. Block 2 resume sources must be the newest `ep_5000` file per run (the evaluator's choice; runs have both `..._rew_X.pth` and `..._rew__X_.pth`).
+- Synced (remote matched HEAD before; 10 files, checksums match).
+- CPU validations PASS: `1118902` on M2 rollout `1033178` (M2 expert, M2 PCA, joint basis `1033233`, `CHECK_GOAL_YAW=1`): |q_x|, |q_y| max 0 (goals are exactly pure yaw), goal-yaw unit norm 6e-8, goal quaternion rebuilt from (sin ψ, cos ψ) within 1.5e-7, goal-4 = canonical goal; all earlier checks still pass. `1118903` Stage 1 regression (`1023537`): all PASS incl. goal-4.
+- First GPU dry runs `1118904` (m2-hidden) / `1118905` (resume) FAILED (600 s timeout each, script bug in `15`): the new variable `start_epoch` collided with the wall-clock `start_epoch=$(date +%s)` in the loop, so `--max_iterations` became a timestamp (1794448560); and the resume check grepped `student_resume_start_epoch=` first. Evidence that the code under test worked: `1118905` logged `resume_start_epoch=5000 resume_frame=163840000 resume_model_max_abs_diff=0 resume_central_value_max_abs_diff=0` and continued at epoch 5001; `1118904` blind: actor 149, critic 157. Fixed (`resume_epoch`, grep `^resume_start_epoch=`), dependents `1118906`–`1118909` cancelled.
+- Resubmitted 2026-11-12:
+  - `1118971` GPU dry run `m2-hidden` × {blind, goal-4, goal-yaw, hand-8} × holds {1, 6, 12, 30}, 256 envs × 3 it.
+  - `1118972` resume dry run: goal-4 N = 1 seed 0 `1111584_0` `ep_5000` (`..._rew__5467.298_.pth`), 256 envs, 1 iteration → `ep_5001`.
+  - `1118973` (`afterok:1118972`, array 0–1): last-checkpoint evaluation (1024 envs) of the resumed `ep_5001` and of the source `ep_5000`, same single-checkpoint protocol. Acceptance: within 1% (recorded full-curve value 22.326).
+  - Smoke tests of the new channel on the source checkpoint (256 envs, not results): `1118974` delay 30, `1118975` bits 2; `1118976` evaluates the m2-hidden goal-yaw hold-6 dry checkpoint on the ZAxis task.
+- Results (all COMPLETED 0:0):
+  - `1118971` **PASS** 16/16 (~37 s each): m2-hidden actor dims blind 149, goal-yaw 151, goal-4 153, hand-8 157; `critic_states_shape=(256, 157)` everywhere; logged hold matches each requested hold.
+  - `1118972` **PASS**: `resume_start_epoch=5000 resume_frame=163840000`, model and central value net max abs diff 0 vs the checkpoint, one epoch → `ep_5001`.
+  - `1118973` evaluation (single checkpoint, 1024 envs): source `ep_5000` 22.076 (full-curve record 22.326, −1.1%: evaluator order effect again), resumed `ep_5001` **21.563 (−2.3% vs source) → the 1% criterion is not met.** Restore is bit-exact, so the shift comes from the one PPO update (256 envs, batch 4096, learning rate restarted at 5e-4; the source run's adaptive rate at the end alternates 2.2e-4 / 3.3e-4, `info/last_lr`). For scale: the same runs move −3% … +8% between neighbouring 200-iteration checkpoints (seed 0: 4200 → 4400 −1.9%; seed 2: 4000 → 4200 −3.0%). **User decision 2026-11-12: keep the resume for block 2 and keep block 4.** The 1% bar measured the drift of one PPO update, not the restore, which is exact; the miss does not indicate a resume problem. Report the restart of the adaptive learning rate as a caveat.
+  - Smoke tests PASS (256 envs, final goal-4 seed 0 checkpoint, not results): `1118974` delay 30 → 10.66 successes/episode; `1118975` bits 2 → 0.10; `1118976` m2-hidden goal-yaw hold-6 dry checkpoint evaluates on the ZAxis task (actor 151, hold 6).

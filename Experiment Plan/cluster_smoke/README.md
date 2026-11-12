@@ -329,6 +329,28 @@ Optional: `HOLD_DATASET_DIR` (default: Stage 1 rollout `1023537`), `HOLD_STEPS`
 (default `1,2,3,6,12,30,60,120`). Output:
 `datasets/intent-hold-<rollout>-job<id>/{summary.json,intent_hold.csv,intent_hold.png}`.
 
+## Stage 16: rate sweep phase 2 (second task, resume, delay / quantisation)
+
+Plan: `../RATE_SWEEP_PLAN.md`, section "Phase 2". New options (defaults keep phase 1 behaviour):
+
+- `STUDENT_STAGE=m2-hidden` (`15`, `16`): M1 setting on the M2 task and expert; needs the M2
+  action PCA (`INTENT_PCA_DIR=.../action-pca-expert-m2-rollout-seed0-job1033178-job1033179`).
+  New intent `goal-yaw` = (sin ψ, cos ψ) of the goal's rotation about world z.
+- `STUDENT_RESUME_FROM` (`16`): one periodic checkpoint per array task (same order as the task
+  mapping); `STUDENT_ITERATIONS` is the absolute final epoch (10000). `train_student.py` checks the
+  source run's `intent.json` and the restored weights. `STUDENT_SEEDS="3 4"` changes the seeds.
+- `STUDENT_PRINT_PLAN=1` (`16`) prints the task mapping without training; run it locally or on the
+  login node before submitting a block.
+- `EVAL_INTENT_DELAY=d`, `EVAL_INTENT_BITS=b` (`17`, evaluation only, not combinable with a hold).
+- `CHECK_GOAL_YAW=1` (`14`) on the M2 rollout validates goal-yaw.
+
+```bash
+# Print the block 1 mapping (no submission).
+STUDENT_PRINT_PLAN=1 STUDENT_STAGE=m2-hidden STUDENT_ITERATIONS=5000 INTENT_PCA_DIR="$M2P" \
+  STUDENT_INTENTS="blind goal-4:1 goal-yaw:1 goal-4:30 goal-yaw:30 goal-yaw:6 goal-yaw:12 goal-4:6 goal-4:12" \
+  ISAACLAB_DIR=... VENV_DIR=... SLURM_ARRAY_TASK_ID=0 bash 16_train_student.sbatch
+```
+
 ## Useful monitoring commands
 
 ```bash

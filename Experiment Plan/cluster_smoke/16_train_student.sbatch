@@ -14,6 +14,11 @@
 # Submit the stage-one grid (7 intents x 3 seeds) with --array=0-20%<max concurrent>.
 # STUDENT_INTENT_HOLD=N (rate sweep) refreshes the intent every N episode steps; N != 1 adds -holdN to the run name.
 # A STUDENT_INTENTS entry may carry its own hold as intent:N (e.g. "goal-4:1 hand-8:6"), overriding STUDENT_INTENT_HOLD.
+# STUDENT_SEEDS overrides the seed list (default "0 1 2"), e.g. "3 4".
+# STUDENT_RESUME_FROM (rate sweep phase 2) is a space-separated list of checkpoints, entry i for array task i;
+# training resumes from it up to STUDENT_ITERATIONS (absolute epoch count) and the run name gets -resume.
+# train_student.py checks that the checkpoint's run has the same intent, hold, seed, task and flags.
+# STUDENT_PRINT_PLAN=1 prints the task -> (stage, intent, hold, seed, resume, name) mapping and exits.
 
 set -Eeuo pipefail
 
@@ -50,13 +55,25 @@ if ! [[ "${intent_hold}" =~ ^[1-9][0-9]*$ ]]; then
     exit 2
 fi
 seed="${seeds[$((task_id % ${#seeds[@]}))]}"
+resume_from=""
+if [[ -n "${STUDENT_RESUME_FROM:-}" ]]; then
+    read -r -a resume_list <<< "${STUDENT_RESUME_FROM}"
+    if (( ${#resume_list[@]} != ${#intents[@]} * ${#seeds[@]} )); then
+        echo "STUDENT_RESUME_FROM has ${#resume_list[@]} entries, expected ${#intents[@]} x ${#seeds[@]}" >&2
+        exit 2
+    fi
+    resume_from="${resume_list[${task_id}]}"
+fi
 
 # STUDENT_STAGE=m2 trains on the M2 task (shadow_zaxis_env.py) with the frozen M2 expert.
 # STUDENT_STAGE=m1 is Stage 2 M1: Stage 1 task and expert, goal hidden from the actor, asymmetric
 # critic. STUDENT_STAGE=m1-gate keeps the goal visible with the same asymmetric critic (M1 gate run).
+# STUDENT_STAGE=m2-hidden is M1's setting on the M2 task and expert (rate sweep phase 2).
 student_flags=()
 case "${stage}" in
     m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; expert_name=expert-m2-seed0 ;;
+    m2-hidden) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; expert_name=expert-m2-seed0
+        student_flags=(--goal_hidden --asymmetric_critic) ;;
     m1) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0
         student_flags=(--goal_hidden --asymmetric_critic) ;;
     m1-gate) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0
@@ -64,6 +81,21 @@ case "${stage}" in
     stage1) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0 ;;
     *) echo "unknown STUDENT_STAGE=${stage}" >&2; exit 2 ;;
 esac
+# The action PCA must come from the same task's expert rollout (M2 basis directories contain "expert-m2").
+case "${stage}" in
+    m2*) [[ "${INTENT_PCA_DIR}" == *expert-m2* ]] || { echo "STUDENT_STAGE=${stage} needs the M2 action PCA" >&2; exit 2; } ;;
+    *) [[ "${INTENT_PCA_DIR}" != *expert-m2* ]] || { echo "STUDENT_STAGE=${stage} must not use the M2 action PCA" >&2; exit 2; } ;;
+esac
+job_tag="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID:-plan}}_${task_id}"
+hold_tag=""
+if [[ "${intent_hold}" != "1" ]]; then hold_tag="-hold${intent_hold}"; fi
+resume_tag=""
+if [[ -n "${resume_from}" ]]; then resume_tag="-resume"; fi
+name="student-${stage}-${intent}${hold_tag}-seed${seed}${resume_tag}"
+if [[ "${STUDENT_PRINT_PLAN:-0}" == "1" ]]; then
+    echo "plan task=${task_id} stage=${stage} task_name=${task} intent=${intent} hold=${intent_hold} seed=${seed} iterations=${STUDENT_ITERATIONS} resume=${resume_from:-none} name=${name}"
+    exit 0
+fi
 frozen_dir="${HOME}/data/low-dim-intent/checkpoints/${expert_name}/frozen"
 checkpoint="${frozen_dir}/${expert_name}.pth"
 expert_sha256=$(awk -v name="${expert_name}.pth" '$2 == name {print $1}' "${frozen_dir}/SHA256SUMS")
@@ -72,10 +104,6 @@ case "${intent}" in
     joint-*) pca_basis="${JOINT_PCA_DIR:?joint-K intents need JOINT_PCA_DIR}/joint_basis.npz" ;;
     *) pca_basis="${INTENT_PCA_DIR}/pca_basis.npz" ;;
 esac
-job_tag="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID}}_${task_id}"
-hold_tag=""
-if [[ "${intent_hold}" != "1" ]]; then hold_tag="-hold${intent_hold}"; fi
-name="student-${stage}-${intent}${hold_tag}-seed${seed}"
 run_root="${HOME}/data/low-dim-intent/runs/${name}-job${job_tag}"
 metadata_dir="${HOME}/data/low-dim-intent/metadata/${name}-job${job_tag}"
 trainer="${SLURM_SUBMIT_DIR}/train_student.py"
@@ -84,8 +112,13 @@ test -f "${checkpoint}"
 test -n "${expert_sha256}"
 test -f "${pca_basis}"
 test -f "${trainer}"
+resume_args=()
+if [[ -n "${resume_from}" ]]; then
+    test -f "${resume_from}"
+    resume_args=(--checkpoint "${resume_from}")
+fi
 mkdir -p "${run_root}" "${metadata_dir}" "${XDG_CACHE_HOME}"
-cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_env_wrapper.py,intent_modules.py,m2_tasks.py,shadow_zaxis_env.py,16_train_student.sbatch} "${metadata_dir}/"
+cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_env_wrapper.py,intent_modules.py,student_eval_utils.py,m2_tasks.py,shadow_zaxis_env.py,16_train_student.sbatch} "${metadata_dir}/"
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
 echo "record_type=shadow_student_train_job"
@@ -108,6 +141,7 @@ echo "expert_sha256=${expert_sha256}"
 echo "pca_basis=${pca_basis}"
 echo "obj_lookahead=${obj_lookahead}"
 echo "intent_hold=${intent_hold}"
+echo "resume_from=${resume_from:-none}"
 echo "run_root=${run_root}"
 
 run_log="${run_root}/train.log"
@@ -131,6 +165,7 @@ set +e
     "${student_flags[@]}" \
     --obj_lookahead "${obj_lookahead}" \
     --intent_hold "${intent_hold}" \
+    "${resume_args[@]}" \
     --num_envs "${num_envs}" \
     --seed "${seed}" \
     --max_iterations "${STUDENT_ITERATIONS}" \

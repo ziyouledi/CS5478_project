@@ -12,6 +12,12 @@ on the full clipped 157-D observation.
 
 Rate sweep: ``--intent_hold N`` refreshes the intent only every N episode steps (zero-order hold,
 see intent_env_wrapper.py); it is written to params/intent.json and the evaluator reads it back.
+
+Rate sweep phase 2: ``--checkpoint`` resumes PPO from a periodic RL-Games checkpoint of a run with the same
+intent, hold, seed, task and flags (checked against that run's params/intent.json). RL-Games restores the
+actor-critic, input normalizers, central value net, optimizer state, epoch and frame count; it does not restore
+the adaptive learning rate, which restarts at the configured value (Isaac Lab's train.py behaves the same).
+Training continues to ``--max_iterations`` (absolute epoch count).
 """
 
 from __future__ import annotations
@@ -30,7 +36,8 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--task", default="Isaac-Repose-Cube-Shadow-Direct-v0")
 parser.add_argument("--agent", default="rl_games_cfg_entry_point")
-parser.add_argument("--intent", required=True, help="blind | hand-K | joint-K | wrist-2 | wrist2-finger-K | obj-1|3|4 | goal-4")
+parser.add_argument("--intent", required=True,
+                    help="blind | hand-K | joint-K | wrist-2 | wrist2-finger-K | obj-1|3|4 | goal-4 | goal-yaw")
 parser.add_argument("--expert_checkpoint", default=None)
 parser.add_argument("--expert_sha256", default=None)
 parser.add_argument("--pca_basis", default=None)
@@ -42,6 +49,7 @@ parser.add_argument(
     help="Add an RL-Games central value net that sees the full clipped 157-D observation (no intent).",
 )
 parser.add_argument("--intent_hold", type=int, default=1, help="Refresh the intent every N episode steps (1 = every step).")
+parser.add_argument("--checkpoint", default=None, help="Resume from this periodic RL-Games checkpoint (see module doc).")
 parser.add_argument("--num_envs", type=int, default=2048)
 parser.add_argument("--seed", type=int, required=True)
 parser.add_argument("--max_iterations", type=int, required=True)
@@ -55,6 +63,7 @@ app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
 import gymnasium as gym
+import torch
 from rl_games.common import env_configurations, vecenv
 from rl_games.common.algo_observer import IsaacAlgoObserver
 from rl_games.torch_runner import Runner
@@ -66,7 +75,8 @@ from isaaclab_tasks.utils.hydra import hydra_task_config
 
 import m2_tasks  # noqa: F401  registers Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0
 from intent_env_wrapper import IntentRlGamesVecEnvWrapper
-from intent_modules import build_intent
+from intent_modules import build_intent, sha256
+from student_eval_utils import checkpoint_iteration
 
 
 # Stage 2 M1 critic, copied from Isaac Lab's shadow_hand/agents/rl_games_ppo_ff_cfg.yaml except
@@ -93,6 +103,45 @@ CENTRAL_VALUE_CONFIG = {
         },
     },
 }
+
+
+# Fields of the source run's intent.json that a resumed run must share (num_envs may differ in dry runs).
+RESUME_MATCH_KEYS = (
+    "intent", "task", "seed", "goal_hidden", "asymmetric_critic", "intent_hold",
+    "expert_checkpoint_sha256", "pca_basis_sha256", "obj_lookahead_rad",
+)
+
+
+def check_resume_source(checkpoint: Path, record: dict) -> dict:
+    """Returns resume provenance; raises if the checkpoint's run differs from this one."""
+    start_epoch = checkpoint_iteration(checkpoint)
+    if not checkpoint.is_file() or start_epoch is None:
+        raise ValueError(f"Resume checkpoint {checkpoint} is not a periodic RL-Games checkpoint (_ep_<N>_)")
+    if start_epoch >= record["max_iterations"]:
+        raise ValueError(f"Resume epoch {start_epoch} >= --max_iterations {record['max_iterations']}")
+    source_path = checkpoint.parent.parent / "params" / "intent.json"
+    source = json.loads(source_path.read_text(encoding="utf-8"))
+    defaults = {"intent_hold": 1, "goal_hidden": False, "asymmetric_critic": False}
+    mismatched = {
+        key: (source.get(key, defaults.get(key)), record.get(key, defaults.get(key)))
+        for key in RESUME_MATCH_KEYS
+        if source.get(key, defaults.get(key)) != record.get(key, defaults.get(key))
+    }
+    if mismatched:
+        raise ValueError(f"Resume source {source_path} differs from this run (source, this): {mismatched}")
+    return {
+        "resume_from": str(checkpoint),
+        "resume_from_sha256": sha256(checkpoint),
+        "resume_start_epoch": start_epoch,
+        "resume_source_num_envs": source.get("num_envs"),
+        "resume_source_max_iterations": source.get("max_iterations"),
+    }
+
+
+def max_abs_state_diff(live: dict, saved: dict) -> float:
+    if live.keys() != saved.keys():
+        raise KeyError(f"State keys differ: {sorted(set(live) ^ set(saved))[:5]}")
+    return max(float((live[key].detach().cpu().float() - saved[key].cpu().float()).abs().max()) for key in live)
 
 
 @hydra_task_config(args_cli.task, args_cli.agent)
@@ -141,6 +190,9 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "asymmetric_critic": args_cli.asymmetric_critic,
         "intent_hold": args_cli.intent_hold,
     }
+    checkpoint = Path(args_cli.checkpoint).expanduser().resolve() if args_cli.checkpoint else None
+    if checkpoint is not None:
+        intent_record.update(check_resume_source(checkpoint, intent_record))
 
     clip_obs = agent_cfg["params"]["env"].get("clip_observations", math.inf)
     clip_actions = agent_cfg["params"]["env"].get("clip_actions", math.inf)
@@ -170,7 +222,29 @@ def main(env_cfg, agent_cfg: dict) -> None:
     runner = Runner(IsaacAlgoObserver())
     runner.load(agent_cfg)
     runner.reset()
-    runner.run({"train": True, "play": False, "sigma": None})
+    if checkpoint is None:
+        runner.run({"train": True, "play": False, "sigma": None})
+    else:
+        # Same steps as Runner.run_train with a checkpoint (sigma override is None), plus a check that
+        # the restored networks equal the checkpoint and training resumes at its epoch.
+        agent = runner.algo_factory.create(runner.algo_name, base_name="run", params=runner.params)
+        agent.restore(str(checkpoint))
+        saved = torch.load(checkpoint, map_location="cpu", weights_only=False)
+        model_diff = max_abs_state_diff(agent.model.state_dict(), saved["model"])
+        critic_diff = (
+            max_abs_state_diff(agent.central_value_net.state_dict(), saved["assymetric_vf_nets"])
+            if agent.has_central_value else 0.0
+        )
+        print(
+            f"resume_start_epoch={agent.epoch_num} resume_frame={agent.frame} "
+            f"resume_model_max_abs_diff={model_diff:.3e} resume_central_value_max_abs_diff={critic_diff:.3e} "
+            f"resume_has_central_value={agent.has_central_value}"
+        )
+        if agent.epoch_num != intent_record["resume_start_epoch"] or model_diff != 0.0 or critic_diff != 0.0:
+            raise RuntimeError("Resumed agent does not match its checkpoint")
+        if agent.has_central_value != args_cli.asymmetric_critic:
+            raise RuntimeError("Central value net presence does not match --asymmetric_critic")
+        agent.train()
     env.close()
     print(f"student_log_dir={log_dir}")
     print("student_train_status=PASS")

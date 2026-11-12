@@ -16,13 +16,14 @@ from intent_modules import (
     OBJECT_ROT,
     WRIST,
     build_intent,
+    canonical_quat,
     quat_conjugate,
     quat_mul,
     rotation_distance,
 )
 
 STAGE_ONE_INTENTS = ["blind", "wrist-2", "hand-2", "hand-4", "hand-20", "obj-1", "obj-4"]
-EXTRA_INTENTS = ["hand-8", "wrist2-finger-2", "obj-3"]
+EXTRA_INTENTS = ["hand-8", "wrist2-finger-2", "obj-3", "goal-4"]
 JOINT_INTENTS = ["joint-2", "joint-4", "joint-20"]
 EXPERT_TOLERANCE = 1e-4
 
@@ -35,6 +36,8 @@ def main() -> None:
     parser.add_argument("--expert_sha256", required=True)
     parser.add_argument("--obj_lookahead", type=float, required=True)
     parser.add_argument("--joint_basis", default=None, help="joint_basis.npz from fit_joint_basis.py; adds joint-K checks")
+    parser.add_argument("--check_goal_yaw", action="store_true",
+                        help="M2 rollout only: goals must be pure yaw; adds goal-yaw and its reconstruction checks")
     parser.add_argument("--num_rows", type=int, default=131072)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--output_json", required=True)
@@ -65,6 +68,8 @@ def main() -> None:
         obj_lookahead=args.obj_lookahead,
     )
     modules = {name: build_intent(name, **common) for name in STAGE_ONE_INTENTS + EXTRA_INTENTS}
+    if args.check_goal_yaw:
+        modules["goal-yaw"] = build_intent("goal-yaw", **common)
     if args.joint_basis:
         joint_common = {**common, "pca_basis": Path(args.joint_basis)}
         modules.update({name: build_intent(name, **joint_common) for name in JOINT_INTENTS})
@@ -146,6 +151,23 @@ def main() -> None:
         object_rot,
     )
     check("obj3_rotates_object_to_subgoal", float(rotation_distance(applied, subgoal).max()), 2e-3)
+
+    # 4b. Goal intents.
+    goal4 = modules["goal-4"](obs)
+    check("goal4_equals_canonical_goal", float((goal4 - canonical_quat(goal_rot)).abs().max()), 0.0)
+    check("goal4_w_nonnegative", float((-goal4[:, 0]).clamp(min=0).max()), 0.0)
+    check("goal4_unit_norm", float((goal4.norm(dim=1) - 1).abs().max()), 1e-5)
+    if args.check_goal_yaw:
+        # Pure yaw goals: q = +-(cos(psi/2), 0, 0, sin(psi/2)); (sin psi, cos psi) must give q back.
+        check("goal_quat_xy_abs_max", float(goal_rot[:, 1:3].abs().max()), 1e-3)
+        yaw = modules["goal-yaw"](obs)
+        check("goal_yaw_unit_norm", float((yaw.norm(dim=1) - 1).abs().max()), 1e-5)
+        psi = torch.atan2(yaw[:, 0], yaw[:, 1])
+        rebuilt = torch.stack([torch.cos(psi / 2), torch.zeros_like(psi), torch.zeros_like(psi), torch.sin(psi / 2)], 1)
+        unit_goal = goal_rot / goal_rot.norm(dim=1, keepdim=True)
+        sign_free = torch.minimum((rebuilt - unit_goal).abs().amax(1), (rebuilt + unit_goal).abs().amax(1))
+        check("goal_yaw_reconstructs_goal_quat", float(sign_free.max()), 1e-5)
+        report["goal_yaw_psi_quantiles"] = np.quantile(psi.numpy(), [0, 0.1, 0.5, 0.9, 1]).tolist()
 
     # 5. Shapes and finiteness for every condition.
     shapes = {}

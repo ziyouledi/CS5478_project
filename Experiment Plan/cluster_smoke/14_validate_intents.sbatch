@@ -27,6 +27,9 @@ joint_args=()
 if [[ -n "${JOINT_PCA_DIR:-}" ]]; then
     joint_args=(--joint_basis "${JOINT_PCA_DIR}/joint_basis.npz")
 fi
+if [[ "${CHECK_GOAL_YAW:-0}" == "1" ]]; then
+    joint_args+=(--check_goal_yaw)  # M2 rollout only: goals are pure yaw
+fi
 pca_basis="${INTENT_PCA_DIR}/pca_basis.npz"
 metadata_dir="${HOME}/data/low-dim-intent/metadata/intent-check-job${SLURM_JOB_ID}"
 
@@ -49,6 +52,7 @@ echo "pca_basis=${pca_basis}"
 echo "pca_basis_check=$(cd "${INTENT_PCA_DIR}" && sha256sum -c --strict SHA256SUMS >/dev/null && echo PASS)"
 echo "obj_lookahead=${OBJ_LOOKAHEAD}"
 echo "joint_pca_dir=${JOINT_PCA_DIR:-none}"
+echo "check_goal_yaw=${CHECK_GOAL_YAW:-0}"
 
 set +e
 python "${SLURM_SUBMIT_DIR}/validate_intent_modules.py" \

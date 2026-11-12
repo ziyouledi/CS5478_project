@@ -16,6 +16,8 @@
 # Stage 2 M1 runs use the default task; the evaluator reads goal_hidden from params/intent.json.
 # EVAL_INTENT_HOLD=N overrides the intent hold (refresh every N episode steps; rate sweep step 1);
 # it is added to the output directory name as -holdN. EVAL_LAST_ONLY=1 evaluates only the final checkpoint.
+# EVAL_INTENT_DELAY=d delays the intent by d control steps, EVAL_INTENT_BITS=b quantises it to 2^b levels
+# (rate sweep phase 2, evaluation only; output suffixes -delayD / -bitsB). The evaluator rejects combinations.
 
 set -Eeuo pipefail
 
@@ -42,7 +44,7 @@ num_envs="${EVAL_NUM_ENVS:-1024}"
 seed="${EVAL_SEED:-20261028}"
 task="${EVAL_TASK:-Isaac-Repose-Cube-Shadow-Direct-v0}"
 job_tag="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID}}_${task_id}"
-hold_tag="${EVAL_INTENT_HOLD:+-hold${EVAL_INTENT_HOLD}}"
+hold_tag="${EVAL_INTENT_HOLD:+-hold${EVAL_INTENT_HOLD}}${EVAL_INTENT_DELAY:+-delay${EVAL_INTENT_DELAY}}${EVAL_INTENT_BITS:+-bits${EVAL_INTENT_BITS}}"
 output_dir="${HOME}/data/low-dim-intent/runs/eval-$(basename "${run_dir}")${hold_tag}-job${job_tag}"
 metadata_dir="${HOME}/data/low-dim-intent/metadata/eval-$(basename "${run_dir}")${hold_tag}-job${job_tag}"
 evaluator="${SLURM_SUBMIT_DIR}/evaluate_students.py"
@@ -64,6 +66,8 @@ echo "task=${task}"
 echo "intent_override=${EVAL_INTENT:-none}"
 echo "checkpoint_stride=${stride}"
 echo "intent_hold_override=${EVAL_INTENT_HOLD:-none}"
+echo "intent_delay=${EVAL_INTENT_DELAY:-0}"
+echo "intent_bits=${EVAL_INTENT_BITS:-0}"
 echo "last_checkpoint_only=${EVAL_LAST_ONLY:-0}"
 echo "num_envs=${num_envs}"
 echo "seed=${seed}"
@@ -80,6 +84,12 @@ eval_args=(
 )
 if [[ -n "${EVAL_INTENT_HOLD:-}" ]]; then
     eval_args+=(--intent_hold "${EVAL_INTENT_HOLD}")
+fi
+if [[ -n "${EVAL_INTENT_DELAY:-}" ]]; then
+    eval_args+=(--intent_delay "${EVAL_INTENT_DELAY}")
+fi
+if [[ -n "${EVAL_INTENT_BITS:-}" ]]; then
+    eval_args+=(--intent_bits "${EVAL_INTENT_BITS}")
 fi
 if [[ "${EVAL_LAST_ONLY:-0}" == "1" ]]; then
     eval_args+=(--last_checkpoint_only)

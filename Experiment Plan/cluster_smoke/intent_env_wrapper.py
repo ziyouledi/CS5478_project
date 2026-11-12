@@ -10,7 +10,7 @@ import torch
 
 from isaaclab_rl.rl_games import RlGamesVecEnvWrapper
 
-from intent_modules import GOAL_FIELDS, GOAL_HIDDEN_OBS_DIM, OBS_DIM, IntentModule, hide_goal
+from intent_modules import GOAL_FIELDS, GOAL_HIDDEN_OBS_DIM, OBS_DIM, IntentChannel, IntentModule, hide_goal
 
 
 class IntentRlGamesVecEnvWrapper(RlGamesVecEnvWrapper):
@@ -27,6 +27,10 @@ class IntentRlGamesVecEnvWrapper(RlGamesVecEnvWrapper):
     With ``intent_hold`` = N > 1 (zero-order hold), an environment's intent is recomputed only when
     its episode step count is a multiple of N (always at episode start) and is held otherwise. A goal
     change inside an episode does not trigger a refresh. N = 1 recomputes every step (M1 behaviour).
+
+    ``intent_delay`` = d and ``intent_bits`` = b (evaluation only, rate sweep phase 2) delay the intent by
+    d control steps within the episode or quantise it to 2**b levels; see ``IntentChannel``. At most one of
+    hold, delay and bits may be active.
     """
 
     def __init__(
@@ -39,12 +43,11 @@ class IntentRlGamesVecEnvWrapper(RlGamesVecEnvWrapper):
         goal_hidden: bool = False,
         asymmetric_critic: bool = False,
         intent_hold: int = 1,
+        intent_delay: int = 0,
+        intent_bits: int = 0,
     ):
-        if intent_hold < 1:
-            raise ValueError(f"intent_hold must be >= 1, got {intent_hold}")
         self._intent = intent
-        self._intent_hold = int(intent_hold)
-        self._held_intent: torch.Tensor | None = None
+        self._channel = IntentChannel(hold=intent_hold, delay=intent_delay, bits=intent_bits)
         self._goal_hidden = goal_hidden
         self._asymmetric_critic = asymmetric_critic
         self._checked_shape = False
@@ -79,7 +82,9 @@ class IntentRlGamesVecEnvWrapper(RlGamesVecEnvWrapper):
     def _process_obs(self, obs_dict):
         processed = super()._process_obs(obs_dict)
         obs = processed["obs"]
-        intent = self._hold(self._intent(obs))
+        intent = self._intent(obs)
+        step = None if self._channel.passthrough else self.unwrapped.episode_length_buf
+        intent = self._channel(intent, step)
         actor_obs = hide_goal(obs) if self._goal_hidden else obs
         processed["obs"] = torch.cat([actor_obs, intent], dim=1) if self._intent.dim else actor_obs
         if self._asymmetric_critic:
@@ -88,7 +93,8 @@ class IntentRlGamesVecEnvWrapper(RlGamesVecEnvWrapper):
             states_shape = tuple(processed["states"].shape) if self._asymmetric_critic else None
             print(
                 f"student_obs_shape={tuple(processed['obs'].shape)} intent_dim={self._intent.dim} "
-                f"goal_hidden={self._goal_hidden} intent_hold={self._intent_hold} critic_states_shape={states_shape}"
+                f"goal_hidden={self._goal_hidden} intent_hold={self.intent_hold} intent_delay={self.intent_delay} "
+                f"intent_bits={self.intent_bits} critic_states_shape={states_shape}"
             )
             if processed["obs"].shape[1] != self.actor_obs_dim or not torch.isfinite(intent).all():
                 raise RuntimeError("Student observation shape or intent values are invalid")
@@ -97,24 +103,23 @@ class IntentRlGamesVecEnvWrapper(RlGamesVecEnvWrapper):
             self._checked_shape = True
         return processed
 
-    def _hold(self, intent: torch.Tensor) -> torch.Tensor:
-        """Zero-order hold keyed on the env's episode step counter (already reset to 0 for new episodes)."""
-        if self._intent_hold == 1 or not self._intent.dim:
-            return intent
-        step = self.unwrapped.episode_length_buf.to(intent.device)
-        refresh = (step % self._intent_hold) == 0
-        if self._held_intent is None or self._held_intent.shape != intent.shape:
-            refresh = torch.ones_like(refresh)
-            self._held_intent = intent.clone()
-        self._held_intent = torch.where(refresh.unsqueeze(1), intent, self._held_intent)
-        return self._held_intent
+    # The channel is keyed on the env's episode step counter, which Isaac Lab has already reset to 0
+    # for new episodes when observations are computed.
 
     @property
     def intent_hold(self) -> int:
-        return self._intent_hold
+        return self._channel.hold
+
+    @property
+    def intent_delay(self) -> int:
+        return self._channel.delay
+
+    @property
+    def intent_bits(self) -> int:
+        return self._channel.bits
 
     def reset_with_seed(self, seed: int):
         """Reset every environment with a fixed seed so each checkpoint sees the same initial states."""
         obs_dict, _ = self.env.reset(seed=seed)
-        self._held_intent = None
+        self._channel.reset()
         return self._process_obs(obs_dict)

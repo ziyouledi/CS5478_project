@@ -13,6 +13,11 @@ k-D vector that is appended to the student's observation:
 * ``obj-3``            rotation vector from the current cube orientation to the subgoal.
 * ``obj-4``            subgoal quaternion slerp(q_obj, q_goal, min(1, lookahead / theta_remain)).
 * ``goal-4``           the goal quaternion itself, w >= 0 (goal-level interface; no expert, no lookahead).
+* ``goal-yaw``         (sin psi, cos psi), psi = 2 atan2(q_z, q_w) of the goal quaternion: its rotation angle
+                       about world z. Only meaningful on the M2 task, whose goals are pure yaw.
+
+``IntentChannel`` models the link between the intent source and the actor: zero-order hold, delay and
+quantisation (rate sweep).
 
 Quaternions follow Isaac Lab's (w, x, y, z) convention.
 """
@@ -203,6 +208,8 @@ def parse_intent(name: str) -> IntentSpec:
         return IntentSpec(name, "wrist_finger", k, 2 + k)
     if name == "goal-4":
         return IntentSpec(name, "goal", 4, 4)
+    if name == "goal-yaw":
+        return IntentSpec(name, "goal", 2, 2)
     if m := re.fullmatch(r"obj-([134])", name):
         k = int(m.group(1))
         return IntentSpec(name, "obj", k, k)
@@ -270,6 +277,8 @@ class IntentModule(nn.Module):
         if kind == "obj":
             return self._object_intent(obs)
         if kind == "goal":
+            if self.spec.k == 2:
+                return goal_yaw(obs[:, GOAL_ROT])
             return canonical_quat(obs[:, GOAL_ROT])
 
         action = self.expert(obs)
@@ -290,6 +299,69 @@ class IntentModule(nn.Module):
         if self.spec.k == 4:
             return canonical_quat(subgoal)
         return quat_to_rotvec(quat_mul(subgoal, quat_conjugate(object_rot)))
+
+
+def goal_yaw(q: torch.Tensor) -> torch.Tensor:
+    """(sin psi, cos psi) of the rotation angle psi = 2 atan2(q_z, q_w) about world z; q and -q agree."""
+    psi = 2.0 * torch.atan2(q[:, 3], q[:, 0])
+    return torch.stack([torch.sin(psi), torch.cos(psi)], dim=1)
+
+
+def quantise(x: torch.Tensor, bits: int) -> torch.Tensor:
+    """Clips to [-1, 1] and rounds each component to the nearest of 2**bits evenly spaced levels (endpoints included)."""
+    levels = 2**bits - 1
+    return torch.round((x.clamp(-1.0, 1.0) + 1.0) * (levels / 2.0)) * (2.0 / levels) - 1.0
+
+
+class IntentChannel:
+    """Per-environment channel between intent source and actor (rate sweep). Defaults pass the intent through.
+
+    * ``hold`` = N: zero-order hold; the intent is recomputed when the episode step is a multiple of N
+      (always at episode start) and held otherwise. A goal change inside an episode does not refresh it.
+    * ``delay`` = d: the actor sees the intent computed d steps earlier in the same episode; until d steps
+      have passed it sees the episode's first intent.
+    * ``bits`` = b: each component is clipped to [-1, 1] and rounded to 2**b levels.
+
+    At most one of them may be active. ``step`` is the env's episode step counter (0 on the first
+    observation of an episode); call ``reset`` whenever all environments are reset outside of ``step``.
+    """
+
+    def __init__(self, hold: int = 1, delay: int = 0, bits: int = 0):
+        if hold < 1 or delay < 0 or bits < 0:
+            raise ValueError(f"Invalid intent channel: hold={hold} delay={delay} bits={bits}")
+        if sum((hold > 1, delay > 0, bits > 0)) > 1:
+            raise ValueError(f"Only one of hold, delay, bits may be active: hold={hold} delay={delay} bits={bits}")
+        self.hold, self.delay, self.bits = int(hold), int(delay), int(bits)
+        self.reset()
+
+    @property
+    def passthrough(self) -> bool:
+        return self.hold == 1 and self.delay == 0 and self.bits == 0
+
+    def reset(self) -> None:
+        self._held: torch.Tensor | None = None
+        self._buffer: torch.Tensor | None = None
+
+    def __call__(self, intent: torch.Tensor, step: torch.Tensor | None) -> torch.Tensor:
+        if self.passthrough or intent.shape[1] == 0:
+            return intent
+        if self.bits:
+            return quantise(intent, self.bits)
+        step = step.to(intent.device).long()
+        if self.hold > 1:
+            refresh = (step % self.hold) == 0
+            if self._held is None or self._held.shape != intent.shape:
+                refresh = torch.ones_like(refresh)
+                self._held = intent.clone()
+            self._held = torch.where(refresh.unsqueeze(1), intent, self._held)
+            return self._held
+        # Delay: ring buffer indexed by episode step; slot s % (d + 1) holds the intent of step s.
+        size = self.delay + 1
+        if self._buffer is None or self._buffer.shape[1:] != intent.shape:
+            self._buffer = intent.unsqueeze(0).repeat(size, 1, 1)
+        envs = torch.arange(intent.shape[0], device=intent.device)
+        self._buffer[step % size, envs] = intent
+        return self._buffer[(step - self.delay).clamp(min=0) % size, envs].clone()
 
 
 def hide_goal(obs: torch.Tensor) -> torch.Tensor:

@@ -30,6 +30,10 @@ parser.add_argument("--checkpoint_stride", type=int, default=1)
 parser.add_argument("--last_checkpoint_only", action="store_true", help="Evaluate only the final periodic checkpoint")
 parser.add_argument("--intent_hold", type=int, default=None,
                     help="Refresh the intent every N episode steps (zero-order hold); default: intent.json value or 1")
+parser.add_argument("--intent_delay", type=int, default=0,
+                    help="Actor sees the intent computed this many control steps earlier in the episode (evaluation only)")
+parser.add_argument("--intent_bits", type=int, default=0,
+                    help="Clip each intent component to [-1, 1] and round to 2**bits levels; 0 = off (evaluation only)")
 parser.add_argument("--num_envs", type=int, default=1024, help="Episodes per checkpoint (one per environment)")
 parser.add_argument("--seed", type=int, default=20261028)
 parser.add_argument("--output_dir", required=True)
@@ -79,6 +83,8 @@ def main(env_cfg, agent_cfg: dict) -> None:
         checkpoints = checkpoints[-1:]
 
     record = load_intent_record(run_dir)
+    if record.get("task") and record["task"] != args_cli.task:
+        raise ValueError(f"--task {args_cli.task} differs from the training task {record['task']} in intent.json")
     pca_basis = record.get("pca_basis")
     if pca_basis and record.get("pca_basis_sha256") and sha256(Path(pca_basis)) != record["pca_basis_sha256"]:
         raise ValueError(f"PCA basis {pca_basis} changed since training")
@@ -108,7 +114,8 @@ def main(env_cfg, agent_cfg: dict) -> None:
     trained_hold = int(record.get("intent_hold", 1))
     intent_hold = trained_hold if args_cli.intent_hold is None else args_cli.intent_hold
     env = IntentRlGamesVecEnvWrapper(
-        base_env, rl_device, clip_obs, clip_actions, intent, goal_hidden=goal_hidden, intent_hold=intent_hold
+        base_env, rl_device, clip_obs, clip_actions, intent, goal_hidden=goal_hidden, intent_hold=intent_hold,
+        intent_delay=args_cli.intent_delay, intent_bits=args_cli.intent_bits,
     )
     vecenv.register(
         "IsaacRlgWrapper", lambda config_name, num_actors, **kwargs: RlGamesGpuEnv(config_name, num_actors, **kwargs)
@@ -184,6 +191,10 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "intent_hold": intent_hold,
         "intent_hold_trained": trained_hold,
         "intent_hold_rule": "intent recomputed when episode step % intent_hold == 0, held otherwise",
+        "intent_delay": args_cli.intent_delay,
+        "intent_delay_rule": "actor sees the intent of episode step max(t - intent_delay, 0)",
+        "intent_bits": args_cli.intent_bits,
+        "intent_bits_rule": "each component clipped to [-1, 1] and rounded to 2**bits evenly spaced levels; 0 = off",
         "actor_obs_dim": env.actor_obs_dim,
         "deterministic": True,
         "seed": args_cli.seed,
