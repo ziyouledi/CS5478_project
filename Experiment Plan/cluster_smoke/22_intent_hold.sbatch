@@ -11,7 +11,10 @@ set -Eeuo pipefail
 
 : "${VENV_DIR:?Submit with VENV_DIR}"
 : "${INTENT_PCA_DIR:?Submit with INTENT_PCA_DIR (a completed action-pca output directory)}"
-: "${OBJ_LOOKAHEAD:?Submit with OBJ_LOOKAHEAD (radians)}"
+: "${HOLD_FACE_TURN:=0}"
+if [[ "${HOLD_FACE_TURN}" != "1" ]]; then
+    : "${OBJ_LOOKAHEAD:?Submit with OBJ_LOOKAHEAD (radians), or HOLD_FACE_TURN=1}"
+fi
 
 source "${VENV_DIR}/bin/activate"
 
@@ -43,7 +46,8 @@ echo "torch=$(python -c 'import torch; print(torch.__version__)')"
 echo "dataset_dir=${dataset_dir}"
 echo "pca_basis=${pca_basis}"
 echo "pca_basis_check=$(cd "${INTENT_PCA_DIR}" && sha256sum -c --strict SHA256SUMS >/dev/null && echo PASS)"
-echo "obj_lookahead=${OBJ_LOOKAHEAD}"
+echo "obj_lookahead=${OBJ_LOOKAHEAD:-none}"
+echo "face_turn=${HOLD_FACE_TURN}"
 echo "holds=${holds}"
 echo "output_dir=${output_dir}"
 
@@ -56,7 +60,7 @@ set +e
 python "${analyzer}" \
     --dataset_dir "${dataset_dir}" \
     --pca_basis "${pca_basis}" \
-    --obj_lookahead "${OBJ_LOOKAHEAD}" \
+    $( [[ "${HOLD_FACE_TURN}" == "1" ]] && echo --face_turn || echo --obj_lookahead "${OBJ_LOOKAHEAD}" ) \
     --holds "${holds}" \
     --output_dir "${output_dir}" \
     2>&1 | tee "${metadata_dir}/intent_hold.log"

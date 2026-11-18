@@ -1,0 +1,350 @@
+{
+  "action_total_variance": 7.722872491402418,
+  "by_hold": {
+    "1": {
+      "fraction_goal_changed_since_refresh": 0.0,
+      "mean_intent_age_steps": 0.0,
+      "update_rate_hz": 60.0,
+      "valid_samples": 1228800
+    },
+    "12": {
+      "fraction_goal_changed_since_refresh": 0.298515625,
+      "mean_intent_age_steps": 5.484090169270833,
+      "update_rate_hz": 5.0,
+      "valid_samples": 1228800
+    },
+    "120": {
+      "fraction_goal_changed_since_refresh": 0.6520076497395834,
+      "mean_intent_age_steps": 59.24093587239583,
+      "update_rate_hz": 0.5,
+      "valid_samples": 1228800
+    },
+    "2": {
+      "fraction_goal_changed_since_refresh": 0.0271484375,
+      "mean_intent_age_steps": 0.49916666666666665,
+      "update_rate_hz": 30.0,
+      "valid_samples": 1228800
+    },
+    "3": {
+      "fraction_goal_changed_since_refresh": 0.054154459635416666,
+      "mean_intent_age_steps": 0.9979305013020834,
+      "update_rate_hz": 20.0,
+      "valid_samples": 1228800
+    },
+    "30": {
+      "fraction_goal_changed_since_refresh": 0.5509977213541667,
+      "mean_intent_age_steps": 14.451824544270833,
+      "update_rate_hz": 2.0,
+      "valid_samples": 1228800
+    },
+    "6": {
+      "fraction_goal_changed_since_refresh": 0.13553548177083333,
+      "mean_intent_age_steps": 2.4941731770833333,
+      "update_rate_hz": 10.0,
+      "valid_samples": 1228800
+    },
+    "60": {
+      "fraction_goal_changed_since_refresh": 0.6179508463541666,
+      "mean_intent_age_steps": 29.392400716145833,
+      "update_rate_hz": 1.0,
+      "valid_samples": 1228800
+    }
+  },
+  "checkpoint_sha256": "477f3d433c097ee1cea4c86d616383fd38cd76befb9887a0cd2eed9ae9e0f30a",
+  "control_hz": 60.0,
+  "created_at": "2026-11-18T11:16:13.156228+08:00",
+  "dataset_dir": "/home/x/xiaox/data/low-dim-intent/datasets/expert-faceturn-rollout-seed0-job1153675",
+  "dataset_manifest_sha256": "4d3233dd969d0fececad3711d5f81fed6e5cef9b3ddd9fd2a05d75d09eea0862",
+  "face_turn": true,
+  "failures": [],
+  "goal_change_rate_per_step": 0.05453101273977808,
+  "hold_rule": "refresh when episode_step % N == 0, otherwise keep the previous value",
+  "holds": [
+    1,
+    2,
+    3,
+    6,
+    12,
+    30,
+    60,
+    120
+  ],
+  "intent_total_variance": {
+    "goal-yaw": 0.9987939798262634,
+    "hand-2": 3.475687952756517,
+    "hand-20": 7.7228724913832165,
+    "hand-4": 5.248297315366867,
+    "hand-8": 6.781450839785342,
+    "wrist-2": 0.4567457555447972
+  },
+  "intents": {
+    "goal-yaw": {
+      "1": {
+        "autocorrelation_at_lag": 0.9453985169717144,
+        "fraction_angle_error_above_success_tolerance": 0.0,
+        "mean_angle_error_rad": 0.0,
+        "normalized_hold_error": 0.0
+      },
+      "12": {
+        "autocorrelation_at_lag": 0.3380182624101735,
+        "fraction_angle_error_above_success_tolerance": 0.298515625,
+        "mean_angle_error_rad": 0.46890723993514827,
+        "normalized_hold_error": 0.5977521365240824
+      },
+      "120": {
+        "autocorrelation_at_lag": 0.03862141571746107,
+        "fraction_angle_error_above_success_tolerance": 0.6520076497395834,
+        "mean_angle_error_rad": 1.3297772196612352,
+        "normalized_hold_error": 1.6951693969153547
+      },
+      "2": {
+        "autocorrelation_at_lag": 0.890659874750779,
+        "fraction_angle_error_above_success_tolerance": 0.0271484375,
+        "mean_angle_error_rad": 0.04264466522615628,
+        "normalized_hold_error": 0.05436243584018848
+      },
+      "3": {
+        "autocorrelation_at_lag": 0.8357920782734672,
+        "fraction_angle_error_above_success_tolerance": 0.054154459635416666,
+        "mean_angle_error_rad": 0.08506562500291347,
+        "normalized_hold_error": 0.10843969718935627
+      },
+      "30": {
+        "autocorrelation_at_lag": 0.05634465775867649,
+        "fraction_angle_error_above_success_tolerance": 0.5509977213541667,
+        "mean_angle_error_rad": 0.9866001690652958,
+        "normalized_hold_error": 1.2576951649519654
+      },
+      "6": {
+        "autocorrelation_at_lag": 0.6706491081510344,
+        "fraction_angle_error_above_success_tolerance": 0.13553548177083333,
+        "mean_angle_error_rad": 0.2128986336202478,
+        "normalized_hold_error": 0.27139826873737755
+      },
+      "60": {
+        "autocorrelation_at_lag": 0.030966987558170643,
+        "fraction_angle_error_above_success_tolerance": 0.6179508463541666,
+        "mean_angle_error_rad": 1.211898473503169,
+        "normalized_hold_error": 1.544900272475299
+      }
+    },
+    "hand-2": {
+      "1": {
+        "action_variance_explained": 0.45005118971536007,
+        "autocorrelation_at_lag": 0.8238406040878928,
+        "normalized_hold_error": 0.0
+      },
+      "12": {
+        "action_variance_explained": -0.1857565053327861,
+        "autocorrelation_at_lag": 0.10940783284194767,
+        "normalized_hold_error": 1.412745282272839
+      },
+      "120": {
+        "action_variance_explained": -0.33896513840302767,
+        "autocorrelation_at_lag": 0.025151963123988062,
+        "normalized_hold_error": 1.7531701863109435
+      },
+      "2": {
+        "action_variance_explained": 0.3707573203212602,
+        "autocorrelation_at_lag": 0.6039308094344377,
+        "normalized_hold_error": 0.17618855633886413
+      },
+      "3": {
+        "action_variance_explained": 0.27921395444322505,
+        "autocorrelation_at_lag": 0.41192917748274777,
+        "normalized_hold_error": 0.37959511979320726
+      },
+      "30": {
+        "action_variance_explained": -0.2750378763965968,
+        "autocorrelation_at_lag": 0.20910794888092019,
+        "normalized_hold_error": 1.6111257623261626
+      },
+      "6": {
+        "action_variance_explained": 0.040010882366232625,
+        "autocorrelation_at_lag": 0.104483937289614,
+        "normalized_hold_error": 0.9110970412292952
+      },
+      "60": {
+        "action_variance_explained": -0.3189768915152049,
+        "autocorrelation_at_lag": 0.11652323221479818,
+        "normalized_hold_error": 1.7087569121218988
+      }
+    },
+    "hand-20": {
+      "1": {
+        "action_variance_explained": 1.0,
+        "autocorrelation_at_lag": 0.7201726123602152,
+        "normalized_hold_error": 0.0
+      },
+      "12": {
+        "action_variance_explained": -0.5393962002781407,
+        "autocorrelation_at_lag": 0.06952927359885452,
+        "normalized_hold_error": 1.539396200281968
+      },
+      "120": {
+        "action_variance_explained": -1.1193704846466814,
+        "autocorrelation_at_lag": 0.026041049851005596,
+        "normalized_hold_error": 2.1193704846519505
+      },
+      "2": {
+        "action_variance_explained": 0.7230360362912116,
+        "autocorrelation_at_lag": 0.44233013202156984,
+        "normalized_hold_error": 0.27696396370947707
+      },
+      "3": {
+        "action_variance_explained": 0.44643175071087327,
+        "autocorrelation_at_lag": 0.25454822540424915,
+        "normalized_hold_error": 0.5535682492905031
+      },
+      "30": {
+        "action_variance_explained": -0.7474300234241269,
+        "autocorrelation_at_lag": 0.1337524001460317,
+        "normalized_hold_error": 1.7474300234284714
+      },
+      "6": {
+        "action_variance_explained": -0.11254693962530116,
+        "autocorrelation_at_lag": 0.039095730259349114,
+        "normalized_hold_error": 1.1125469396280674
+      },
+      "60": {
+        "action_variance_explained": -0.9022574417144635,
+        "autocorrelation_at_lag": 0.08535386350622404,
+        "normalized_hold_error": 1.9022574417191933
+      }
+    },
+    "hand-4": {
+      "1": {
+        "action_variance_explained": 0.6795783979638124,
+        "autocorrelation_at_lag": 0.7847842828996431,
+        "normalized_hold_error": 0.0
+      },
+      "12": {
+        "action_variance_explained": -0.34052993543659094,
+        "autocorrelation_at_lag": 0.0829059028727559,
+        "normalized_hold_error": 1.5010899941208165
+      },
+      "120": {
+        "action_variance_explained": -0.518404293195881,
+        "autocorrelation_at_lag": 0.018238619602544828,
+        "normalized_hold_error": 1.7628322129625222
+      },
+      "2": {
+        "action_variance_explained": 0.5334382627536913,
+        "autocorrelation_at_lag": 0.5284007190938879,
+        "normalized_hold_error": 0.21504529227021923
+      },
+      "3": {
+        "action_variance_explained": 0.3687515750616084,
+        "autocorrelation_at_lag": 0.3232889570710237,
+        "normalized_hold_error": 0.45738184709027785
+      },
+      "30": {
+        "action_variance_explained": -0.45259023707659884,
+        "autocorrelation_at_lag": 0.14984101061408073,
+        "normalized_hold_error": 1.6659867918650912
+      },
+      "6": {
+        "action_variance_explained": -0.020940703885772738,
+        "autocorrelation_at_lag": 0.027156254670700576,
+        "normalized_hold_error": 1.0308142577090103
+      },
+      "60": {
+        "action_variance_explained": -0.49945579526110717,
+        "autocorrelation_at_lag": 0.09625403091630282,
+        "normalized_hold_error": 1.7349494874497355
+      }
+    },
+    "hand-8": {
+      "1": {
+        "action_variance_explained": 0.8780995474616566,
+        "autocorrelation_at_lag": 0.7548080108478653,
+        "normalized_hold_error": 0.0
+      },
+      "12": {
+        "action_variance_explained": -0.46781398282175757,
+        "autocorrelation_at_lag": 0.05971720803551918,
+        "normalized_hold_error": 1.5327573441734357
+      },
+      "120": {
+        "action_variance_explained": -0.8937601310420822,
+        "autocorrelation_at_lag": 0.01739755285015989,
+        "normalized_hold_error": 2.0178346334771633
+      },
+      "2": {
+        "action_variance_explained": 0.6649890133348886,
+        "autocorrelation_at_lag": 0.4738402642969433,
+        "normalized_hold_error": 0.24269518728647005
+      },
+      "3": {
+        "action_variance_explained": 0.4300183150151444,
+        "autocorrelation_at_lag": 0.2779212172290669,
+        "normalized_hold_error": 0.5102852333121686
+      },
+      "30": {
+        "action_variance_explained": -0.64200947180079,
+        "autocorrelation_at_lag": 0.13248894801872732,
+        "normalized_hold_error": 1.7311351812684157
+      },
+      "6": {
+        "action_variance_explained": -0.07088430163062465,
+        "autocorrelation_at_lag": 0.03132148347116064,
+        "normalized_hold_error": 1.0807246761921447
+      },
+      "60": {
+        "action_variance_explained": -0.7549639378575761,
+        "autocorrelation_at_lag": 0.0822426819569499,
+        "normalized_hold_error": 1.8597703301915958
+      }
+    },
+    "wrist-2": {
+      "1": {
+        "action_variance_explained": 0.05914195217827212,
+        "autocorrelation_at_lag": 0.6200032592240662,
+        "normalized_hold_error": 0.0
+      },
+      "12": {
+        "action_variance_explained": -0.040656288557687104,
+        "autocorrelation_at_lag": 0.1256247363939753,
+        "normalized_hold_error": 1.6874356876087222
+      },
+      "120": {
+        "action_variance_explained": -0.055883212882501754,
+        "autocorrelation_at_lag": -0.001496856842090651,
+        "normalized_hold_error": 1.9448997002879684
+      },
+      "2": {
+        "action_variance_explained": 0.03687337685462,
+        "autocorrelation_at_lag": 0.2884369437891533,
+        "normalized_hold_error": 0.3765275663801762
+      },
+      "3": {
+        "action_variance_explained": 0.016366863986863378,
+        "autocorrelation_at_lag": 0.05216866850335571,
+        "normalized_hold_error": 0.7232613503254491
+      },
+      "30": {
+        "action_variance_explained": -0.04700101520368749,
+        "autocorrelation_at_lag": -0.009943837537819775,
+        "normalized_hold_error": 1.7947153159030746
+      },
+      "6": {
+        "action_variance_explained": -0.021974117426699857,
+        "autocorrelation_at_lag": -0.11420267867663847,
+        "normalized_hold_error": 1.371548733530561
+      },
+      "60": {
+        "action_variance_explained": -0.05027016989985977,
+        "autocorrelation_at_lag": 0.03621350600345658,
+        "normalized_hold_error": 1.8499917242039994
+      }
+    }
+  },
+  "mean_steps_between_goal_changes": 18.33818867021595,
+  "num_samples": 1228800,
+  "obj_lookahead_rad": null,
+  "pca_basis": "/home/x/xiaox/data/low-dim-intent/datasets/action-pca-expert-faceturn-rollout-seed0-job1153675-job1153676/pca_basis.npz",
+  "pca_basis_sha256": "87b90cf0cb6a86dd68c53887410a3d7031d154a10d9e59c6890c9253e62a42ba",
+  "record_type": "shadow_intent_hold_analysis",
+  "schema_version": 1,
+  "task": "Isaac-FaceTurn-HingedCube-Shadow-Direct-v0"
+}

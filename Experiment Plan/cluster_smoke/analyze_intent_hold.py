@@ -4,7 +4,8 @@
 For hold N the intent of an environment is refreshed when its episode step is a multiple of N and kept
 otherwise. The script measures how stale each intent becomes: normalised hold error, autocorrelation,
 the expert-action variance a held action intent still reconstructs, and the angle error of held
-quaternion intents. The data come from the expert's own trajectories, so this is a property of the
+quaternion intents. With --face_turn (hinged-cube face-turn rollout) the goal-level intent is goal-yaw
+(sin/cos of the goal hinge angle) and the object/quaternion intents are skipped. The data come from the expert's own trajectories, so this is a property of the
 signals, not the performance of a student trained under hold.
 """
 
@@ -19,13 +20,14 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from intent_modules import GOAL_ROT, OBS_DIM, WRIST, build_intent, canonical_quat, sha256
+from intent_modules import GOAL_ROT, OBS_DIM, WRIST, build_intent, canonical_quat, goal_yaw, sha256
 
 
 ACTION_DIM = 20
 CONTROL_HZ = 60.0
 HAND_KS = (2, 4, 8, 20)
 QUAT_INTENTS = ("obj-4", "goal-4")
+YAW_INTENTS = ("goal-yaw",)
 SUCCESS_TOLERANCE = 0.1  # rad, the environment's success tolerance
 GOAL_CHANGE_ANGLE = 1e-2  # rad; float32 quaternions give up to ~1e-3 rad of noise, resampled goals far more
 CHUNK_ROWS = 131072
@@ -39,6 +41,17 @@ def quat_angle(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     """Rotation angle between unit quaternions, insensitive to the q / -q sign."""
     dot = np.abs((a * b).sum(axis=-1)) / (np.linalg.norm(a, axis=-1) * np.linalg.norm(b, axis=-1))
     return 2.0 * np.arccos(dot.clip(max=1.0))
+
+
+def yaw_angle(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """Absolute angle between two (sin, cos) yaw encodings."""
+    cross = a[..., 0] * b[..., 1] - a[..., 1] * b[..., 0]
+    dot = (a * b).sum(axis=-1)
+    return np.abs(np.arctan2(cross, dot))
+
+
+def goal_angle(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    return quat_angle(a, b) if a.shape[-1] == 4 else yaw_angle(a, b)
 
 
 def held_index(episode_steps: np.ndarray, episode_ids: np.ndarray, hold: int) -> tuple[np.ndarray, np.ndarray]:
@@ -57,13 +70,19 @@ def take(values: np.ndarray, index: np.ndarray) -> np.ndarray:
 
 
 def compute_intents(
-    observations: np.ndarray, actions: np.ndarray, basis, obj_lookahead: float, shape: tuple[int, int]
+    observations: np.ndarray, actions: np.ndarray, basis, obj_lookahead: float | None, shape: tuple[int, int],
+    face_turn: bool = False,
 ) -> dict[str, np.ndarray]:
     mu = basis["mu_robot"].astype(np.float64)
     w = basis["W_robot"].astype(np.float64)
     centered = actions - mu
     intents = {f"hand-{k}": centered @ w[:, :k] for k in HAND_KS}
     intents["wrist-2"] = actions[:, WRIST].copy()
+    if face_turn:
+        parts = [goal_yaw(torch.from_numpy(np.asarray(observations[start : start + CHUNK_ROWS, GOAL_ROT], dtype=np.float32)))
+                 .double().numpy() for start in range(0, observations.shape[0], CHUNK_ROWS)]
+        intents["goal-yaw"] = np.concatenate(parts)
+        return {name: value.reshape(*shape, -1) for name, value in intents.items()}
 
     obj_modules = {name: build_intent(name, obj_lookahead=obj_lookahead) for name in ("obj-1", "obj-4")}
     parts: dict[str, list[np.ndarray]] = {"obj-1": [], "obj-4": [], "goal-4": []}
@@ -118,13 +137,16 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset_dir", required=True)
     parser.add_argument("--pca_basis", required=True)
-    parser.add_argument("--obj_lookahead", type=float, required=True)
+    parser.add_argument("--obj_lookahead", type=float, default=None, help="Required unless --face_turn")
+    parser.add_argument("--face_turn", action="store_true", help="Face-turn rollout: goal-yaw instead of obj/goal-4")
     parser.add_argument("--output_dir", required=True)
     parser.add_argument("--holds", default="1,2,3,6,12,30,60,120")
     parser.add_argument("--skip_plot", action="store_true")
     args = parser.parse_args()
 
     torch.set_grad_enabled(False)
+    if not args.face_turn and args.obj_lookahead is None:
+        parser.error("--obj_lookahead is required unless --face_turn")
     holds = [int(value) for value in args.holds.split(",")]
     if holds[0] != 1 or sorted(set(holds)) != holds:
         raise ValueError("--holds must be increasing and start at 1")
@@ -151,11 +173,11 @@ def main() -> None:
         raise ValueError("The rollout does not start at episode step 0")
 
     basis = np.load(args.pca_basis)
-    intents = compute_intents(observations, actions, basis, args.obj_lookahead, shape)
+    intents = compute_intents(observations, actions, basis, args.obj_lookahead, shape, face_turn=args.face_turn)
     actions = actions.reshape(*shape, ACTION_DIM)
     action_mean = actions.reshape(-1, ACTION_DIM).mean(axis=0)
     action_total_var = float(actions.reshape(-1, ACTION_DIM).var(axis=0).sum())
-    goal = intents["goal-4"]
+    goal = intents["goal-yaw" if args.face_turn else "goal-4"]
 
     means = {name: z.reshape(-1, z.shape[-1]).mean(axis=0) for name, z in intents.items()}
     total_var = {name: float(z.reshape(-1, z.shape[-1]).var(axis=0).sum()) for name, z in intents.items()}
@@ -174,7 +196,7 @@ def main() -> None:
             "valid_samples": count,
             "mean_intent_age_steps": float(age.mean()),
             "fraction_goal_changed_since_refresh": float(
-                (quat_angle(goal, take(goal, index))[valid] > GOAL_CHANGE_ANGLE).mean()
+                (goal_angle(goal, take(goal, index))[valid] > GOAL_CHANGE_ANGLE).mean()
             ),
         }
         for name, z in intents.items():
@@ -185,8 +207,8 @@ def main() -> None:
             if name.startswith("hand-") or name == "wrist-2":
                 error = ((actions - reconstruct_action(name, held, basis, action_mean)) ** 2).sum(axis=-1)
                 entry["action_variance_explained"] = float(1.0 - error[valid].mean() / action_total_var)
-            if name in QUAT_INTENTS:
-                angle = quat_angle(z, held)[valid]
+            if name in QUAT_INTENTS or name in YAW_INTENTS:
+                angle = goal_angle(z, held)[valid]
                 entry["mean_angle_error_rad"] = float(angle.mean())
                 entry["fraction_angle_error_above_success_tolerance"] = float((angle > SUCCESS_TOLERANCE).mean())
             if name == "obj-1":
@@ -211,7 +233,7 @@ def main() -> None:
             if abs(first["action_variance_explained"] - cumulative[k - 1]) > 1e-3:
                 failures.append(f"{name}_hold1_variance")
 
-    changed = (quat_angle(goal[1:], goal[:-1]) > GOAL_CHANGE_ANGLE) & (episode_ids[1:] == episode_ids[:-1])
+    changed = (goal_angle(goal[1:], goal[:-1]) > GOAL_CHANGE_ANGLE) & (episode_ids[1:] == episode_ids[:-1])
     pairs = int((episode_ids[1:] == episode_ids[:-1]).sum())
     goal_change_rate = float(changed.sum() / pairs)
 
@@ -226,6 +248,7 @@ def main() -> None:
         "pca_basis": str(Path(args.pca_basis).resolve()),
         "pca_basis_sha256": sha256(Path(args.pca_basis)),
         "obj_lookahead_rad": args.obj_lookahead,
+        "face_turn": args.face_turn,
         "control_hz": CONTROL_HZ,
         "holds": holds,
         "hold_rule": "refresh when episode_step % N == 0, otherwise keep the previous value",
