@@ -14,6 +14,9 @@
 # Submit the stage-one grid (7 intents x 3 seeds) with --array=0-20%<max concurrent>.
 # STUDENT_INTENT_HOLD=N (rate sweep) refreshes the intent every N episode steps; N != 1 adds -holdN to the run name.
 # A STUDENT_INTENTS entry may carry its own hold as intent:N (e.g. "goal-4:1 hand-8:6"), overriding STUDENT_INTENT_HOLD.
+# An entry intent:dD (e.g. "goal-4:d30") trains under an intent delay of D control steps instead (hold 1);
+# the run name gets -delayD (rate sweep phase 3).
+# STUDENT_ACTION_HOLD=N (rate sweep phase 4) applies a new policy action only every N steps; run name gets -aholdN.
 # STUDENT_SEEDS overrides the seed list (default "0 1 2"), e.g. "3 4".
 # STUDENT_RESUME_FROM (rate sweep phase 2) is a space-separated list of checkpoints, entry i for array task i;
 # training resumes from it up to STUDENT_ITERATIONS (absolute epoch count) and the run name gets -resume.
@@ -46,9 +49,18 @@ if (( task_id >= ${#intents[@]} * ${#seeds[@]} )); then
     exit 2
 fi
 intent="${intents[$((task_id / ${#seeds[@]}))]}"
-if [[ "${intent}" == *:* ]]; then
+intent_delay=0
+if [[ "${intent}" == *:d* ]]; then
+    intent_delay="${intent##*:d}"
+    intent="${intent%%:*}"
+    intent_hold=1
+elif [[ "${intent}" == *:* ]]; then
     intent_hold="${intent##*:}"
     intent="${intent%%:*}"
+fi
+if ! [[ "${intent_delay}" =~ ^[0-9]+$ ]]; then
+    echo "invalid intent delay '${intent_delay}'" >&2
+    exit 2
 fi
 if ! [[ "${intent_hold}" =~ ^[1-9][0-9]*$ ]]; then
     echo "invalid intent hold '${intent_hold}'" >&2
@@ -69,7 +81,9 @@ fi
 # STUDENT_STAGE=m1 is Stage 2 M1: Stage 1 task and expert, goal hidden from the actor, asymmetric
 # critic. STUDENT_STAGE=m1-gate keeps the goal visible with the same asymmetric critic (M1 gate run).
 # STUDENT_STAGE=m2-hidden is M1's setting on the M2 task and expert (rate sweep phase 2).
+# STUDENT_STAGE=faceturn-hidden is M1's setting on the face-turn task (FACE_TURN_PLAN.md, E1).
 student_flags=()
+expert_file=""
 case "${stage}" in
     m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; expert_name=expert-m2-seed0 ;;
     m2-hidden) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; expert_name=expert-m2-seed0
@@ -79,26 +93,49 @@ case "${stage}" in
     m1-gate) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0
         student_flags=(--asymmetric_critic) ;;
     stage1) task=Isaac-Repose-Cube-Shadow-Direct-v0; expert_name=expert-seed0 ;;
+    faceturn-hidden) task=Isaac-FaceTurn-HingedCube-Shadow-Direct-v0
+        # M1's setting on the face-turn task: goal hidden, asymmetric critic, and the actor also gets
+        # (sin, cos) of the current hinge angle (intent_env_wrapper.py). Expert = the handoff-trained one.
+        expert_name=expert-faceturn-cap0.05_hold10_handoff-seed0; expert_file=expert-faceturn-handoff-seed0.pth
+        student_flags=(--goal_hidden --asymmetric_critic --hinge_angle_obs)
+        # Face-turn task (hinged_cube_env.py) as its expert was trained and evaluated: torque cap 0.05 N m,
+        # a turn counts after 10 held steps, flat start only.
+        export HINGE_REFERENCE_JSON="${HINGE_REFERENCE_JSON:-${HOME}/data/low-dim-intent/runs/hinged-cube-eval-job1141499/dexcube.json}"
+        export HINGE_EFFORT_LIMIT=0.05 FACE_TURN_HOLD_STEPS=10
+        unset FACE_TURN_START_STATES ;;
+    unified-hidden) task=Isaac-Unified-HingedCube-Shadow-Direct-v0
+        # E3 (FACE_TURN_PLAN.md): students of the frozen v4 unified teacher on its training env
+        # (unified_env.sh). Goal-hidden actor = unified_actor_obs (intent_env_wrapper.py), asymmetric critic.
+        source "${SLURM_SUBMIT_DIR:-.}/unified_env.sh"
+        expert_name="${unified_teacher_name}"; expert_file="${unified_teacher_file}"
+        student_flags=(--goal_hidden --asymmetric_critic --hinge_angle_obs) ;;
     *) echo "unknown STUDENT_STAGE=${stage}" >&2; exit 2 ;;
 esac
 # The action PCA must come from the same task's expert rollout (M2 basis directories contain "expert-m2").
 case "${stage}" in
     m2*) [[ "${INTENT_PCA_DIR}" == *expert-m2* ]] || { echo "STUDENT_STAGE=${stage} needs the M2 action PCA" >&2; exit 2; } ;;
-    *) [[ "${INTENT_PCA_DIR}" != *expert-m2* ]] || { echo "STUDENT_STAGE=${stage} must not use the M2 action PCA" >&2; exit 2; } ;;
+    faceturn*) [[ "${INTENT_PCA_DIR}" == *expert-faceturn* ]] || { echo "STUDENT_STAGE=${stage} needs the face-turn action PCA" >&2; exit 2; } ;;
+    unified*) [[ "${INTENT_PCA_DIR}" == *expert-unified* ]] || { echo "STUDENT_STAGE=${stage} needs the unified v4 action PCA" >&2; exit 2; } ;;
+    *) [[ "${INTENT_PCA_DIR}" != *expert-m2* && "${INTENT_PCA_DIR}" != *expert-faceturn* && "${INTENT_PCA_DIR}" != *expert-unified* ]] || { echo "STUDENT_STAGE=${stage} must not use the M2, face-turn or unified action PCA" >&2; exit 2; } ;;
 esac
 job_tag="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID:-plan}}_${task_id}"
 hold_tag=""
 if [[ "${intent_hold}" != "1" ]]; then hold_tag="-hold${intent_hold}"; fi
+if [[ "${intent_delay}" != "0" ]]; then hold_tag="-delay${intent_delay}"; fi
+action_hold="${STUDENT_ACTION_HOLD:-1}"
+if ! [[ "${action_hold}" =~ ^[1-9][0-9]*$ ]]; then echo "invalid action hold '${action_hold}'" >&2; exit 2; fi
+if [[ "${action_hold}" != "1" ]]; then hold_tag="${hold_tag}-ahold${action_hold}"; fi
 resume_tag=""
 if [[ -n "${resume_from}" ]]; then resume_tag="-resume"; fi
 name="student-${stage}-${intent}${hold_tag}-seed${seed}${resume_tag}"
 if [[ "${STUDENT_PRINT_PLAN:-0}" == "1" ]]; then
-    echo "plan task=${task_id} stage=${stage} task_name=${task} intent=${intent} hold=${intent_hold} seed=${seed} iterations=${STUDENT_ITERATIONS} resume=${resume_from:-none} name=${name}"
+    echo "plan task=${task_id} stage=${stage} task_name=${task} intent=${intent} hold=${intent_hold} delay=${intent_delay} action_hold=${action_hold} seed=${seed} iterations=${STUDENT_ITERATIONS} resume=${resume_from:-none} name=${name}"
     exit 0
 fi
 frozen_dir="${HOME}/data/low-dim-intent/checkpoints/${expert_name}/frozen"
-checkpoint="${frozen_dir}/${expert_name}.pth"
-expert_sha256=$(awk -v name="${expert_name}.pth" '$2 == name {print $1}' "${frozen_dir}/SHA256SUMS")
+expert_file="${expert_file:-${expert_name}.pth}"
+checkpoint="${frozen_dir}/${expert_file}"
+expert_sha256=$(awk -v name="${expert_file}" '$2 == name {print $1}' "${frozen_dir}/SHA256SUMS")
 # joint-K intents use the joint-position basis (20_fit_joint_basis.sbatch); all others the action PCA.
 case "${intent}" in
     joint-*) pca_basis="${JOINT_PCA_DIR:?joint-K intents need JOINT_PCA_DIR}/joint_basis.npz" ;;
@@ -119,6 +156,17 @@ if [[ -n "${resume_from}" ]]; then
 fi
 mkdir -p "${run_root}" "${metadata_dir}" "${XDG_CACHE_HOME}"
 cp "${SLURM_SUBMIT_DIR}"/{train_student.py,intent_env_wrapper.py,intent_modules.py,student_eval_utils.py,m2_tasks.py,shadow_zaxis_env.py,16_train_student.sbatch} "${metadata_dir}/"
+if [[ "${stage}" == faceturn* || "${stage}" == unified* ]]; then
+    cp "${SLURM_SUBMIT_DIR}"/{hinged_cube_tasks.py,hinged_cube_env.py,unified_env.sh} "${metadata_dir}/"
+    export HINGE_ASSET_DIR="${run_root}/asset"
+    echo "hinge_reference_json=${HINGE_REFERENCE_JSON}"
+    echo "hinge_effort_limit=${HINGE_EFFORT_LIMIT}"
+    echo "face_turn_hold_steps=${FACE_TURN_HOLD_STEPS}"
+    if [[ "${stage}" == unified* ]]; then
+        env | grep -E '^UNIFIED_' | sort
+        echo "unified_start_states_sha256=$(sha256sum "${UNIFIED_START_STATES}" | cut -d' ' -f1)"
+    fi
+fi
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
 echo "record_type=shadow_student_train_job"
@@ -141,6 +189,8 @@ echo "expert_sha256=${expert_sha256}"
 echo "pca_basis=${pca_basis}"
 echo "obj_lookahead=${obj_lookahead}"
 echo "intent_hold=${intent_hold}"
+echo "intent_delay=${intent_delay}"
+echo "action_hold=${action_hold}"
 echo "resume_from=${resume_from:-none}"
 echo "run_root=${run_root}"
 
@@ -165,6 +215,8 @@ set +e
     "${student_flags[@]}" \
     --obj_lookahead "${obj_lookahead}" \
     --intent_hold "${intent_hold}" \
+    --intent_delay "${intent_delay}" \
+    --action_hold "${action_hold}" \
     "${resume_args[@]}" \
     --num_envs "${num_envs}" \
     --seed "${seed}" \

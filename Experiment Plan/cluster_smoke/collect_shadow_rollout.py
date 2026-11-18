@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Collect deterministic Shadow Hand expert transitions into memory-mapped NumPy arrays."""
+"""Collect deterministic Shadow Hand expert transitions into memory-mapped NumPy arrays.
+
+The observation width is the env's (157, or 162 on the unified task). On the unified task the collector also
+stores, per row and at the same moment as the observation, the hinge angle, the hinge goal and the phase kind
+(hinge_angle.npy, hinge_goal.npy, phase_kind.npy) so the unified intents can be validated offline.
+"""
 
 from __future__ import annotations
 
@@ -44,6 +49,7 @@ from isaaclab_tasks.utils.hydra import hydra_task_config
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import m2_tasks  # noqa: E402,F401  registers Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0
+import hinged_cube_tasks  # noqa: E402,F401  registers the face-turn task
 
 
 ACTION_NAMES = [
@@ -83,6 +89,13 @@ OBSERVATION_SLICES = {
     "fingertip_rot": [87, 107],
     "fingertip_velocities": [107, 137],
     "previous_action": [137, 157],
+}
+UNIFIED_OBSERVATION_SLICES = {
+    **OBSERVATION_SLICES,
+    "sin_cos_hinge_error": [157, 159],
+    "is_turn": [159, 160],
+    "hold_fraction": [160, 161],
+    "hinge_velocity_scaled": [161, 162],
 }
 
 
@@ -181,11 +194,23 @@ def main(env_cfg, agent_cfg: dict) -> None:
         player.reset()
         player.has_batch_dimension = True
 
+        obs_dim = int(env.observation_space.shape[0])
+        unified = args_cli.task == hinged_cube_tasks.UNIFIED_TASK
+        if obs_dim != (162 if unified else 157):
+            raise RuntimeError(f"Unexpected observation width {obs_dim} for {args_cli.task}")
+        unified_arrays = {}
+        if unified:
+            unified_arrays = {
+                "hinge_angle.npy": open_memmap(partial_dir / "hinge_angle.npy", mode="w+", dtype=np.float32, shape=(total_samples,)),
+                "hinge_goal.npy": open_memmap(partial_dir / "hinge_goal.npy", mode="w+", dtype=np.float32, shape=(total_samples,)),
+                "phase_kind.npy": open_memmap(partial_dir / "phase_kind.npy", mode="w+", dtype=np.uint8, shape=(total_samples,)),
+            }
+
         observations = open_memmap(
             partial_dir / "observations.npy",
             mode="w+",
             dtype=np.float32,
-            shape=(total_samples, 157),
+            shape=(total_samples, obs_dim),
         )
         actions = open_memmap(
             partial_dir / "actions.npy",
@@ -229,7 +254,7 @@ def main(env_cfg, agent_cfg: dict) -> None:
                 if not simulation_app.is_running():
                     raise RuntimeError(f"Simulator stopped after {vector_step} vector steps")
                 policy_obs = player.obs_to_torch(extract_policy_obs(obs))
-                if policy_obs.shape != (args_cli.num_envs, 157):
+                if policy_obs.shape != (args_cli.num_envs, obs_dim):
                     raise RuntimeError(f"Unexpected observation shape: {tuple(policy_obs.shape)}")
                 policy_actions = player.get_action(policy_obs, is_deterministic=True)
                 if policy_actions.shape != (args_cli.num_envs, 20):
@@ -244,6 +269,11 @@ def main(env_cfg, agent_cfg: dict) -> None:
                 env_ids[start:end] = np.arange(args_cli.num_envs, dtype=np.uint16)
                 episode_ids[start:end] = per_env_episode
                 episode_steps[start:end] = per_env_step
+                if unified:
+                    unwrapped = base_env.unwrapped
+                    unified_arrays["hinge_angle.npy"][start:end] = unwrapped.object.data.joint_pos[:, 0].cpu().numpy()
+                    unified_arrays["hinge_goal.npy"][start:end] = unwrapped.hinge_goal.cpu().numpy()
+                    unified_arrays["phase_kind.npy"][start:end] = unwrapped.kind.cpu().numpy().astype(np.uint8)
 
                 obs, step_rewards, step_dones, infos = env.step(policy_actions)
                 rewards_cpu = step_rewards.detach().cpu().numpy().reshape(-1).astype(np.float32, copy=False)
@@ -288,7 +318,7 @@ def main(env_cfg, agent_cfg: dict) -> None:
                         f"samples_written={end} completed_episodes={len(completed_returns)}"
                     )
 
-        for array in (observations, actions, rewards, dones, env_ids, episode_ids, episode_steps):
+        for array in (observations, actions, rewards, dones, env_ids, episode_ids, episode_steps, *unified_arrays.values()):
             array.flush()
 
         elapsed = time.monotonic() - started
@@ -327,15 +357,17 @@ def main(env_cfg, agent_cfg: dict) -> None:
             "action_names": ACTION_NAMES,
             "action_mean": action_mean.tolist(),
             "action_std": np.sqrt(action_variance).tolist(),
-            "observation_slices": OBSERVATION_SLICES,
+            "observation_slices": UNIFIED_OBSERVATION_SLICES if unified else OBSERVATION_SLICES,
+            "unified_env": {key: os.environ.get(key) for key in sorted(os.environ) if key.startswith(("UNIFIED_", "HINGE_", "FACE_TURN_"))} if unified else None,
             "arrays": {
-                "observations.npy": {"shape": [total_samples, 157], "dtype": "float32"},
+                "observations.npy": {"shape": [total_samples, obs_dim], "dtype": "float32"},
                 "actions.npy": {"shape": [total_samples, 20], "dtype": "float32"},
                 "rewards.npy": {"shape": [total_samples], "dtype": "float32"},
                 "dones.npy": {"shape": [total_samples], "dtype": "bool"},
                 "env_ids.npy": {"shape": [total_samples], "dtype": "uint16"},
                 "episode_ids.npy": {"shape": [total_samples], "dtype": "uint32"},
                 "episode_steps.npy": {"shape": [total_samples], "dtype": "uint16"},
+                **{name: {"shape": [total_samples], "dtype": str(array.dtype)} for name, array in unified_arrays.items()},
             },
         }
         write_manifest(partial_dir / "manifest.json", manifest)

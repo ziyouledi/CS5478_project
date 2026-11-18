@@ -21,14 +21,21 @@ export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 dataset_dir="${INTENT_DATASET_DIR:-${HOME}/data/low-dim-intent/datasets/expert-rollout-seed0-job1023537}"
 expert_name="${INTENT_EXPERT:-expert-seed0}"  # expert-m2-seed0 for the M2 rollout
 frozen_dir="${HOME}/data/low-dim-intent/checkpoints/${expert_name}/frozen"
-checkpoint="${frozen_dir}/${expert_name}.pth"
-expert_sha256=$(awk -v name="${expert_name}.pth" '$2 == name {print $1}' "${frozen_dir}/SHA256SUMS")
+expert_file="${INTENT_EXPERT_FILE:-${expert_name}.pth}"  # file name inside frozen/ when it differs from the directory
+checkpoint="${frozen_dir}/${expert_file}"
+expert_sha256=$(awk -v name="${expert_file}" '$2 == name {print $1}' "${frozen_dir}/SHA256SUMS")
 joint_args=()
 if [[ -n "${JOINT_PCA_DIR:-}" ]]; then
     joint_args=(--joint_basis "${JOINT_PCA_DIR}/joint_basis.npz")
 fi
 if [[ "${CHECK_GOAL_YAW:-0}" == "1" ]]; then
     joint_args+=(--check_goal_yaw)  # M2 rollout only: goals are pure yaw
+fi
+if [[ "${CHECK_FACE_TURN:-0}" == "1" ]]; then
+    joint_args+=(--face_turn)  # face-turn rollout only: obs[68:72] is the hinge error
+fi
+if [[ "${CHECK_UNIFIED:-0}" == "1" ]]; then
+    joint_args+=(--unified)  # unified v4 rollout (E3): 162-D obs + hinge angle / goal / kind arrays
 fi
 pca_basis="${INTENT_PCA_DIR}/pca_basis.npz"
 metadata_dir="${HOME}/data/low-dim-intent/metadata/intent-check-job${SLURM_JOB_ID}"
@@ -53,6 +60,8 @@ echo "pca_basis_check=$(cd "${INTENT_PCA_DIR}" && sha256sum -c --strict SHA256SU
 echo "obj_lookahead=${OBJ_LOOKAHEAD}"
 echo "joint_pca_dir=${JOINT_PCA_DIR:-none}"
 echo "check_goal_yaw=${CHECK_GOAL_YAW:-0}"
+echo "check_face_turn=${CHECK_FACE_TURN:-0}"
+echo "check_unified=${CHECK_UNIFIED:-0}"
 
 set +e
 python "${SLURM_SUBMIT_DIR}/validate_intent_modules.py" \

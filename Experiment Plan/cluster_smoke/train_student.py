@@ -18,6 +18,10 @@ intent, hold, seed, task and flags (checked against that run's params/intent.jso
 actor-critic, input normalizers, central value net, optimizer state, epoch and frame count; it does not restore
 the adaptive learning rate, which restarts at the configured value (Isaac Lab's train.py behaves the same).
 Training continues to ``--max_iterations`` (absolute epoch count).
+
+Unified task (FACE_TURN_PLAN.md E3): with ``--task Isaac-Unified-HingedCube-Shadow-Direct-v0`` the student runs on
+the v4 teacher's training env (settings from the UNIFIED_* / HINGE_* environment variables, recorded in
+intent.json); it needs --goal_hidden --asymmetric_critic --hinge_angle_obs (see intent_env_wrapper.py).
 """
 
 from __future__ import annotations
@@ -37,7 +41,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--task", default="Isaac-Repose-Cube-Shadow-Direct-v0")
 parser.add_argument("--agent", default="rl_games_cfg_entry_point")
 parser.add_argument("--intent", required=True,
-                    help="blind | hand-K | joint-K | wrist-2 | wrist2-finger-K | obj-1|3|4 | goal-4 | goal-yaw")
+                    help="blind | hand-K | joint-K | wrist-2 | wrist2-finger-K | obj-1|3|4 | goal-4 | goal-yaw | goal-7")
 parser.add_argument("--expert_checkpoint", default=None)
 parser.add_argument("--expert_sha256", default=None)
 parser.add_argument("--pca_basis", default=None)
@@ -48,7 +52,13 @@ parser.add_argument(
     action="store_true",
     help="Add an RL-Games central value net that sees the full clipped 157-D observation (no intent).",
 )
+parser.add_argument("--hinge_angle_obs", action="store_true",
+                    help="Face-turn task: give the actor (sin, cos) of the current hinge angle (see intent_env_wrapper.py).")
 parser.add_argument("--intent_hold", type=int, default=1, help="Refresh the intent every N episode steps (1 = every step).")
+parser.add_argument("--intent_delay", type=int, default=0,
+                    help="Actor sees the intent computed this many control steps earlier in the episode (0 = off).")
+parser.add_argument("--action_hold", type=int, default=1,
+                    help="Apply a new policy action only every N episode steps and repeat it in between (1 = off).")
 parser.add_argument("--checkpoint", default=None, help="Resume from this periodic RL-Games checkpoint (see module doc).")
 parser.add_argument("--num_envs", type=int, default=2048)
 parser.add_argument("--seed", type=int, required=True)
@@ -74,6 +84,7 @@ import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
 import m2_tasks  # noqa: F401  registers Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0
+import hinged_cube_tasks  # noqa: F401  registers the face-turn task
 from intent_env_wrapper import IntentRlGamesVecEnvWrapper
 from intent_modules import build_intent, sha256
 from student_eval_utils import checkpoint_iteration
@@ -107,9 +118,19 @@ CENTRAL_VALUE_CONFIG = {
 
 # Fields of the source run's intent.json that a resumed run must share (num_envs may differ in dry runs).
 RESUME_MATCH_KEYS = (
-    "intent", "task", "seed", "goal_hidden", "asymmetric_critic", "intent_hold",
-    "expert_checkpoint_sha256", "pca_basis_sha256", "obj_lookahead_rad",
+    "intent", "task", "seed", "goal_hidden", "asymmetric_critic", "intent_hold", "intent_delay", "action_hold",
+    "expert_checkpoint_sha256", "pca_basis_sha256", "obj_lookahead_rad", "hinge_angle_obs",
+    "unified_start_states_sha256",
 )
+
+# Unified-task settings read by hinged_cube_env.py from the environment (defaults = the v4 teacher's run).
+UNIFIED_ENV_DEFAULTS = {
+    "HINGE_EFFORT_LIMIT": "0.1", "FACE_TURN_HOLD_STEPS": "10", "UNIFIED_TURN_ORIENT_TOL": "0.4",
+    "UNIFIED_MAX_PHASE_STEPS": "120", "UNIFIED_TIMEOUT_TERMINATES": "1", "UNIFIED_HINGE_PROG_SCALE": "30.0",
+    "UNIFIED_ORIENT_PROG_SCALE": "15.0", "UNIFIED_HOLD_PROG_SCALE": "5.0", "UNIFIED_ALIVE_BONUS": "0.5",
+    "UNIFIED_FALL_PENALTY": "-15.0", "UNIFIED_EXTRA_OBS": "1", "UNIFIED_START_STATES": "",
+    "UNIFIED_START_FRACTION": "0.5", "UNIFIED_CYCLE": "",
+}
 
 
 def check_resume_source(checkpoint: Path, record: dict) -> dict:
@@ -121,7 +142,8 @@ def check_resume_source(checkpoint: Path, record: dict) -> dict:
         raise ValueError(f"Resume epoch {start_epoch} >= --max_iterations {record['max_iterations']}")
     source_path = checkpoint.parent.parent / "params" / "intent.json"
     source = json.loads(source_path.read_text(encoding="utf-8"))
-    defaults = {"intent_hold": 1, "goal_hidden": False, "asymmetric_critic": False}
+    defaults = {"intent_hold": 1, "intent_delay": 0, "action_hold": 1, "goal_hidden": False, "asymmetric_critic": False,
+                "hinge_angle_obs": False}
     mismatched = {
         key: (source.get(key, defaults.get(key)), record.get(key, defaults.get(key)))
         for key in RESUME_MATCH_KEYS
@@ -164,12 +186,14 @@ def main(env_cfg, agent_cfg: dict) -> None:
         raise ValueError(f"num_envs * horizon_length = {rollout_batch} is not divisible by minibatch_size")
 
     rl_device = config["device"]
+    unified = args_cli.task == hinged_cube_tasks.UNIFIED_TASK
     intent = build_intent(
         args_cli.intent,
         expert_checkpoint=Path(args_cli.expert_checkpoint) if args_cli.expert_checkpoint else None,
         expert_sha256=args_cli.expert_sha256,
         pca_basis=Path(args_cli.pca_basis) if args_cli.pca_basis else None,
         obj_lookahead=args_cli.obj_lookahead,
+        unified=unified,
     ).to(rl_device)
 
     train_dir = Path(args_cli.train_dir).expanduser().resolve()
@@ -189,7 +213,24 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "goal_hidden": args_cli.goal_hidden,
         "asymmetric_critic": args_cli.asymmetric_critic,
         "intent_hold": args_cli.intent_hold,
+        "intent_delay": args_cli.intent_delay,
+        "action_hold": args_cli.action_hold,
+        "hinge_angle_obs": args_cli.hinge_angle_obs,
     }
+    if args_cli.task == hinged_cube_tasks.FACE_TURN_TASK:
+        # Task settings read by hinged_cube_env.py from the environment; the evaluator checks them.
+        intent_record["hinge_effort_limit"] = float(os.environ.get("HINGE_EFFORT_LIMIT", "0.1"))
+        intent_record["face_turn_hold_steps"] = int(os.environ.get("FACE_TURN_HOLD_STEPS", "1"))
+        intent_record["face_turn_start_states"] = os.environ.get("FACE_TURN_START_STATES") or None
+    elif unified:
+        settings = {key: os.environ.get(key, default) for key, default in UNIFIED_ENV_DEFAULTS.items()}
+        if settings["UNIFIED_EXTRA_OBS"] == "0" or settings["UNIFIED_CYCLE"]:
+            raise ValueError("Unified students train on the v4 env: UNIFIED_EXTRA_OBS=1, random goal order")
+        intent_record["unified_env"] = settings
+        start = settings["UNIFIED_START_STATES"]
+        intent_record["unified_start_states_sha256"] = sha256(Path(start).expanduser()) if start else None
+    elif args_cli.hinge_angle_obs:
+        raise ValueError("--hinge_angle_obs is only defined on the face-turn and unified tasks")
     checkpoint = Path(args_cli.checkpoint).expanduser().resolve() if args_cli.checkpoint else None
     if checkpoint is not None:
         intent_record.update(check_resume_source(checkpoint, intent_record))
@@ -206,6 +247,10 @@ def main(env_cfg, agent_cfg: dict) -> None:
         goal_hidden=args_cli.goal_hidden,
         asymmetric_critic=args_cli.asymmetric_critic,
         intent_hold=args_cli.intent_hold,
+        intent_delay=args_cli.intent_delay,
+        action_hold=args_cli.action_hold,
+        hinge_angle=args_cli.hinge_angle_obs,
+        unified=unified,
     )
     intent_record["student_obs_dim"] = env.actor_obs_dim
     intent_record["critic_states_dim"] = env.rlg_num_states

@@ -25,6 +25,17 @@ export XDG_CACHE_HOME="${HOME}/data/low-dim-intent/cache/xdg"
 case "${ROLLOUT_TASK:-stage1}" in
     stage1) task=Isaac-Repose-Cube-Shadow-Direct-v0; run_prefix=expert-rollout ;;
     m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; run_prefix=expert-m2-rollout ;;
+    faceturn) task=Isaac-FaceTurn-HingedCube-Shadow-Direct-v0; run_prefix=expert-faceturn-rollout
+        : "${ROLLOUT_CHECKPOINT:?ROLLOUT_TASK=faceturn needs ROLLOUT_CHECKPOINT (a face-turn expert)}"
+        # Face-turn task (hinged_cube_env.py) as its expert was trained and evaluated: torque cap 0.05 N m,
+        # a turn counts after 10 held steps, flat start only.
+        export HINGE_REFERENCE_JSON="${HINGE_REFERENCE_JSON:-${HOME}/data/low-dim-intent/runs/hinged-cube-eval-job1141499/dexcube.json}"
+        export HINGE_EFFORT_LIMIT=0.05 FACE_TURN_HOLD_STEPS=10
+        unset FACE_TURN_START_STATES ;;
+    unified) task=Isaac-Unified-HingedCube-Shadow-Direct-v0; run_prefix=expert-unified-v4-rollout
+        # E3: frozen v4 unified teacher on its own training env (unified_env.sh), as its students train.
+        source "${SLURM_SUBMIT_DIR}/unified_env.sh"
+        ROLLOUT_CHECKPOINT="${ROLLOUT_CHECKPOINT:-${HOME}/data/low-dim-intent/checkpoints/${unified_teacher_name}/frozen/${unified_teacher_file}}" ;;
     *) echo "unknown ROLLOUT_TASK=${ROLLOUT_TASK}" >&2; exit 2 ;;
 esac
 checkpoint="${ROLLOUT_CHECKPOINT:-${HOME}/data/low-dim-intent/checkpoints/expert-seed0/frozen/expert-seed0.pth}"
@@ -40,7 +51,17 @@ test -f "${checkpoint}"
 test -f "${collector}"
 mkdir -p "${run_root}" "${metadata_dir}" "${XDG_CACHE_HOME}"
 cp "${collector}" "${metadata_dir}/collect_shadow_rollout.py"
-cp "${SLURM_SUBMIT_DIR}"/{m2_tasks.py,shadow_zaxis_env.py} "${metadata_dir}/"
+cp "${SLURM_SUBMIT_DIR}"/{m2_tasks.py,shadow_zaxis_env.py,hinged_cube_tasks.py,hinged_cube_env.py} "${metadata_dir}/"
+if [[ "${ROLLOUT_TASK:-stage1}" == faceturn || "${ROLLOUT_TASK:-stage1}" == unified ]]; then
+    export HINGE_ASSET_DIR="${run_root}/asset"
+    echo "hinge_reference_json=${HINGE_REFERENCE_JSON}"
+    echo "hinge_effort_limit=${HINGE_EFFORT_LIMIT}"
+    echo "face_turn_hold_steps=${FACE_TURN_HOLD_STEPS}"
+    if [[ "${ROLLOUT_TASK}" == unified ]]; then
+        cp "${SLURM_SUBMIT_DIR}/unified_env.sh" "${metadata_dir}/"
+        env | grep -E '^UNIFIED_' | sort
+    fi
+fi
 cp "${SLURM_SUBMIT_DIR}/11_collect_expert_rollout.sbatch" "${metadata_dir}/11_collect_expert_rollout.sbatch"
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 

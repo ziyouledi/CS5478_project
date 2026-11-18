@@ -14,7 +14,15 @@ k-D vector that is appended to the student's observation:
 * ``obj-4``            subgoal quaternion slerp(q_obj, q_goal, min(1, lookahead / theta_remain)).
 * ``goal-4``           the goal quaternion itself, w >= 0 (goal-level interface; no expert, no lookahead).
 * ``goal-yaw``         (sin psi, cos psi), psi = 2 atan2(q_z, q_w) of the goal quaternion: its rotation angle
-                       about world z. Only meaningful on the M2 task, whose goals are pure yaw.
+                       about z. Only meaningful where goals are pure yaw: the M2 task (world z) and the
+                       face-turn task (goal hinge angle, see ``hinge_angle_obs``).
+* ``goal-7``           unified task only (FACE_TURN_PLAN.md E3): goal quaternion (w >= 0), (sin, cos) of the hinge
+                       goal, and the env's is_turn bit; computed from the extended unified observation
+                       (``UNIFIED_EXT_DIM``).
+
+Unified task (ShadowHandUnifiedEnv, v4 teacher): intents read the extended observation = the clipped 162-D
+policy observation followed by (sin, cos) of the current hinge angle, which the wrapper reads from the env
+(the 162-D observation holds the hinge only as an error to the goal). The frozen teacher sees the first 162.
 
 ``IntentChannel`` models the link between the intent source and the actor: zero-order hold, delay and
 quantisation (rate sweep).
@@ -44,6 +52,19 @@ FINGERS = slice(2, 20)
 # [68:72]. in_hand_pos [61:64] is a fixed target position and stays.
 GOAL_FIELDS = slice(64, 72)
 GOAL_HIDDEN_OBS_DIM = OBS_DIM - (GOAL_FIELDS.stop - GOAL_FIELDS.start)
+
+# Unified task (hinged_cube_env.py ShadowHandUnifiedEnv, UNIFIED_EXTRA_OBS=1): 157 Stage 1 entries, then
+# sin/cos(hinge error = hinge angle - hinge goal), is_turn, hold_count / hold_steps, scaled hinge velocity.
+UNIFIED_OBS_DIM = 162
+UNIFIED_HINGE_ERROR = slice(157, 159)
+UNIFIED_IS_TURN = slice(159, 160)
+UNIFIED_HOLD_FRAC = slice(160, 161)
+UNIFIED_HINGE_VEL = slice(161, 162)
+UNIFIED_HINGE_ANGLE = slice(162, 164)  # appended by the wrapper
+UNIFIED_EXT_DIM = 164
+# The goal-hidden actor (E3 definition a) loses the goal fields and everything derived from the goal or the
+# phase (hinge error, is_turn, hold count); it keeps the hinge velocity and gets the hinge angle.
+UNIFIED_ACTOR_DIM = UNIFIED_EXT_DIM - (GOAL_FIELDS.stop - GOAL_FIELDS.start) - (UNIFIED_HOLD_FRAC.stop - UNIFIED_HINGE_ERROR.start)
 EXPERT_OBS_EPSILON = 1e-5
 EXPERT_OBS_NORM_CLIP = 5.0
 
@@ -123,7 +144,7 @@ class FrozenExpert(nn.Module):
     normalization clipped to +-5, ELU MLP, linear mu head, then clamp to [-1, 1].
     """
 
-    def __init__(self, checkpoint: Path, expected_sha256: str | None = None):
+    def __init__(self, checkpoint: Path, expected_sha256: str | None = None, obs_dim: int = OBS_DIM):
         super().__init__()
         checkpoint = Path(checkpoint).expanduser().resolve()
         self.checkpoint = str(checkpoint)
@@ -151,8 +172,9 @@ class FrozenExpert(nn.Module):
         self.mu = nn.Linear(mu_weight.shape[1], mu_weight.shape[0])
         self.mu.weight.data.copy_(mu_weight)
         self.mu.bias.data.copy_(state["a2c_network.mu.bias"])
-        if self.obs_mean.shape != (OBS_DIM,) or self.mu.out_features != ACTION_DIM:
+        if self.obs_mean.shape != (obs_dim,) or self.mu.out_features != ACTION_DIM:
             raise ValueError(f"Unexpected expert shapes: obs {tuple(self.obs_mean.shape)}, action {self.mu.out_features}")
+        self.obs_dim = int(obs_dim)
         self.layer_sizes = [layer.out_features for layer in layers]
         self.requires_grad_(False)
         self.eval()
@@ -210,6 +232,8 @@ def parse_intent(name: str) -> IntentSpec:
         return IntentSpec(name, "goal", 4, 4)
     if name == "goal-yaw":
         return IntentSpec(name, "goal", 2, 2)
+    if name == "goal-7":
+        return IntentSpec(name, "goal", 7, 7)
     if m := re.fullmatch(r"obj-([134])", name):
         k = int(m.group(1))
         return IntentSpec(name, "obj", k, k)
@@ -223,9 +247,18 @@ class IntentModule(nn.Module):
         expert: FrozenExpert | None = None,
         pca_basis: Path | None = None,
         obj_lookahead: float | None = None,
+        unified: bool = False,
     ):
         super().__init__()
         self.spec = spec
+        self.unified = bool(unified)
+        self.input_dim = UNIFIED_EXT_DIM if unified else OBS_DIM
+        if unified and not (spec.kind in ("blind", "hand") or spec.name == "goal-7"):
+            raise ValueError(f"{spec.name} is not defined on the unified task (blind, hand-K, goal-7)")
+        if spec.name == "goal-7" and not unified:
+            raise ValueError("goal-7 is defined on the unified task only")
+        if expert is not None and expert.obs_dim != (UNIFIED_OBS_DIM if unified else OBS_DIM):
+            raise ValueError(f"Expert input {expert.obs_dim}-D does not match the task (unified={unified})")
         self.expert = expert
         uses_pca = spec.kind in ("hand", "joint", "wrist_finger")
         self.pca_basis = str(pca_basis) if uses_pca and pca_basis is not None else None
@@ -265,23 +298,27 @@ class IntentModule(nn.Module):
             "pca_basis": self.pca_basis,
             "pca_basis_sha256": self.pca_basis_sha256,
             "obj_lookahead_rad": self.obj_lookahead if self.spec.needs_lookahead else None,
+            "unified": self.unified,
+            "intent_input_dim": self.input_dim,
         }
 
     @torch.no_grad()
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
-        if obs.ndim != 2 or obs.shape[1] != OBS_DIM:
-            raise ValueError(f"Intent expects [N, {OBS_DIM}] observations, got {tuple(obs.shape)}")
+        if obs.ndim != 2 or obs.shape[1] != self.input_dim:
+            raise ValueError(f"Intent expects [N, {self.input_dim}] observations, got {tuple(obs.shape)}")
         kind = self.spec.kind
         if kind == "blind":
             return obs.new_zeros((obs.shape[0], 0))
         if kind == "obj":
             return self._object_intent(obs)
         if kind == "goal":
+            if self.spec.k == 7:
+                return unified_goal(obs)
             if self.spec.k == 2:
                 return goal_yaw(obs[:, GOAL_ROT])
             return canonical_quat(obs[:, GOAL_ROT])
 
-        action = self.expert(obs)
+        action = self.expert(obs[:, :UNIFIED_OBS_DIM] if self.unified else obs)
         if kind == "wrist":
             return action[:, WRIST]
         if kind in ("hand", "joint"):
@@ -305,6 +342,32 @@ def goal_yaw(q: torch.Tensor) -> torch.Tensor:
     """(sin psi, cos psi) of the rotation angle psi = 2 atan2(q_z, q_w) about world z; q and -q agree."""
     psi = 2.0 * torch.atan2(q[:, 3], q[:, 0])
     return torch.stack([torch.sin(psi), torch.cos(psi)], dim=1)
+
+
+def unified_hinge_goal(ext: torch.Tensor) -> torch.Tensor:
+    """(sin g, cos g) of the hinge goal g = theta - e from the extended unified observation: theta = current hinge
+    angle (appended), e = hinge error (obs[157:159], wrapped angle - goal in hinged_cube_env.py)."""
+    st, ct = ext[:, UNIFIED_HINGE_ANGLE].unbind(dim=1)
+    se, ce = ext[:, UNIFIED_HINGE_ERROR].unbind(dim=1)
+    return torch.stack([st * ce - ct * se, ct * ce + st * se], dim=1)
+
+
+def unified_goal(ext: torch.Tensor) -> torch.Tensor:
+    """goal-7: canonical goal quaternion (4), (sin, cos) of the hinge goal (2), is_turn (1)."""
+    return torch.cat([canonical_quat(ext[:, GOAL_ROT]), unified_hinge_goal(ext), ext[:, UNIFIED_IS_TURN]], dim=1)
+
+
+def unified_actor_obs(ext: torch.Tensor) -> torch.Tensor:
+    """Goal-hidden actor input of the unified task (E3 definition a), [N, UNIFIED_ACTOR_DIM] = 152:
+    obs[0:64], obs[72:157], hinge velocity obs[161], hinge angle (sin, cos). Removed: goal fields [64:72],
+    hinge error [157:159], is_turn [159], hold count [160]."""
+    if ext.ndim != 2 or ext.shape[1] != UNIFIED_EXT_DIM:
+        raise ValueError(f"unified_actor_obs expects [N, {UNIFIED_EXT_DIM}], got {tuple(ext.shape)}")
+    return torch.cat(
+        [ext[:, : GOAL_FIELDS.start], ext[:, GOAL_FIELDS.stop : UNIFIED_HINGE_ERROR.start],
+         ext[:, UNIFIED_HINGE_VEL], ext[:, UNIFIED_HINGE_ANGLE]],
+        dim=1,
+    )
 
 
 def quantise(x: torch.Tensor, bits: int) -> torch.Tensor:
@@ -364,11 +427,58 @@ class IntentChannel:
         return self._buffer[(step - self.delay).clamp(min=0) % size, envs].clone()
 
 
+def selector_view(
+    channel: IntentChannel,
+    kind: torch.Tensor,
+    goal_rot: torch.Tensor,
+    object_rot: torch.Tensor,
+    hinge_rot: torch.Tensor,
+    step: torch.Tensor,
+    turn_kind: int,
+    mul=None,
+    conjugate=None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """What the skill policies see when the selector message (skill kind, goal) passes through ``channel``
+    (FACE_TURN_PLAN.md E2', two-expert task switching).
+
+    The message is the env's current phase kind and goal rotation; ``channel`` holds or delays it per env
+    exactly as it does an intent. Returns the message kind ([N] long; it picks the expert) and the goal fields
+    ``obs[64:72]`` rebuilt from the message: the message goal, then the current rotation times its conjugate,
+    where the current rotation is the hinge rotation when the message kind is ``turn_kind`` (face-turn
+    layout) and the cube rotation otherwise (Stage 1 layout). With a pass-through channel this equals the
+    env's own fields. ``mul`` / ``conjugate`` default to this module's quaternion functions; evaluate_switch.py
+    passes Isaac Lab's so the pass-through case is bit-identical to the env's observation.
+    """
+    mul = quat_mul if mul is None else mul
+    conjugate = quat_conjugate if conjugate is None else conjugate
+    message = torch.cat((kind.to(goal_rot.dtype).unsqueeze(-1), goal_rot), dim=-1)
+    message = channel(message, step)
+    message_kind = torch.round(message[:, 0]).long()
+    message_goal = message[:, 1:5]
+    current = torch.where((message_kind == turn_kind).unsqueeze(-1), hinge_rot, object_rot)
+    fields = torch.cat((message_goal, mul(current, conjugate(message_goal))), dim=-1)
+    return message_kind, fields
+
+
 def hide_goal(obs: torch.Tensor) -> torch.Tensor:
     """Removes the goal fields from [N, 157] observations, giving the [N, 149] goal-hidden actor input."""
     if obs.ndim != 2 or obs.shape[1] != OBS_DIM:
         raise ValueError(f"hide_goal expects [N, {OBS_DIM}] observations, got {tuple(obs.shape)}")
     return torch.cat([obs[:, : GOAL_FIELDS.start], obs[:, GOAL_FIELDS.stop :]], dim=1)
+
+
+HINGE_ERROR = slice(68, 72)
+HINGE_OBS_DIM = 2
+
+
+def hinge_angle_obs(obs: torch.Tensor) -> torch.Tensor:
+    """(sin theta, cos theta) of the current hinge angle of the face-turn task, from its [N, 157] observation.
+
+    There ``obs[64:68]`` is the goal hinge angle as a rotation about z and ``obs[68:72]`` is
+    hinge_rot * conj(goal_rot) (hinged_cube_env.py), so their product is the hinge rotation. The goal-hidden
+    actor loses both fields and with them the hinge angle; this gives the angle back without the goal.
+    """
+    return goal_yaw(quat_mul(obs[:, HINGE_ERROR], obs[:, GOAL_ROT]))
 
 
 def build_intent(
@@ -377,7 +487,11 @@ def build_intent(
     expert_sha256: str | None = None,
     pca_basis: Path | None = None,
     obj_lookahead: float | None = None,
+    unified: bool = False,
 ) -> IntentModule:
     spec = parse_intent(name)
-    expert = FrozenExpert(expert_checkpoint, expert_sha256) if spec.needs_expert else None
-    return IntentModule(spec, expert=expert, pca_basis=pca_basis, obj_lookahead=obj_lookahead)
+    expert = (
+        FrozenExpert(expert_checkpoint, expert_sha256, obs_dim=UNIFIED_OBS_DIM if unified else OBS_DIM)
+        if spec.needs_expert else None
+    )
+    return IntentModule(spec, expert=expert, pca_basis=pca_basis, obj_lookahead=obj_lookahead, unified=unified)
