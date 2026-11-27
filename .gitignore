@@ -42,3 +42,24 @@ Docs/Milestone/data/student_evals_m2/
 Docs/Milestone/data/m1_evals/
 Docs/Milestone/data/rate_sweep_step1_evals/
 Docs/Demo/videos/
+
+# Videos and raw rollout traces (demo videos are linked from README via GitHub attachments)
+*.mp4
+*.npz
+Docs/Final presentation/clips/
+
+# Office lock files, archives, scratch edit tooling, intermediate deck copies
+~$*
+*.zip
+.codex-pptx-edit/
+Docs/Final presentation/*_before_*.pptx
+Docs/Final presentation/crop_test.png
+Docs/Project proposal/Archived/
+
+# LaTeX build outputs
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz
