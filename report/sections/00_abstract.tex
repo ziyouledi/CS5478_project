@@ -1,0 +1,8 @@
+\begin{abstract}
+Vision-language models (VLMs) plan at 0.2--2~Hz, whereas dexterous robotic hands require 60~Hz closed-loop motor control.
+Bridging this gap requires a low-dimensional \emph{intent interface} between a slow planner and a fast low-level controller, yet it remains unclear what representation should cross this channel under realistic rate, latency, and precision limits.
+We systematically benchmark three abstraction levels---action synergies, object waypoints, and goal-level commands---across three Shadow Hand tasks in Isaac Lab: 3D cube reorientation, $z$-axis rotation, and a simplified Rubik's-like cube combining whole-cube reorientation with $\pm 90^\circ$ top-layer twists.
+While 8-D action synergies match goal commands at 60~Hz (87\% expert recovery), reducing the update rate to $\le 10$~Hz or adding $\ge 0.1$~s latency triggers a sharp reversal: inter-update staleness collapses action and waypoint interfaces, leaving goal commands (at $\ge 8$~bits/component) as the sole representation that degrades predictably along an analytical waiting-time law, $P(d) \approx 600/(T_0 + d)$.
+Guided by this principle, we train a unified 60~Hz multi-skill controller (\texttt{Unified v4}) that holds the cube through 4~s planner pauses with zero drops, and pair it with an open-weight 8B VLM (\texttt{Qwen3-VL-8B-Instruct}) adapted via lightweight Map-then-Reason LoRA (0.51\% trainable parameters, frozen ViT).
+Across 128 real-time 60~Hz closed-loop episodes in Isaac Lab, the resulting system achieves \textbf{100.0\%} task completion with zero drops, showing that a goal-level interface turns a slow, open-weight VLM into a reliable dexterous-hand planner.
+\end{abstract}

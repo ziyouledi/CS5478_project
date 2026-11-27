@@ -1,0 +1,123 @@
+\section{Problem Formulation and Method}
+\label{sec:method}
+
+\subsection{Overview: Seven-Step Pipeline and Dual Role of the Expert}
+\label{sec:method_overview}
+Our methodology spans two tightly linked parts---\textbf{Part~I (Steps~1--5)}: a controlled benchmark of low-dimensional intent interfaces under channel degradation, and \textbf{Part~II (Steps~6--7)}: deploying the winning goal-level interface in an end-to-end VLM manipulation system:
+\begin{enumerate}[leftmargin=1.5em,itemsep=1.5pt,topsep=2pt]
+  \item \textbf{Step~1 (Reference expert training \& freezing):} Train a goal-visible PPO policy per task and freeze its final checkpoint to define the 100\% performance ceiling $P_E$.
+  \item \textbf{Step~2 (Deterministic rollout \& PCA basis):} Roll out the frozen reference expert to collect 1.23M continuous transitions and fit orthogonal action-synergy PCA bases $W$.
+  \item \textbf{Step~3 (Intent generation \& channel degradation):} At each step, compute a $k$-D intent $z_t$ (action, object-subgoal, or goal level) and pass it through controlled zero-order hold, delay, or quantization to obtain $\tilde{z}_t$.
+  \item \textbf{Step~4 (Goal-hidden student training):} Strip goal observations from the actor and train a goal-hidden student via asymmetric-critic PPO using $\tilde{z}_t$ as its sole task cue, executing all interface and rate/delay sweeps here.
+  \item \textbf{Step~5 (Deterministic evaluation):} Evaluate all 25 periodic checkpoints across 1,024 fixed-seed episodes to compute exact completions, recovery, staleness, and waiting-time fits.
+  \item \textbf{Step~6 (Unified 60~Hz multi-skill controller):} Train a single goal-conditioned controller (\texttt{Unified v4}) for the two-skill hinged cube and verify its 96-state BFS execution ceiling and 4~s pause stability.
+  \item \textbf{Step~7 (Upstream VLM adaptation \& online 60~Hz loop):} Adapt \texttt{Qwen3-VL-8B-Instruct} via Map-then-Reason LoRA SFT and closed-loop GRPO to drive frozen \texttt{Unified v4} from live 3-camera images.
+\end{enumerate}
+
+\paragraph{Clarifying the dual role of the expert.}
+To avoid ambiguity, note that the frozen expert serves \emph{two distinct roles} across Parts~I and~II.
+In \textbf{Part~I (Steps~1--5)}, it is a \textbf{Reference Expert}: it sets the $P_E$ baseline, supplies the offline PCA basis, and—\emph{only} for action-level intents—acts online as an action-intent oracle computing $a_t^E \to z_t$.
+Crucially, student training in Step~4 is \emph{not} teacher--student action distillation; every student learns autonomously from environment rewards via asymmetric-critic PPO.
+In \textbf{Part~II (Steps~6--7)}, once Part~I establishes that slow planners must emit goal-level commands, frozen \texttt{Unified v4} serves directly as the \textbf{60~Hz Goal-Conditioned Skill Controller} (analogous to an arm's IK controller) executed under the slow VLM planner.
+
+\subsection{Tasks, Simulation Setup, and Evaluation Protocol}
+\label{sec:method_tasks}
+All experiments run in Isaac Lab v2.3.1 \citep{mittal2023orbit} on the 24-DOF Shadow Dexterous Hand (20 actuated joints: 2 wrist drives at action indices 0--1 and 18 finger drives at indices 2--19, with 4 coupled distal joints).
+Physics runs at 120~Hz with decimation 2, yielding a 60~Hz discrete-time control loop and 10~s episodes (600 control steps) with continuous observations $s_t \in \mathbb{R}^{157}$ and continuous actions $a_t \in [-1,1]^{20}$.
+Observations include joint positions/velocities, object pose/velocities, goal quaternion \texttt{obs[64:68]}, relative object--goal quaternion \texttt{obs[68:72]}, fingertip states, and previous action.
+We evaluate three tasks of increasing complexity:
+\begin{itemize}[leftmargin=1.5em,itemsep=1.5pt,topsep=2pt]
+  \item \textbf{Task~1 ($\mathrm{SO}(3)$ Reorientation):} Standard \texttt{Isaac-Repose-Cube-Shadow-Direct-v0}. Reorient a 6~cm cube to random 3D target orientations within 0.1~rad; each success samples a new target without resetting the hand ($P_E=26.11$).
+  \item \textbf{Task~2 ($z$-Axis Reorientation, M2):} \texttt{Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0}, restricting targets to yaw rotations about the palm-normal $z$-axis ($P_E=31.14$).
+  \item \textbf{Task~3 (Simplified Rubik's-Like Hinged Cube):} A custom two-part 6~cm cube (0.216~kg, friction 1.0) whose top third twists about the cube $z$-axis against a 0.05~N$\cdot$m detent torque cap every $90^\circ$. It combines whole-cube reorientation (\texttt{any}: arbitrary 3D target; \texttt{up}: top layer upright with random yaw) and $\pm 90^\circ$ top-layer twists (\texttt{turn}: hinge within 0.1~rad of target for 10 consecutive steps, 0.17~s).
+\end{itemize}
+
+\paragraph{Exact per-episode evaluation (Step~5).}
+Because Isaac Lab's built-in \texttt{consecutive\_successes} metric is an across-reset exponential moving average that understates throughput ($\approx 15.5$ vs.\ $26.11$), all results use an independent deterministic evaluator over 1,024 fixed-seed episodes per checkpoint, reporting exact per-episode completions $P$, drop rate, and normalized recovery:
+\begin{equation}
+  \mathrm{Recovery}(c) = \frac{P(c) - P_{\mathrm{blind}}}{P_E - P_{\mathrm{blind}}},
+  \label{eq:recovery}
+\end{equation}
+where $P_{\mathrm{blind}}$ is the goal-hidden student with no intent ($0.006$ on Task~1; $19.66$ on Task~2).
+Policies train with RL-Games PPO \citep{schulman2017proximal,makoviichuk2021rlgames} for 5,000 iterations (2,048 envs, 163.84M transitions; 8,192 envs on H200 for unified experts), with 3--5 seeds per condition and two-sided Welch $t$- / Mann--Whitney $U$ tests.
+
+\subsection{Goal-Hidden Student Training and Intent Taxonomy (Steps 1--4)}
+\label{sec:method_student}
+In a preliminary goal-visible stage (Stage~1; 21 runs on Task~1 and 30 on Task~2), appending intents to a goal-visible actor yielded no significant speed or AUC gain (one-way ANOVA N80 $p=0.82$, AUC $p=0.65$; Appendix~\ref{app:stage1}), because the actor already observes the goal directly.
+To isolate the information carried by the intent channel, we adopt a \emph{goal-hidden asymmetric-critic} protocol (Figure~\ref{fig:protocol}): the 8 goal fields \texttt{obs[64:72]} are stripped from the student actor (leaving 149-D proprioceptive/object state plus the $k$-D intent $\tilde{z}_t$), while the central value critic \citep{pinto2018asymmetric} retains the full 157-D state during training for low-variance advantage estimation.
+A goal-visible asymmetric-critic gate run matches the symmetric expert within 1.4\% ($25.76 = 0.986\,P_E$), confirming no architectural confound.
+
+\begin{figure}[t]
+  \centering
+  \input{figures/fig_intent_protocol_v2.tex}
+  \caption{Part~I student training and channel-sweep pipeline (Steps~1--5). Action intents project the expert's 20-D action onto a fixed PCA basis; the actor concatenates $\tilde{z}_t$ with the 149-D state under a 157-D training critic.}
+  \label{fig:protocol}
+\end{figure}
+
+At each control step $t$, we compute $z_t \in \mathbb{R}^k$ across three abstraction levels (Table~\ref{tab:intent_taxonomy}):
+\begin{enumerate}[leftmargin=1.5em,itemsep=1.5pt,topsep=2pt]
+  \item \textbf{Action-level intents:} Using PCA bases fitted on 1,228,800 deterministic mean-action transitions from the frozen reference expert (maximizing retained action variance), \texttt{hand-$k$} ($k \in \{2,4,8,20\}$) projects the expert's online mean action $a_t^E$ onto the top $k$ whole-hand PCs: $z_t = W_{:,1:k}^\top (a_t^E - \mu)$. To test wrist--finger decoupling \citep{liu2016analysis}, \texttt{wrist-2} sends $a^E_{0:2}$ and \texttt{wrist2-finger-$k$} ($k \in \{2,6\}$) appends the top $k$ finger-only PCs. On Task~2 we also test \texttt{joint-$k$}, projecting $a_t^E$ onto the joint-position PCA basis.
+  \item \textbf{Object-subgoal intents:} Computed directly from object and goal poses (no reference expert needed): \texttt{obj-1} sends the remaining geodesic angle $\theta_t$; \texttt{obj-4} sends an intermediate waypoint $\Delta\theta = 0.5$~rad ahead along $\mathrm{slerp}(q_{\mathrm{obj}}, q_{\mathrm{goal}}, \min(1, 0.5/\theta_t))$.
+  \item \textbf{Goal-level intents:} Also computed directly from the target: \texttt{goal-4} sends canonicalized $q_{\mathrm{goal}}$ ($w \ge 0$); \texttt{goal-yaw} sends $[\sin\psi_{\mathrm{goal}}, \cos\psi_{\mathrm{goal}}]$ (2-D); \texttt{goal-7} sends $[q_{\mathrm{goal}}, \sin\phi_{\mathrm{goal}}, \cos\phi_{\mathrm{goal}}, \mathbb{I}_{\mathrm{turn}}]$ (7-D) for unified Task~3.
+\end{enumerate}
+
+\begin{table}[t]
+  \centering
+  \caption{Summary of evaluated low-dimensional intent interfaces across abstraction levels.}
+  \label{tab:intent_taxonomy}
+  \small
+  \begin{tabular}{llcl}
+    \toprule
+    Level & Interface Name & Dim $k$ & Definition / Physical Meaning \\
+    \midrule
+    None & \texttt{blind} & 0 & No intent (goal-hidden lower bound) \\
+    \multirow{4}{*}{Action} & \texttt{wrist-2} & 2 & Raw reference-expert wrist commands $a^E_{0:2}$ \\
+     & \texttt{hand-$k$} ($k \in \{2,4,8,20\}$) & $k$ & Top-$k$ PCA projection of 20-D expert action $a^E_t$ \\
+     & \texttt{wrist2-finger-$k$} ($k \in \{2,6\}$) & $2+k$ & Wrist commands + top-$k$ 18-D finger PCA \\
+     & \texttt{joint-$k$} ($k \in \{2,4\}$, Task~2) & $k$ & Expert action projected onto joint-position PCA basis \\
+    \multirow{2}{*}{Object Subgoal} & \texttt{obj-1} & 1 & Remaining geodesic rotation angle $\theta_t$ \\
+     & \texttt{obj-4} & 4 & Geodesic waypoint $\Delta\theta=0.5$~rad ahead of cube \\
+    \multirow{3}{*}{Goal} & \texttt{goal-4} & 4 & Target cube orientation quaternion $q_{\mathrm{goal}}$ \\
+     & \texttt{goal-yaw} (Tasks~2--3) & 2 & Target yaw / hinge angle $[\sin\psi, \cos\psi]$ \\
+     & \texttt{goal-7} (Task~3 unified) & 7 & $q_{\mathrm{goal}}$ (4) + hinge target $[\sin,\cos]$ (2) + \texttt{is\_turn} (1) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Channel Degradation Models and Waiting-Time Law (Steps 3--4)}
+\label{sec:method_channel}
+To model a slow, band-limited planner, $z_t$ passes through three controlled degradations:
+(i)~\textbf{Zero-order hold refresh:} recomputed every $N \in \{1, 6, 12, 30\}$ steps (60, 10, 5, 2~Hz) and held in between, $\tilde{z}_t = z_{N \lfloor t/N \rfloor}$ (tested both evaluation-only and trained-under-hold), alongside a \textbf{Slow Expert} control whose own 20-D action is held for $N$ steps despite full goal visibility;
+(ii)~\textbf{Fixed latency:} $\tilde{z}_t = z_{\max(0, t-d)}$ for $d \in \{6, 30, 60, 120\}$ steps (0.1--2.0~s, evaluation-only and trained-under-delay); and
+(iii)~\textbf{Scalar quantization:} uniform $b \in \{8, 4, 3, 2\}$-bit quantization per component on $[-1,1]$ (evaluation-only).
+
+\paragraph{Analytical waiting-time law.}
+When a goal-level intent remains valid until goal completion, channel degradation primarily adds dead time $w$ after each completion before the new target arrives ($w=d$ for delay; $w \approx N/2$ for periodic hold).
+With zero-wait completion time $T_0$, expected completions per 600-step episode obey:
+\begin{equation}
+  P(w) \approx \frac{600}{T_0 + w}, \qquad P_{\mathrm{cycle}}(w) \approx \frac{600}{T_0 + L \cdot w},
+  \label{eq:waiting}
+\end{equation}
+where $L$ is the number of sequential phases per cycle ($L=2$ for \texttt{up,turn}; $L=3$ for \texttt{any,up,turn}).
+
+\subsection{Multi-Skill Control and End-to-End VLM System (Steps 6--7)}
+\label{sec:method_unified_vlm}
+\paragraph{Step~6: Multi-skill 60~Hz controller (\texttt{Unified v4}).}
+For Task~3, we compare \textbf{Two-Expert Handoff} (switching between the Stage~1 expert and a face-turn expert fine-tuned on 34,243 Stage~1 \texttt{up} end states) against a single 60~Hz goal-conditioned policy, \textbf{\texttt{Unified v4}} (162-D observation adding hinge error, \texttt{is\_turn}, hold count, and hinge velocity).
+Resolving three RL exploits observed in v1--v3 (Appendix~\ref{app:unified_debug}), \texttt{Unified v4} (i)~terminates episodes on 120-step phase timeout with $V(s')=0$, (ii)~initializes 50\% of resets into $\pm 90^\circ$ \texttt{turn} phases from Stage~1 \texttt{up} handoff states, and (iii)~uses monotonic hold-milestone shaping ($+5$/step, cap $+50$) with fall penalty $-15$.
+
+\paragraph{Step~7: Upstream VLM adaptation and online 60~Hz closed loop (Figure~\ref{fig:vlm_arch}).}
+Guided by Part~I, we freeze \texttt{Unified v4} as the 60~Hz goal-conditioned execution layer and discretize the hinged cube into a 96-state graph (24 axis-aligned orientations $\times$ 4 detents, diameter $L=4$).
+Macro-actions are JSON goals: \texttt{\{"action":"reorient","up":$c_1$,"front":$c_2$\}} or \texttt{\{"action":"turn","delta":$\pm 90$\}} (legal only when \texttt{up=="white"}).
+States use a visually observable \texttt{relational} format (listing \texttt{up}, \texttt{front}, and the 1/3 top-strip color aligned above each 2/3 base side), and visual observations tile three fixed cameras (\texttt{c1 + s040 + s220}) into one $1164\times 412$ \texttt{montage} image.
+We adapt \texttt{Qwen3-VL-8B-Instruct} via LoRA ($r=16, \alpha=32$, ViT frozen; 0.51\% trainable parameters):
+\textbf{\texttt{C1-v1}} (2 epochs) learns structured \emph{Map-then-Reason} outputs (\texttt{view\_obs $\to$ state $\to$ thought $\to$ action});
+\textbf{\texttt{C1-v2}} (1 epoch) adds multi-template phrasing, calibrated unanswerable-frame abstention (CBD), 30\% color-permutation augmentation, and explicit cyclic $\mathbb{Z}_4$ turn CoT; and
+\textbf{\texttt{C2} GRPO} (\texttt{C2-Terminal} / \texttt{C2-Grounded}) applies multi-turn outcome-reward RL \citep{shao2024deepseekmath} over a 96-state real-rendered image pool before real-time 60~Hz Isaac Lab verification.
+
+\begin{figure}[t]
+  \centering
+  \input{figures/fig_vlm_system.tex}
+  \caption{Part~II end-to-end VLM manipulation architecture (Steps~6--7). Frozen \texttt{Unified v4} acts as the 60~Hz goal-conditioned skill controller executing discrete macro-actions emitted by the slow Map-then-Reason VLM from live 3-camera \texttt{montage} images.}
+  \label{fig:vlm_arch}
+\end{figure}

@@ -1,0 +1,21 @@
+\section{Discussion, Limitations, and Conclusion}
+\label{sec:conclusion}
+
+\subsection{Key Takeaways for Slow-Planner to Fast-Hand Design}
+Our experiments across three Shadow Hand tasks yield three clear takeaways for pairing slow planners with fast dexterous hands:
+\begin{itemize}[leftmargin=1.5em,itemsep=1pt,topsep=1pt]
+  \item \textbf{Keep the hand fast; send goals, not actions or waypoints.} A 20-DOF hand cannot run directly at 2--10~Hz (Slow Expert $\le 15\%$ at 10~Hz, $0\%$ at 2~Hz), and held action synergies or moving waypoints go stale within steps. The low-level controller must close its proprioceptive loop at 60~Hz while the slow planner sends goal-level targets---except on simple 1-DOF tasks where action codes implicitly encode the goal direction.
+  \item \textbf{Match precision and latency to task dynamics.} Two task properties set the channel budget: success tolerance sets precision ($\ge 8$~bits/component for 0.1~rad), and zero-wait goal time $T_0$ sets latency ($d \ll T_0$ under $P(d)\approx 600/(T_0+d)$). Moreover, when a task admits a goal-free heuristic (Task~2), sending an outdated goal is strictly worse than sending no goal at all.
+  \item \textbf{Lightweight spatial grounding suffices once a 60~Hz skill layer exists.} Given a reliable goal-conditioned controller (\texttt{Unified v4}), an open-weight 8B VLM is bottlenecked by fine-grained spatial grounding rather than vision features. Frozen-ViT Map-then-Reason LoRA resolves grounding with minimal forgetting, while multi-template phrasing and abstention data prevent format overfitting.
+\end{itemize}
+
+\subsection{Limitations and Future Work}
+Three limitations highlight clear next steps:
+(1)~\textbf{Single-camera partial observability:} closed-loop visual evaluation uses three fixed cameras (\texttt{c1+s040+s220}); extending to one occluded camera requiring exploratory \texttt{reorient} moves is a natural POMDP extension.
+(2)~\textbf{Asynchronous timing and sim-to-real:} physics pauses during VLM decoding; real-time asynchronous inference (testing Eq.~\ref{eq:waiting}), physical perturbations, and hardware transfer remain future work.
+(3)~\textbf{Over-abstention on top-bar cues and seed breadth:} on unseen \texttt{v3} queries, \texttt{C1-v2} still over-abstains (26.3\%) when relying on the top face's black orientation bar rather than side strips; additionally, \texttt{Unified v4} uses 2 seeds and auxiliary interface grids use 3 seeds (core rate-reversal claims use $n=5$).
+
+\subsection{Conclusion}
+Returning to our central question, a slow planner should transmit \emph{goal-level} targets---not action synergies or moving waypoints---to a fast 60~Hz dexterous hand.
+Channel degradation separates viable from brittle interfaces decisively: while 8-D action synergies match goals at 60~Hz, low refresh rates ($\le 10$~Hz) and latency ($\ge 0.1$~s) collapse action and waypoint codes via inter-update staleness, leaving goal commands---at $\ge 8$~bits/component to meet the 0.1~rad tolerance---as the only representation that degrades predictably along the waiting-time law.
+Guided by this principle, pairing a frozen 60~Hz goal-conditioned controller (\texttt{Unified v4}) with lightweight Map-then-Reason LoRA on \texttt{Qwen3-VL-8B-Instruct} achieves 100.0\% (128/128) zero-drop closed-loop manipulation in Isaac Lab, showing that the right goal-level interface turns a slow, open-weight VLM into a reliable dexterous-hand planner.

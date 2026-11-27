@@ -1,0 +1,19 @@
+\section{Related Work}
+\label{sec:related}
+
+\subsection{In-Hand Manipulation and Hand Synergies}
+GPU-accelerated RL enables anthropomorphic hands to perform in-hand cube reorientation \citep{andrychowicz2020learning,mittal2023orbit} and Rubik's-cube solving \citep{akkaya2019solving} via PPO \citep{schulman2017proximal,makoviichuk2021rlgames} and asymmetric actor-critic training \citep{pinto2018asymmetric}.
+In parallel, hand-synergy studies showed that two principal components capture $>80\%$ of static human grasping variance \citep{santello1998postural}, inspiring eigengrasp planning \citep{ciocarlie2009hand}, multi-task motor priors \citep{caggiano2023myodex,yuan2025crossdex}, wrist--finger decoupling \citep{liu2016analysis,jarquebou2019kinematic}, and synergy complexity indices \citep{west2025synergy}.
+However, prior synergy work examines \emph{spatial} dimensionality only at full control rates, leaving open how action codes behave under slow updates.
+
+\subsection{Hierarchical Interfaces, Skill Composition, and Frequency Decoupling}
+To bridge slow high-level planning and fast motor control, visuomotor methods such as action chunking \citep{zhao2023learning} and diffusion policies \citep{chi2023diffusion} execute multi-step action sequences open-loop to amortize inference, while dual-system VLAs and hierarchical hand policies connect VLMs to fast controllers via latent action codes or 3D keypoints \citep{chen2025fastinslow,jiang2026xlvla,debakker2025scaffolding}.
+Yet open-loop chunks are fragile under contact-rich, high-switching in-hand dynamics, and existing systems commit to a single interface abstraction without head-to-head sweeps across refresh rate, latency, and quantization.
+A related design axis is how multiple dexterous skills are organized at the low level: chaining or composing separate specialist policies via transition feasibility or residual adapters \citep{chen2023sequential,huang2026dexcompose} versus distilling a single unified low-level controller \citep{yin2025dexteritygen}.
+Our study benchmarks both axes on the same hand---sweeping interface abstraction under channel degradation (Part~I) and directly comparing two-expert handoff against a unified 60~Hz controller (Part~II).
+
+\subsection{VLMs as High-Level Robot Planners}
+LLMs and VLMs increasingly serve as high-level robot planners through affordance grounding \citep{ichter2022saycan}, pattern extrapolation \citep{mirchandani2023llms}, vision-language-action co-training \citep{brohan2023rt2}, and outcome-based RL via GRPO \citep{shao2024deepseekmath,tang2026training}.
+On robot arms, sparse VLM commands succeed because off-the-shelf IK/pose controllers execute fast motions between queries \citep{tang2026training}; on dexterous hands, recent VLAs mainly target grasping \citep{zhong2026dexgraspvla}, whereas direct slow joint control by frontier models largely fails on in-hand manipulation \citep{galbot2026astra}.
+Even with a capable low-level controller, open-weight VLMs exhibit fine-grained multi-view spatial deficits on BLINK \citep{fu2024blink}, MMStar \citep{chen2024mmstar}, and EmbSpatial \citep{du2024embspatial}.
+Existing remedies rely on visual overlays \citep{yang2023setofmark,nasiriany2024pivot} or tool-augmented 3D spatial reasoning \citep{zhang2026think3d,li2026skill3d}, which introduce external dependencies or extra inference latency; our Part~II system instead pairs a frozen 60~Hz goal-conditioned controller with lightweight Map-then-Reason LoRA adaptation for single-pass, marker-free closed-loop control.
