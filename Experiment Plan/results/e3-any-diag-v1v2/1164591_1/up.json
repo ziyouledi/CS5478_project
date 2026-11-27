@@ -1,0 +1,148 @@
+{
+  "record_type": "shadow_task_switch_evaluation",
+  "cycle": [
+    "up"
+  ],
+  "hold_steps": 10,
+  "checkpoints": {
+    "student": "/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-goal-7-diaganyonly-seed1-job1164590_1/student-unified-hidden-goal-7-diaganyonly-seed1/nn/last_shadow_hand_ep_3000_rew__650.1194_.pth"
+  },
+  "seed": 20261006,
+  "num_envs": 1024,
+  "steps": 600,
+  "stall_steps": 120,
+  "student": {
+    "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-goal-7-diaganyonly-seed1-job1164590_1/student-unified-hidden-goal-7-diaganyonly-seed1",
+    "checkpoint_sha256": "a49e33a941e757b08215ec7df2bcab5d5310f2cae663bcbd1d793d34edf660a7",
+    "intent": "goal-7",
+    "intent_dim": 7,
+    "intent_hold": 1,
+    "intent_delay": 0,
+    "actor_obs_dim": 159,
+    "seed": 1,
+    "teacher_sha256": null,
+    "pca_basis_sha256": null,
+    "unified_goal_check_max_error": 1.9371509552001953e-07,
+    "iteration_requested": null,
+    "checkpoint": "/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-goal-7-diaganyonly-seed1-job1164590_1/student-unified-hidden-goal-7-diaganyonly-seed1/nn/last_shadow_hand_ep_3000_rew__650.1194_.pth",
+    "goal7_intent_check": {
+      "up": {
+        "steps": 614400,
+        "max_abs_error": 1.9371509552001953e-07,
+        "steps_error_over_1e-3": 0,
+        "max_abs_error_quat": 0.0,
+        "fraction_steps_error_over_1e-3": 0.0
+      }
+    }
+  },
+  "selector": null,
+  "hinge": {
+    "stiffness": 5.0,
+    "damping": 0.02,
+    "effort_limit": 0.05,
+    "geometry": {
+      "size": [
+        0.0600000000000005,
+        0.0600000000000005,
+        0.06000000000000005
+      ],
+      "mass_total": 0.2160000056028366,
+      "mass_base": 0.1440000037352244,
+      "mass_top": 0.0720000018676122,
+      "top_inertia_about_hinge": 4.3200001120568034e-05
+    },
+    "samples": 684032,
+    "mean_abs_angle_deg": 0.9393966417430673,
+    "max_abs_angle_deg": 191.61740546633933,
+    "fraction_over_5_deg": 0.020822125280688622,
+    "fraction_over_15_deg": 0.008400191803892216,
+    "fraction_over_45_deg": 0.00679354182260479
+  },
+  "phases_completed_per_600_steps": 6.8779296875,
+  "cycles_completed_per_600_steps": 6.8779296875,
+  "falls_per_600_steps": 0.076171875,
+  "time_outs": 952,
+  "fraction_of_steps_by_kind": {
+    "up": 1.0
+  },
+  "by_kind": {
+    "up": {
+      "completed_per_600_steps": 6.8779296875,
+      "steps_to_complete": {
+        "n": 7043,
+        "mean": 68.65370178222656,
+        "median": 57.0,
+        "p90": 135.0,
+        "max": 573.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 7043,
+        "mean": 3.3940532207489014,
+        "median": 3.5147435665130615,
+        "p90": 5.085553646087647,
+        "max": 5.72758674621582
+      },
+      "falls_per_600_steps": 0.076171875,
+      "stalled_phases": 309,
+      "stalled_fraction_of_started": 0.03396724194789491,
+      "hinge_drift_deg": {
+        "n": 7043,
+        "mean": 0.5186393857002258,
+        "median": 0.2193664014339447,
+        "p90": 1.3089191913604736,
+        "max": 7.03456449508667
+      },
+      "fraction_hinge_moved_over_45_deg": 0.0
+    }
+  },
+  "by_transition": {
+    "reset->up": {
+      "steps_to_complete": {
+        "n": 1030,
+        "mean": 89.95145416259766,
+        "median": 73.0,
+        "p90": 167.10000000000002,
+        "max": 573.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1030,
+        "mean": 3.4376213550567627,
+        "median": 3.5675742626190186,
+        "p90": 5.104569578170777,
+        "max": 5.72758674621582
+      },
+      "falls": 21,
+      "fall_fraction_of_started": 0.019980970504281638
+    },
+    "up->up": {
+      "steps_to_complete": {
+        "n": 6013,
+        "mean": 65.00548553466797,
+        "median": 54.0,
+        "p90": 130.80000000000018,
+        "max": 467.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 6013,
+        "mean": 3.3865904808044434,
+        "median": 3.504981517791748,
+        "p90": 5.081553363800049,
+        "max": 5.727381229400635
+      },
+      "falls": 57,
+      "fall_fraction_of_started": 0.009390444810543658
+    }
+  },
+  "trace_columns": [
+    "kind",
+    "phase_steps",
+    "hinge_error_rad",
+    "orient_error_rad",
+    "tilt_error_rad",
+    "yaw_error_rad",
+    "hold_count",
+    "hinge_pos_rad",
+    "phase_start_hinge_rad",
+    "reward"
+  ]
+}

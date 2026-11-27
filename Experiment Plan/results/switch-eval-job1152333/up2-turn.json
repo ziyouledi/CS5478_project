@@ -1,0 +1,159 @@
+{
+  "record_type": "shadow_task_switch_evaluation",
+  "cycle": [
+    "up2",
+    "turn"
+  ],
+  "hold_steps": 10,
+  "checkpoints": {
+    "reorient": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-seed0/frozen/expert-seed0.pth",
+    "turn": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-faceturn-cap0.05_hold10-seed0/frozen/expert-faceturn-seed0.pth"
+  },
+  "seed": 20261006,
+  "num_envs": 1024,
+  "steps": 600,
+  "stall_steps": 120,
+  "hinge": {
+    "stiffness": 5.0,
+    "damping": 0.02,
+    "effort_limit": 0.05,
+    "geometry": {
+      "size": [
+        0.0600000000000005,
+        0.0600000000000005,
+        0.06000000000000005
+      ],
+      "mass_total": 0.2160000056028366,
+      "mass_base": 0.1440000037352244,
+      "mass_top": 0.0720000018676122,
+      "top_inertia_about_hinge": 4.3200001120568034e-05
+    },
+    "samples": 1065984,
+    "mean_abs_angle_deg": 67.4575693852231,
+    "max_abs_angle_deg": 360.00001001791264,
+    "fraction_over_5_deg": 0.5880135161503363,
+    "fraction_over_15_deg": 0.5648396223583093,
+    "fraction_over_45_deg": 0.5416235140489913
+  },
+  "phases_completed_per_600_steps": 8.4931640625,
+  "cycles_completed_per_600_steps": 4.24658203125,
+  "falls_per_600_steps": 0.912109375,
+  "time_outs": 428,
+  "fraction_of_steps_by_kind": {
+    "up2": 0.19948567708333334,
+    "turn": 0.8005143229166667
+  },
+  "by_kind": {
+    "up2": {
+      "completed_per_600_steps": 5.1123046875,
+      "steps_to_complete": {
+        "n": 5235,
+        "mean": 21.97917938232422,
+        "median": 22.0,
+        "p90": 34.0,
+        "max": 112.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 5235,
+        "mean": 3.1875879764556885,
+        "median": 3.2505245208740234,
+        "p90": 4.911981678009035,
+        "max": 5.726320743560791
+      },
+      "falls_per_600_steps": 0.076171875,
+      "stalled_phases": 12,
+      "stalled_fraction_of_started": 0.002051983584131327,
+      "hinge_drift_deg": {
+        "n": 5235,
+        "mean": 4.438791751861572,
+        "median": 0.16546817123889923,
+        "p90": 1.4788179397583012,
+        "max": 719.97705078125
+      },
+      "fraction_hinge_moved_over_45_deg": 0.009551098376313277
+    },
+    "turn": {
+      "completed_per_600_steps": 3.380859375,
+      "steps_to_complete": {
+        "n": 3462,
+        "mean": 41.2798957824707,
+        "median": 36.0,
+        "p90": 64.0,
+        "max": 373.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 3462,
+        "mean": 11.12401008605957,
+        "median": 7.651040077209473,
+        "p90": 16.172706604003906,
+        "max": 169.0704803466797
+      },
+      "falls_per_600_steps": 0.8359375,
+      "stalled_phases": 823,
+      "stalled_fraction_of_started": 0.1572110792741165,
+      "detent_error_deg_at_completion": {
+        "n": 3462,
+        "mean": 0.03795890137553215,
+        "median": 0.008319170214235783,
+        "p90": 0.03731674030423165,
+        "max": 5.641524791717529
+      }
+    }
+  },
+  "by_transition": {
+    "reset->up2": {
+      "steps_to_complete": {
+        "n": 1921,
+        "mean": 25.439353942871094,
+        "median": 25.0,
+        "p90": 36.0,
+        "max": 83.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1921,
+        "mean": 3.2178852558135986,
+        "median": 3.2848548889160156,
+        "p90": 4.917291641235352,
+        "max": 5.726320743560791
+      },
+      "falls": 6,
+      "fall_fraction_of_started": 0.0031136481577581734
+    },
+    "up2->turn": {
+      "steps_to_complete": {
+        "n": 3462,
+        "mean": 41.2798957824707,
+        "median": 36.0,
+        "p90": 64.0,
+        "max": 373.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 3462,
+        "mean": 11.12401008605957,
+        "median": 7.651040077209473,
+        "p90": 16.172706604003906,
+        "max": 169.0704803466797
+      },
+      "falls": 856,
+      "fall_fraction_of_started": 0.1982399258916165
+    },
+    "turn->up2": {
+      "steps_to_complete": {
+        "n": 3314,
+        "mean": 19.973445892333984,
+        "median": 20.0,
+        "p90": 32.0,
+        "max": 112.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 3314,
+        "mean": 3.1700263023376465,
+        "median": 3.2182321548461914,
+        "p90": 4.89970178604126,
+        "max": 5.696086883544922
+      },
+      "falls": 72,
+      "fall_fraction_of_started": 0.021264028352037802
+    }
+  }
+}

@@ -1,0 +1,190 @@
+{
+  "P_E": 26.1103515625,
+  "P_B": 0.006184895833333333,
+  "recovery_definition": "(P - P_B) / (P_E - P_B)",
+  "retained_definition": "P / P(delay 0, bits off, same run, same protocol)",
+  "status": "PASS",
+  "failures": [],
+  "latency_budget": {
+    "goal-4": {
+      "half_recovery_delay_steps": 60,
+      "half_recovery_delay_s": 1.0,
+      "note": "first tested delay with mean Recovery <= 0.5 x baseline; None = not reached"
+    },
+    "hand-8": {
+      "half_recovery_delay_steps": 6,
+      "half_recovery_delay_s": 0.1,
+      "note": "first tested delay with mean Recovery <= 0.5 x baseline; None = not reached"
+    }
+  },
+  "groups": [
+    {
+      "intent": "goal-4",
+      "kind": "bits",
+      "value": 2,
+      "delay_s": 0.0,
+      "n_seeds": 3,
+      "successes_mean": 0.08203125,
+      "recovery_mean": 0.002905526735833998,
+      "recovery_std": 0.0003428702884294573,
+      "retained_mean": 0.004136728236688439,
+      "fall_mean": 0.01171875
+    },
+    {
+      "intent": "goal-4",
+      "kind": "bits",
+      "value": 3,
+      "delay_s": 0.0,
+      "n_seeds": 3,
+      "successes_mean": 0.3375651041666667,
+      "recovery_mean": 0.012694533120510774,
+      "recovery_std": 0.002536272823368628,
+      "retained_mean": 0.017165627679649416,
+      "fall_mean": 0.010416666666666666
+    },
+    {
+      "intent": "goal-4",
+      "kind": "bits",
+      "value": 4,
+      "delay_s": 0.0,
+      "n_seeds": 3,
+      "successes_mean": 3.1419270833333335,
+      "recovery_mean": 0.12012420191540303,
+      "recovery_std": 0.034635361293010376,
+      "retained_mean": 0.1606637441226388,
+      "fall_mean": 0.0107421875
+    },
+    {
+      "intent": "goal-4",
+      "kind": "bits",
+      "value": 8,
+      "delay_s": 0.0,
+      "n_seeds": 3,
+      "successes_mean": 20.0048828125,
+      "recovery_mean": 0.7661113328012769,
+      "recovery_std": 0.07415799376883495,
+      "retained_mean": 0.9996740769220777,
+      "fall_mean": 0.08333333333333333
+    },
+    {
+      "intent": "goal-4",
+      "kind": "delay",
+      "value": 0,
+      "delay_s": 0.0,
+      "n_seeds": 3,
+      "successes_mean": 20.0078125,
+      "recovery_mean": 0.7662235634477255,
+      "recovery_std": 0.07197947116845532,
+      "retained_mean": 1.0,
+      "fall_mean": 0.08203125
+    },
+    {
+      "intent": "goal-4",
+      "kind": "delay",
+      "value": 6,
+      "delay_s": 0.1,
+      "n_seeds": 3,
+      "successes_mean": 16.7529296875,
+      "recovery_mean": 0.6415353152434159,
+      "recovery_std": 0.05185012679345997,
+      "retained_mean": 0.8379880005341844,
+      "fall_mean": 0.056315104166666664
+    },
+    {
+      "intent": "goal-4",
+      "kind": "delay",
+      "value": 30,
+      "delay_s": 0.5,
+      "n_seeds": 3,
+      "successes_mean": 10.099934895833334,
+      "recovery_mean": 0.3866719872306464,
+      "recovery_std": 0.020312759482095207,
+      "retained_mean": 0.5060747838707974,
+      "fall_mean": 0.028645833333333332
+    },
+    {
+      "intent": "goal-4",
+      "kind": "delay",
+      "value": 60,
+      "delay_s": 1.0,
+      "n_seeds": 3,
+      "successes_mean": 6.79296875,
+      "recovery_mean": 0.2599885275339186,
+      "recovery_std": 0.007665808670805863,
+      "retained_mean": 0.3408518193088848,
+      "fall_mean": 0.027994791666666668
+    },
+    {
+      "intent": "goal-4",
+      "kind": "delay",
+      "value": 120,
+      "delay_s": 2.0,
+      "n_seeds": 3,
+      "successes_mean": 4.109375,
+      "recovery_mean": 0.15718525538707104,
+      "recovery_std": 0.005363638682568675,
+      "retained_mean": 0.20613879968083496,
+      "fall_mean": 0.0263671875
+    },
+    {
+      "intent": "hand-8",
+      "kind": "delay",
+      "value": 0,
+      "delay_s": 0.0,
+      "n_seeds": 3,
+      "successes_mean": 22.585286458333332,
+      "recovery_mean": 0.864961592178771,
+      "recovery_std": 0.11283429745508369,
+      "retained_mean": 1.0,
+      "fall_mean": 0.029622395833333332
+    },
+    {
+      "intent": "hand-8",
+      "kind": "delay",
+      "value": 6,
+      "delay_s": 0.1,
+      "n_seeds": 3,
+      "successes_mean": 0.08040364583333333,
+      "recovery_mean": 0.0028431763766959303,
+      "recovery_std": 0.0011556870754287373,
+      "retained_mean": 0.0037166090631968025,
+      "fall_mean": 0.9108072916666666
+    },
+    {
+      "intent": "hand-8",
+      "kind": "delay",
+      "value": 30,
+      "delay_s": 0.5,
+      "n_seeds": 3,
+      "successes_mean": 0.0126953125,
+      "recovery_mean": 0.00024940143655227453,
+      "recovery_std": 0.00020829126457115507,
+      "retained_mean": 0.0005903856349062471,
+      "fall_mean": 0.9700520833333334
+    },
+    {
+      "intent": "hand-8",
+      "kind": "delay",
+      "value": 60,
+      "delay_s": 1.0,
+      "n_seeds": 3,
+      "successes_mean": 0.012044270833333334,
+      "recovery_mean": 0.00022446129289704705,
+      "recovery_std": 7.787557360333198e-05,
+      "retained_mean": 0.0005387277198888684,
+      "fall_mean": 0.96484375
+    },
+    {
+      "intent": "hand-8",
+      "kind": "delay",
+      "value": 120,
+      "delay_s": 2.0,
+      "n_seeds": 3,
+      "successes_mean": 0.01171875,
+      "recovery_mean": 0.00021199122106943337,
+      "recovery_std": 9.89781266609359e-05,
+      "retained_mean": 0.0005341063109747983,
+      "fall_mean": 0.9303385416666666
+    }
+  ]
+}

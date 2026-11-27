@@ -1,0 +1,285 @@
+{
+  "model": "/home/x/xiaox/data/low-dim-intent/runs/c1-sft-vision-full-job1173965/merged_hf",
+  "reported": {
+    "blink": 69.1,
+    "mmstar": 70.9,
+    "embspatial": 78.5
+  },
+  "instruction": "Please select the correct answer from the options above. \n",
+  "results": {
+    "blink/greedy": {
+      "acc": 63.17727511835876,
+      "reported": 69.1,
+      "unmatched": 0.0,
+      "truncated": 0.0,
+      "mean_tokens": 5.104155707522357,
+      "n": 1901,
+      "seconds": 359.1384587287903,
+      "groups": {
+        "Art Style": [
+          64.1025641025641,
+          117
+        ],
+        "Counting": [
+          71.66666666666667,
+          120
+        ],
+        "Forensic Detection": [
+          84.84848484848484,
+          132
+        ],
+        "Functional Correspondence": [
+          40.76923076923077,
+          130
+        ],
+        "IQ Test": [
+          31.333333333333332,
+          150
+        ],
+        "Jigsaw": [
+          62.666666666666664,
+          150
+        ],
+        "Multi-view Reasoning": [
+          15.037593984962406,
+          133
+        ],
+        "Object Localization": [
+          66.39344262295081,
+          122
+        ],
+        "Relative Depth": [
+          84.6774193548387,
+          124
+        ],
+        "Relative Reflectance": [
+          42.53731343283582,
+          134
+        ],
+        "Semantic Correspondence": [
+          56.83453237410072,
+          139
+        ],
+        "Spatial Relation": [
+          86.01398601398601,
+          143
+        ],
+        "Visual Correspondence": [
+          89.53488372093024,
+          172
+        ],
+        "Visual Similarity": [
+          85.18518518518519,
+          135
+        ]
+      }
+    },
+    "blink/qwen": {
+      "acc": 62.70384008416623,
+      "reported": 69.1,
+      "unmatched": 0.0,
+      "truncated": 0.0,
+      "mean_tokens": 5.119936875328774,
+      "n": 1901,
+      "seconds": 358.5911774635315,
+      "groups": {
+        "Art Style": [
+          63.24786324786325,
+          117
+        ],
+        "Counting": [
+          72.5,
+          120
+        ],
+        "Forensic Detection": [
+          83.33333333333333,
+          132
+        ],
+        "Functional Correspondence": [
+          40.76923076923077,
+          130
+        ],
+        "IQ Test": [
+          28.0,
+          150
+        ],
+        "Jigsaw": [
+          60.666666666666664,
+          150
+        ],
+        "Multi-view Reasoning": [
+          17.293233082706767,
+          133
+        ],
+        "Object Localization": [
+          66.39344262295081,
+          122
+        ],
+        "Relative Depth": [
+          85.48387096774194,
+          124
+        ],
+        "Relative Reflectance": [
+          42.53731343283582,
+          134
+        ],
+        "Semantic Correspondence": [
+          55.39568345323741,
+          139
+        ],
+        "Spatial Relation": [
+          85.31468531468532,
+          143
+        ],
+        "Visual Correspondence": [
+          89.53488372093024,
+          172
+        ],
+        "Visual Similarity": [
+          85.18518518518519,
+          135
+        ]
+      }
+    },
+    "mmstar/greedy": {
+      "acc": 66.73333333333333,
+      "reported": 70.9,
+      "unmatched": 0.004666666666666667,
+      "truncated": 0.0,
+      "mean_tokens": 6.0953333333333335,
+      "n": 1500,
+      "seconds": 93.74328804016113,
+      "groups": {
+        "coarse perception": [
+          75.6,
+          250
+        ],
+        "fine-grained perception": [
+          60.4,
+          250
+        ],
+        "instance reasoning": [
+          74.8,
+          250
+        ],
+        "logical reasoning": [
+          68.0,
+          250
+        ],
+        "math": [
+          70.0,
+          250
+        ],
+        "science & technology": [
+          51.6,
+          250
+        ]
+      }
+    },
+    "mmstar/qwen": {
+      "acc": 67.33333333333333,
+      "reported": 70.9,
+      "unmatched": 0.006,
+      "truncated": 0.0,
+      "mean_tokens": 6.114,
+      "n": 1500,
+      "seconds": 84.72655034065247,
+      "groups": {
+        "coarse perception": [
+          76.8,
+          250
+        ],
+        "fine-grained perception": [
+          60.0,
+          250
+        ],
+        "instance reasoning": [
+          75.6,
+          250
+        ],
+        "logical reasoning": [
+          67.6,
+          250
+        ],
+        "math": [
+          71.2,
+          250
+        ],
+        "science & technology": [
+          52.8,
+          250
+        ]
+      }
+    },
+    "embspatial/greedy": {
+      "acc": 76.34615384615384,
+      "reported": 78.5,
+      "unmatched": 0.0,
+      "truncated": 0.0,
+      "mean_tokens": 9.553846153846154,
+      "n": 3640,
+      "seconds": 244.96737122535706,
+      "groups": {
+        "above": [
+          77.01342281879195,
+          596
+        ],
+        "close": [
+          70.91503267973856,
+          612
+        ],
+        "far": [
+          65.15151515151516,
+          594
+        ],
+        "left": [
+          87.98701298701299,
+          616
+        ],
+        "right": [
+          89.19354838709677,
+          620
+        ],
+        "under": [
+          67.10963455149502,
+          602
+        ]
+      }
+    },
+    "embspatial/qwen": {
+      "acc": 76.42857142857143,
+      "reported": 78.5,
+      "unmatched": 0.0,
+      "truncated": 0.0,
+      "mean_tokens": 9.559065934065934,
+      "n": 3640,
+      "seconds": 255.8207290172577,
+      "groups": {
+        "above": [
+          77.85234899328859,
+          596
+        ],
+        "close": [
+          70.42483660130719,
+          612
+        ],
+        "far": [
+          66.16161616161617,
+          594
+        ],
+        "left": [
+          88.14935064935065,
+          616
+        ],
+        "right": [
+          88.87096774193549,
+          620
+        ],
+        "under": [
+          66.44518272425249,
+          602
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "still_threshold_rad_s": 0.5,
+  "runs": [
+    {
+      "yaw_rate_mean_abs": 7.128302901983261,
+      "yaw_sign_consistency": 0.9932101555168629,
+      "turns_per_episode": 11.268006265163422,
+      "still_fraction": 0.05058528428093645,
+      "tilt_mean_deg": 1.9781375080347061,
+      "successes_per_episode": 21.822742104530334,
+      "envs_used": 16,
+      "trace": "student-m2-hidden-blind-seed0_trace.npz"
+    },
+    {
+      "yaw_rate_mean_abs": 5.402449071407318,
+      "yaw_sign_consistency": 0.9887313842773438,
+      "turns_per_episode": 8.501236498355865,
+      "still_fraction": 0.058214882943143816,
+      "tilt_mean_deg": 1.878640554845333,
+      "successes_per_episode": 17.87207341194153,
+      "envs_used": 16,
+      "trace": "student-m2-hidden-blind-seed1_trace.npz"
+    },
+    {
+      "yaw_rate_mean_abs": 7.111463665962219,
+      "yaw_sign_consistency": 0.9988401830196381,
+      "turns_per_episode": 11.305213809013367,
+      "still_fraction": 0.017454013377926424,
+      "tilt_mean_deg": 1.7418252676725388,
+      "successes_per_episode": 23.39046812057495,
+      "envs_used": 16,
+      "trace": "student-m2-hidden-blind-seed2_trace.npz"
+    },
+    {
+      "yaw_rate_mean_abs": 4.364434279501438,
+      "yaw_sign_consistency": 0.08807345110108145,
+      "turns_per_episode": 0.3010868744459003,
+      "still_fraction": 0.30748327759197325,
+      "tilt_mean_deg": 9.661475330591202,
+      "successes_per_episode": 22.010869413614273,
+      "envs_used": 16,
+      "trace": "student-m2-hidden-goal-yaw-hold30-seed0_trace.npz"
+    },
+    {
+      "yaw_rate_mean_abs": 6.7865656316280365,
+      "yaw_sign_consistency": 0.05530785844894126,
+      "turns_per_episode": 0.5806729402393103,
+      "still_fraction": 0.05204849498327759,
+      "tilt_mean_deg": 9.917260885238647,
+      "successes_per_episode": 36.559364557266235,
+      "envs_used": 16,
+      "trace": "student-m2-hidden-goal-yaw-seed0_trace.npz"
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "record_type": "shadow_task_switch_evaluation",
+  "cycle": [
+    "any",
+    "up",
+    "turn"
+  ],
+  "hold_steps": 10,
+  "checkpoints": {
+    "reorient": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-seed0/frozen/expert-seed0.pth",
+    "turn": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-faceturn-cap0.05_hold10_handoff-seed0/frozen/expert-faceturn-handoff-seed0.pth"
+  },
+  "seed": 20261006,
+  "num_envs": 1024,
+  "steps": 600,
+  "stall_steps": 120,
+  "selector": {
+    "hold": 1,
+    "only_expert": null,
+    "delay": 6,
+    "fraction_env_steps_kind_stale": 0.135322265625,
+    "fraction_env_steps_goal_stale": 0.135322265625,
+    "fraction_env_steps_fields_replaced": 0.135322265625,
+    "passthrough_max_abs_goal_field_diff": null
+  },
+  "hinge": {
+    "stiffness": 5.0,
+    "damping": 0.02,
+    "effort_limit": 0.05,
+    "geometry": {
+      "size": [
+        0.0600000000000005,
+        0.0600000000000005,
+        0.06000000000000005
+      ],
+      "mass_total": 0.2160000056028366,
+      "mass_base": 0.1440000037352244,
+      "mass_top": 0.0720000018676122,
+      "top_inertia_about_hinge": 4.3200001120568034e-05
+    },
+    "samples": 726016,
+    "mean_abs_angle_deg": 86.14326446253469,
+    "max_abs_angle_deg": 360.00001001791264,
+    "fraction_over_5_deg": 0.6733790990832158,
+    "fraction_over_15_deg": 0.6584386569992948,
+    "fraction_over_45_deg": 0.6461235014104373
+  },
+  "phases_completed_per_600_steps": 13.59375,
+  "cycles_completed_per_600_steps": 4.53125,
+  "falls_per_600_steps": 0.1181640625,
+  "time_outs": 909,
+  "fraction_of_steps_by_kind": {
+    "any": 0.27773274739583337,
+    "up": 0.21186848958333335,
+    "turn": 0.5103987630208333
+  },
+  "by_kind": {
+    "any": {
+      "completed_per_600_steps": 4.88671875,
+      "steps_to_complete": {
+        "n": 5004,
+        "mean": 33.00639343261719,
+        "median": 32.0,
+        "p90": 45.0,
+        "max": 239.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 5004,
+        "mean": 88.94357299804688,
+        "median": 89.19242095947266,
+        "p90": 134.42264862060546,
+        "max": 178.0555877685547
+      },
+      "falls_per_600_steps": 0.017578125,
+      "stalled_phases": 1,
+      "stalled_fraction_of_started": 0.00016299918500407498,
+      "hinge_drift_deg": {
+        "n": 5004,
+        "mean": 7.359345436096191,
+        "median": 0.2601945102214813,
+        "p90": 3.999751210212707,
+        "max": 719.9894409179688
+      },
+      "fraction_hinge_moved_over_45_deg": 0.012390087929656275
+    },
+    "up": {
+      "completed_per_600_steps": 4.7216796875,
+      "steps_to_complete": {
+        "n": 4835,
+        "mean": 26.287487030029297,
+        "median": 25.0,
+        "p90": 36.0,
+        "max": 80.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 4835,
+        "mean": 3.3263027667999268,
+        "median": 3.443953037261963,
+        "p90": 4.973402976989746,
+        "max": 5.7244720458984375
+      },
+      "falls_per_600_steps": 0.0107421875,
+      "stalled_phases": 1,
+      "stalled_fraction_of_started": 0.00019984012789768185,
+      "hinge_drift_deg": {
+        "n": 4835,
+        "mean": 6.250083923339844,
+        "median": 0.3698263466358185,
+        "p90": 4.751445007324233,
+        "max": 719.94482421875
+      },
+      "fraction_hinge_moved_over_45_deg": 0.007859358841778697
+    },
+    "turn": {
+      "completed_per_600_steps": 3.9853515625,
+      "steps_to_complete": {
+        "n": 4081,
+        "mean": 47.466796875,
+        "median": 39.0,
+        "p90": 72.0,
+        "max": 415.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 4081,
+        "mean": 5.675961017608643,
+        "median": 3.441507577896118,
+        "p90": 14.201976776123047,
+        "max": 133.02163696289062
+      },
+      "falls_per_600_steps": 0.08984375,
+      "stalled_phases": 301,
+      "stalled_fraction_of_started": 0.06225439503619441,
+      "detent_error_deg_at_completion": {
+        "n": 4081,
+        "mean": 0.03152445703744888,
+        "median": 0.009534943848848343,
+        "p90": 0.05858253315091133,
+        "max": 2.9501500129699707
+      }
+    }
+  },
+  "by_transition": {
+    "reset->any": {
+      "steps_to_complete": {
+        "n": 1137,
+        "mean": 27.306068420410156,
+        "median": 27.0,
+        "p90": 39.0,
+        "max": 89.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1137,
+        "mean": 89.75840759277344,
+        "median": 89.66539764404297,
+        "p90": 133.5139617919922,
+        "max": 176.7118682861328
+      },
+      "falls": 4,
+      "fall_fraction_of_started": 0.0035056967572304996
+    },
+    "any->up": {
+      "steps_to_complete": {
+        "n": 4835,
+        "mean": 26.287487030029297,
+        "median": 25.0,
+        "p90": 36.0,
+        "max": 80.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 4835,
+        "mean": 3.3263027667999268,
+        "median": 3.443953037261963,
+        "p90": 4.973402976989746,
+        "max": 5.7244720458984375
+      },
+      "falls": 11,
+      "fall_fraction_of_started": 0.002269913330581923
+    },
+    "up->turn": {
+      "steps_to_complete": {
+        "n": 4081,
+        "mean": 47.466796875,
+        "median": 39.0,
+        "p90": 72.0,
+        "max": 415.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 4081,
+        "mean": 5.675961017608643,
+        "median": 3.441507577896118,
+        "p90": 14.201976776123047,
+        "max": 133.02163696289062
+      },
+      "falls": 92,
+      "fall_fraction_of_started": 0.022046489336208962
+    },
+    "turn->any": {
+      "steps_to_complete": {
+        "n": 3867,
+        "mean": 34.68244171142578,
+        "median": 33.0,
+        "p90": 46.0,
+        "max": 239.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 3867,
+        "mean": 88.70398712158203,
+        "median": 88.98217010498047,
+        "p90": 134.8268249511719,
+        "max": 178.0555877685547
+      },
+      "falls": 14,
+      "fall_fraction_of_started": 0.003607317701623293
+    }
+  }
+}

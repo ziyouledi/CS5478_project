@@ -1,0 +1,279 @@
+{
+  "record_type": "p2_bfs_oracle",
+  "task": "Isaac-Unified-HingedCube-Shadow-Direct-v0",
+  "checkpoint": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-unified-cap0.05_hold10_v4-seed0/frozen/expert-unified-v4-seed0.pth",
+  "checkpoint_sha256": "ca3d9367a648a933a927e612697e2aa3fa37e66d564cff76c6ea7c8e250ca1d4",
+  "num_envs": 256,
+  "seed": 20261120,
+  "max_round_steps": 120,
+  "elapsed_s": 129.5751818889985,
+  "hold_stability": {
+    "up": {
+      "60": {
+        "n_started_reached": 256,
+        "fall_rate": 0.0,
+        "mean_tilt_deg": 3.629783868789673,
+        "mean_hinge_drift_deg": 1.321683645248413,
+        "frac_hinge_drift_over_45": 0.0
+      },
+      "120": {
+        "n_started_reached": 256,
+        "fall_rate": 0.0,
+        "mean_tilt_deg": 3.3179829120635986,
+        "mean_hinge_drift_deg": 1.4047966003417969,
+        "frac_hinge_drift_over_45": 0.0
+      },
+      "240": {
+        "n_started_reached": 256,
+        "fall_rate": 0.0,
+        "mean_tilt_deg": 3.396151542663574,
+        "mean_hinge_drift_deg": 1.4870517253875732,
+        "frac_hinge_drift_over_45": 0.0
+      }
+    },
+    "turn": {
+      "60": {
+        "n_started_reached": 256,
+        "fall_rate": 0.0,
+        "mean_tilt_deg": 5.224237442016602,
+        "mean_hinge_drift_deg": 0.350790411233902,
+        "frac_hinge_drift_over_45": 0.0
+      },
+      "120": {
+        "n_started_reached": 256,
+        "fall_rate": 0.0,
+        "mean_tilt_deg": 4.980831146240234,
+        "mean_hinge_drift_deg": 0.32697993516921997,
+        "frac_hinge_drift_over_45": 0.0
+      },
+      "240": {
+        "n_started_reached": 256,
+        "fall_rate": 0.0,
+        "mean_tilt_deg": 5.056539535522461,
+        "mean_hinge_drift_deg": 0.36640721559524536,
+        "frac_hinge_drift_over_45": 0.0
+      }
+    }
+  },
+  "bfs_closed_loop": {
+    "1": {
+      "n_episodes": 256,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_succeeded": 1.0,
+      "rounds_ratio_vs_optimal": 1.0,
+      "mean_control_steps_succeeded": 17.6640625,
+      "replan_events": 0,
+      "actions": {
+        "reorient": {
+          "started": 251,
+          "reached": 251,
+          "reach_rate": 1.0,
+          "steps_median": 17.0,
+          "steps_mean": 17.633466135458168,
+          "hinge_drift_over_45_rate": 0.0
+        },
+        "turn": {
+          "started": 5,
+          "reached": 5,
+          "reach_rate": 1.0,
+          "steps_median": 19.0,
+          "steps_mean": 19.2,
+          "hinge_drift_over_45_rate": 0.0
+        }
+      }
+    },
+    "2": {
+      "n_episodes": 256,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_succeeded": 2.015625,
+      "rounds_ratio_vs_optimal": 1.0078125,
+      "mean_control_steps_succeeded": 36.40625,
+      "replan_events": 0,
+      "actions": {
+        "reorient": {
+          "started": 256,
+          "reached": 256,
+          "reach_rate": 1.0,
+          "steps_median": 16.0,
+          "steps_mean": 17.0703125,
+          "hinge_drift_over_45_rate": 0.0
+        },
+        "turn": {
+          "started": 260,
+          "reached": 256,
+          "reach_rate": 0.9846153846153847,
+          "steps_median": 17.0,
+          "steps_mean": 17.4609375,
+          "hinge_drift_over_45_rate": 0.0
+        }
+      }
+    },
+    "3": {
+      "n_episodes": 256,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_succeeded": 3.0,
+      "rounds_ratio_vs_optimal": 1.0,
+      "mean_control_steps_succeeded": 50.28125,
+      "replan_events": 0,
+      "actions": {
+        "reorient": {
+          "started": 450,
+          "reached": 450,
+          "reach_rate": 1.0,
+          "steps_median": 16.0,
+          "steps_mean": 17.124444444444446,
+          "hinge_drift_over_45_rate": 0.0
+        },
+        "turn": {
+          "started": 318,
+          "reached": 318,
+          "reach_rate": 1.0,
+          "steps_median": 16.0,
+          "steps_mean": 16.245283018867923,
+          "hinge_drift_over_45_rate": 0.0
+        }
+      }
+    },
+    "4": {
+      "n_episodes": 256,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_succeeded": 4.0,
+      "rounds_ratio_vs_optimal": 1.0,
+      "mean_control_steps_succeeded": 63.875,
+      "replan_events": 0,
+      "actions": {
+        "reorient": {
+          "started": 512,
+          "reached": 512,
+          "reach_rate": 1.0,
+          "steps_median": 16.0,
+          "steps_mean": 16.76171875,
+          "hinge_drift_over_45_rate": 0.0
+        },
+        "turn": {
+          "started": 512,
+          "reached": 512,
+          "reach_rate": 1.0,
+          "steps_median": 15.0,
+          "steps_mean": 15.17578125,
+          "hinge_drift_over_45_rate": 0.0
+        }
+      }
+    }
+  },
+  "bfs_open_loop": {
+    "1": {
+      "n_episodes": 256,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_succeeded": 1.0,
+      "rounds_ratio_vs_optimal": 1.0,
+      "mean_control_steps_succeeded": 18.08203125,
+      "replan_events": 0,
+      "actions": {
+        "reorient": {
+          "started": 254,
+          "reached": 254,
+          "reach_rate": 1.0,
+          "steps_median": 17.0,
+          "steps_mean": 18.066929133858267,
+          "hinge_drift_over_45_rate": 0.0
+        },
+        "turn": {
+          "started": 2,
+          "reached": 2,
+          "reach_rate": 1.0,
+          "steps_median": 20.0,
+          "steps_mean": 20.0,
+          "hinge_drift_over_45_rate": 0.0
+        }
+      }
+    },
+    "2": {
+      "n_episodes": 256,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_succeeded": 2.0,
+      "rounds_ratio_vs_optimal": 1.0,
+      "mean_control_steps_succeeded": 34.41015625,
+      "replan_events": 0,
+      "actions": {
+        "reorient": {
+          "started": 256,
+          "reached": 256,
+          "reach_rate": 1.0,
+          "steps_median": 16.0,
+          "steps_mean": 17.05859375,
+          "hinge_drift_over_45_rate": 0.0
+        },
+        "turn": {
+          "started": 256,
+          "reached": 256,
+          "reach_rate": 1.0,
+          "steps_median": 17.0,
+          "steps_mean": 17.3515625,
+          "hinge_drift_over_45_rate": 0.0
+        }
+      }
+    },
+    "3": {
+      "n_episodes": 256,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_succeeded": 3.0,
+      "rounds_ratio_vs_optimal": 1.0,
+      "mean_control_steps_succeeded": 49.84375,
+      "replan_events": 0,
+      "actions": {
+        "reorient": {
+          "started": 444,
+          "reached": 444,
+          "reach_rate": 1.0,
+          "steps_median": 16.0,
+          "steps_mean": 17.07207207207207,
+          "hinge_drift_over_45_rate": 0.0
+        },
+        "turn": {
+          "started": 324,
+          "reached": 324,
+          "reach_rate": 1.0,
+          "steps_median": 15.0,
+          "steps_mean": 15.987654320987655,
+          "hinge_drift_over_45_rate": 0.0
+        }
+      }
+    },
+    "4": {
+      "n_episodes": 256,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_succeeded": 4.0,
+      "rounds_ratio_vs_optimal": 1.0,
+      "mean_control_steps_succeeded": 63.54296875,
+      "replan_events": 0,
+      "actions": {
+        "reorient": {
+          "started": 512,
+          "reached": 512,
+          "reach_rate": 1.0,
+          "steps_median": 16.0,
+          "steps_mean": 16.72265625,
+          "hinge_drift_over_45_rate": 0.0
+        },
+        "turn": {
+          "started": 512,
+          "reached": 512,
+          "reach_rate": 1.0,
+          "steps_median": 15.0,
+          "steps_mean": 15.048828125,
+          "hinge_drift_over_45_rate": 0.0
+        }
+      }
+    }
+  },
+  "gate_l2_pass": true
+}

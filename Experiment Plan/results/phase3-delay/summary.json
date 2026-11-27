@@ -1,0 +1,609 @@
+{
+  "P_E": 26.1103515625,
+  "P_B": 0.006184895833333333,
+  "recovery_definition": "(P - P_B) / (P_E - P_B)",
+  "steps_per_goal_definition": "600 / successes per episode; extra = minus T0 of the 60 Hz students (same seed for evaluation-only rows, group mean for trained rows)",
+  "waiting_line": "Recovery = (600 / (T0 + wait) - P_B) / (P_E - P_B); wait = d (delay), (N - 1) / 2 (hold)",
+  "status": "PASS",
+  "failures": [],
+  "waiting_model": {
+    "max_abs_recovery_error_eval_only": 0.00708851666625504,
+    "max_abs_wait_error_steps_eval_only": 6.3903574994041605,
+    "t0_steps_per_seed": {
+      "0": 27.178625143767142,
+      "1": 32.597623089983024,
+      "2": 30.70464767616192
+    },
+    "t0_steps_mean": 29.988285825849278
+  },
+  "groups": [
+    {
+      "intent": "goal-4",
+      "channel": "delay",
+      "value": 0,
+      "seconds": 0.0,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 0,
+      "recovery_mean": 0.7662235634477255,
+      "recovery_sd": 0.07197947116845532,
+      "recovery_values": [
+        0.8454583998403831,
+        0.7048708100558659,
+        0.7483414804469274
+      ],
+      "successes_mean": 20.0078125,
+      "line_recovery_mean": 0.7662235634477255,
+      "steps_per_goal_mean": 30.16029863663736,
+      "extra_steps_mean": 0.0,
+      "extra_steps_sd": 0.0,
+      "extra_steps_values": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "fall_mean": 0.08203125,
+      "fall_max": 0.0888671875
+    },
+    {
+      "intent": "goal-4",
+      "channel": "delay",
+      "value": 6,
+      "seconds": 0.1,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 6,
+      "recovery_mean": 0.6415353152434159,
+      "recovery_sd": 0.05185012679345997,
+      "recovery_values": [
+        0.6983240223463687,
+        0.596717877094972,
+        0.6295640462889066
+      ],
+      "successes_mean": 16.7529296875,
+      "line_recovery_mean": 0.6379196126395407,
+      "steps_per_goal_mean": 35.967332249255456,
+      "extra_steps_mean": 5.807033612618089,
+      "extra_steps_sd": 0.09176914823056505,
+      "extra_steps_values": [
+        5.724497011215988,
+        5.9058550074037015,
+        5.7907488192345795
+      ],
+      "fall_mean": 0.056315104166666664,
+      "fall_max": 0.06640625
+    },
+    {
+      "intent": "goal-4",
+      "channel": "delay",
+      "value": 6,
+      "seconds": 0.1,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 6,
+      "recovery_mean": 0.6277309457302473,
+      "recovery_sd": 0.009297849791556933,
+      "recovery_values": [
+        0.6183409816440543,
+        0.6369338587390263,
+        0.6279179968076616
+      ],
+      "successes_mean": 16.392578125,
+      "line_recovery_mean": 0.6384385672095454,
+      "steps_per_goal_mean": 36.60728311641893,
+      "extra_steps_mean": 6.618997290569649,
+      "extra_steps_sd": 0.5423180557253136,
+      "extra_steps_values": [
+        7.169258776509356,
+        6.084988011633111,
+        6.602745083566479
+      ],
+      "fall_mean": 0.06380208333333333,
+      "fall_max": 0.0888671875,
+      "eval_only_recovery_mean": 0.6415353152434159,
+      "p_vs_eval_only": 0.6920150439445152,
+      "late_gain_values": [
+        0.07526935355147646,
+        0.06991969273743015,
+        0.04448074620909814
+      ]
+    },
+    {
+      "intent": "goal-4",
+      "channel": "delay",
+      "value": 30,
+      "seconds": 0.5,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 30,
+      "recovery_mean": 0.3866719872306464,
+      "recovery_sd": 0.020312759482095207,
+      "recovery_values": [
+        0.40873154429369507,
+        0.36874002394253785,
+        0.3825443934557063
+      ],
+      "successes_mean": 10.099934895833334,
+      "line_recovery_mean": 0.382363319880544,
+      "steps_per_goal_mean": 59.51410245080396,
+      "extra_steps_mean": 29.353803814166593,
+      "extra_steps_sd": 0.33637152105438856,
+      "extra_steps_values": [
+        29.02335070694636,
+        29.695796761988994,
+        29.342263973564428
+      ],
+      "fall_mean": 0.028645833333333332,
+      "fall_max": 0.037109375
+    },
+    {
+      "intent": "goal-4",
+      "channel": "delay",
+      "value": 30,
+      "seconds": 0.5,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 30,
+      "recovery_mean": 0.25710794094173983,
+      "recovery_sd": 0.014851996894436555,
+      "recovery_values": [
+        0.26631085395051873,
+        0.23997406225059856,
+        0.2650389066241022
+      ],
+      "successes_mean": 6.7177734375,
+      "line_recovery_mean": 0.38291848100002285,
+      "steps_per_goal_mean": 89.52088405766663,
+      "extra_steps_mean": 59.53259823181736,
+      "extra_steps_sd": 5.343174007465861,
+      "extra_steps_values": [
+        56.243293121519145,
+        65.69774438751313,
+        56.656757186419796
+      ],
+      "fall_mean": 0.041666666666666664,
+      "fall_max": 0.0615234375,
+      "eval_only_recovery_mean": 0.3866719872306464,
+      "p_vs_eval_only": 0.001297024256567426,
+      "late_gain_values": [
+        -0.027272047086991213,
+        0.04294692737430167,
+        0.010587090981644065
+      ]
+    },
+    {
+      "intent": "goal-4",
+      "channel": "delay",
+      "value": 60,
+      "seconds": 1.0,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 60,
+      "recovery_mean": 0.2599885275339186,
+      "recovery_sd": 0.007665808670805863,
+      "recovery_values": [
+        0.2683310055865922,
+        0.2532546887470072,
+        0.25837988826815644
+      ],
+      "successes_mean": 6.79296875,
+      "line_recovery_mean": 0.2548557421267415,
+      "steps_per_goal_mean": 88.37731477957375,
+      "extra_steps_mean": 58.21701614293639,
+      "extra_steps_sd": 0.16917310953912934,
+      "extra_steps_values": [
+        58.404325127858435,
+        58.075340310253104,
+        58.171382990697616
+      ],
+      "fall_mean": 0.027994791666666668,
+      "fall_max": 0.0341796875
+    },
+    {
+      "intent": "goal-4",
+      "channel": "delay",
+      "value": 60,
+      "seconds": 1.0,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 60,
+      "recovery_mean": 0.18846019553072627,
+      "recovery_sd": 0.0067715590247071356,
+      "recovery_values": [
+        0.18853501596169195,
+        0.18165153631284917,
+        0.19519403431763768
+      ],
+      "successes_mean": 4.92578125,
+      "line_recovery_mean": 0.2551833845321606,
+      "steps_per_goal_mean": 121.91286189371652,
+      "extra_steps_mean": 91.92457606786725,
+      "extra_steps_sd": 4.38036778412778,
+      "extra_steps_values": [
+        91.77152392444799,
+        96.37946407131238,
+        87.62274020784139
+      ],
+      "fall_mean": 0.0498046875,
+      "fall_max": 0.056640625,
+      "eval_only_recovery_mean": 0.2599885275339186,
+      "p_vs_eval_only": 0.00029055705505987543,
+      "late_gain_values": [
+        0.017844672785315235,
+        -0.002469074221867512,
+        0.01750798084596969
+      ]
+    },
+    {
+      "intent": "goal-4",
+      "channel": "delay",
+      "value": 120,
+      "seconds": 2.0,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 120,
+      "recovery_mean": 0.15718525538707104,
+      "recovery_sd": 0.005363638682568675,
+      "recovery_values": [
+        0.16302124900239426,
+        0.15247156823623303,
+        0.1560629489225858
+      ],
+      "successes_mean": 4.109375,
+      "line_recovery_mean": 0.15286615429957454,
+      "steps_per_goal_mean": 146.1195763342324,
+      "extra_steps_mean": 115.95927769759503,
+      "extra_steps_sd": 2.180198096410104,
+      "extra_steps_values": [
+        113.60964250059584,
+        117.91683060918405,
+        116.35135998300515
+      ],
+      "fall_mean": 0.0263671875,
+      "fall_max": 0.0322265625
+    },
+    {
+      "intent": "goal-4",
+      "channel": "hold",
+      "value": 6,
+      "seconds": 0.1,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 2.5,
+      "recovery_mean": 0.7071777733439745,
+      "recovery_sd": 0.01060144606730422,
+      "recovery_values": [
+        0.7163183359936154,
+        0.6955556664006385,
+        0.7096593176376697
+      ],
+      "successes_mean": 18.466471354166668,
+      "line_recovery_mean": 0.7072438054111675,
+      "steps_per_goal_mean": 32.49620839324753,
+      "extra_steps_mean": 2.50792256739825,
+      "extra_steps_sd": 0.4894649971374947,
+      "extra_steps_values": [
+        2.088564962497802,
+        3.04574826200491,
+        2.3894544776920377
+      ],
+      "fall_mean": 0.07194010416666667,
+      "fall_max": 0.0859375
+    },
+    {
+      "intent": "goal-4",
+      "channel": "hold",
+      "value": 12,
+      "seconds": 0.2,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 5.5,
+      "recovery_mean": 0.6477329409417399,
+      "recovery_sd": 0.017177862283259893,
+      "recovery_values": [
+        0.6595670391061452,
+        0.6280302274541102,
+        0.6556015562649641
+      ],
+      "successes_mean": 16.914713541666668,
+      "line_recovery_mean": 0.647436966029207,
+      "steps_per_goal_mean": 35.488946658990265,
+      "extra_steps_mean": 5.5006608331409845,
+      "extra_steps_sd": 0.9545995333633064,
+      "extra_steps_values": [
+        4.847570612320478,
+        6.596208636458687,
+        5.058203250643789
+      ],
+      "fall_mean": 0.046223958333333336,
+      "fall_max": 0.060546875
+    },
+    {
+      "intent": "goal-4",
+      "channel": "hold",
+      "value": 30,
+      "seconds": 0.5,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 14.5,
+      "recovery_mean": 0.42571578212290495,
+      "recovery_sd": 0.027936364904711283,
+      "recovery_values": [
+        0.39661063447725453,
+        0.4523144453312051,
+        0.42822226656025536
+      ],
+      "successes_mean": 11.119140625,
+      "line_recovery_mean": 0.5164122486606072,
+      "steps_per_goal_mean": 54.11777902230914,
+      "extra_steps_mean": 24.129493196459862,
+      "extra_steps_sd": 3.587954980487783,
+      "extra_steps_values": [
+        27.930266210349817,
+        20.801166104381355,
+        23.65704727464841
+      ],
+      "fall_mean": 0.06966145833333333,
+      "fall_max": 0.0712890625
+    },
+    {
+      "intent": "hand-8",
+      "channel": "delay",
+      "value": 0,
+      "seconds": 0.0,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 0,
+      "recovery_mean": 0.864961592178771,
+      "recovery_sd": 0.11283429745508369,
+      "recovery_values": [
+        0.874226855546688,
+        0.7477803272146848,
+        0.9728775937749401
+      ],
+      "successes_mean": 22.585286458333332,
+      "line_recovery_mean": 0.864961592178771,
+      "steps_per_goal_mean": 26.877347217478118,
+      "extra_steps_mean": 0.0,
+      "extra_steps_sd": 0.0,
+      "extra_steps_values": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "fall_mean": 0.029622395833333332,
+      "fall_max": 0.0439453125
+    },
+    {
+      "intent": "hand-8",
+      "channel": "delay",
+      "value": 6,
+      "seconds": 0.1,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 6,
+      "recovery_mean": 0.0028431763766959303,
+      "recovery_sd": 0.0011556870754287373,
+      "recovery_values": [
+        0.0030551675977653634,
+        0.0038781923383878693,
+        0.001596169193934557
+      ],
+      "successes_mean": 0.08040364583333333,
+      "line_recovery_mean": 0.7043491804599623,
+      "steps_per_goal_mean": 8368.682745825603,
+      "extra_steps_mean": 8341.805398608125,
+      "extra_steps_sd": 3681.467660389252,
+      "extra_steps_values": [
+        6955.533689839573,
+        5554.726863534065,
+        12515.155642450736
+      ],
+      "fall_mean": 0.9108072916666666,
+      "fall_max": 0.9951171875
+    },
+    {
+      "intent": "hand-8",
+      "channel": "delay",
+      "value": 6,
+      "seconds": 0.1,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 6,
+      "recovery_mean": 0.0907696528332003,
+      "recovery_sd": 0.14724986027140152,
+      "recovery_values": [
+        0.008292597765363128,
+        0.26077414205905824,
+        0.003242218675179569
+      ],
+      "successes_mean": 2.3756510416666665,
+      "line_recovery_mean": 0.7055561931939686,
+      "steps_per_goal_mean": 3129.7497420378495,
+      "extra_steps_mean": 3103.1837739193174,
+      "extra_steps_sd": 3280.896517560462,
+      "extra_steps_values": [
+        2668.1708739867313,
+        61.494802986527304,
+        6579.885644784693
+      ],
+      "fall_mean": 0.0390625,
+      "fall_max": 0.0556640625,
+      "eval_only_recovery_mean": 0.0028431763766959303,
+      "p_vs_eval_only": 0.40969144594101065,
+      "late_gain_values": [
+        0.001982741420590582,
+        0.008566939345570623,
+        0.002730945730247406
+      ]
+    },
+    {
+      "intent": "hand-8",
+      "channel": "delay",
+      "value": 30,
+      "seconds": 0.5,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 30,
+      "recovery_mean": 0.00024940143655227453,
+      "recovery_sd": 0.00020829126457115507,
+      "recovery_values": [
+        0.00021199122106943337,
+        0.00047386272944932166,
+        6.235035913806865e-05
+      ],
+      "successes_mean": 0.0126953125,
+      "line_recovery_mean": 0.40493701979632,
+      "steps_per_goal_mean": 53445.61403508772,
+      "extra_steps_mean": 53418.73668787025,
+      "extra_steps_sd": 22319.973636377974,
+      "extra_steps_values": [
+        51173.71550802139,
+        32306.114423342675,
+        76776.38013224666
+      ],
+      "fall_mean": 0.9700520833333334,
+      "fall_max": 0.99609375
+    },
+    {
+      "intent": "hand-8",
+      "channel": "delay",
+      "value": 60,
+      "seconds": 1.0,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 60,
+      "recovery_mean": 0.00022446129289704705,
+      "recovery_sd": 7.787557360333198e-05,
+      "recovery_values": [
+        0.000137170790103751,
+        0.00024940143655227453,
+        0.0002868116520351157
+      ],
+      "successes_mean": 0.012044270833333334,
+      "line_recovery_mean": 0.2646283937578482,
+      "steps_per_goal_mean": 50862.41758241758,
+      "extra_steps_mean": 50835.540235200104,
+      "extra_steps_sd": 9314.526641661389,
+      "extra_steps_values": [
+        61413.71550802139,
+        47230.81077961798,
+        43862.094417960936
+      ],
+      "fall_mean": 0.96484375,
+      "fall_max": 0.9951171875
+    },
+    {
+      "intent": "hand-8",
+      "channel": "delay",
+      "value": 120,
+      "seconds": 2.0,
+      "trained_under": false,
+      "n_seeds": 3,
+      "wait_steps": 120,
+      "recovery_mean": 0.00021199122106943337,
+      "recovery_sd": 9.89781266609359e-05,
+      "recovery_values": [
+        0.00024940143655227453,
+        0.0002868116520351157,
+        9.976057462090982e-05
+      ],
+      "successes_mean": 0.01171875,
+      "line_recovery_mean": 0.15631509518236955,
+      "steps_per_goal_mean": 53137.97313797314,
+      "extra_steps_mean": 53111.095790755666,
+      "extra_steps_sd": 13213.19446049965,
+      "extra_steps_values": [
+        47235.25396955985,
+        43854.986603793805,
+        68243.04679891333
+      ],
+      "fall_mean": 0.9303385416666666,
+      "fall_max": 0.9736328125
+    },
+    {
+      "intent": "hand-8",
+      "channel": "hold",
+      "value": 6,
+      "seconds": 0.1,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 2.5,
+      "recovery_mean": 0.17803521548284118,
+      "recovery_sd": 0.10512257459313676,
+      "recovery_values": [
+        0.294518156424581,
+        0.09022096967278531,
+        0.14936652035115722
+      ],
+      "successes_mean": 4.653645833333333,
+      "line_recovery_mean": 0.7905447931222952,
+      "steps_per_goal_mean": 161.90404714049143,
+      "extra_steps_mean": 135.33807902195923,
+      "extra_steps_sd": 88.34789756526072,
+      "extra_steps_values": [
+        51.413470896571255,
+        227.52832468543804,
+        127.07244148386842
+      ],
+      "fall_mean": 0.016276041666666668,
+      "fall_max": 0.017578125
+    },
+    {
+      "intent": "hand-8",
+      "channel": "hold",
+      "value": 12,
+      "seconds": 0.2,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 5.5,
+      "recovery_mean": 0.09586991221069434,
+      "recovery_sd": 0.0326551325926484,
+      "recovery_values": [
+        0.0750324221867518,
+        0.13350458898643255,
+        0.07907272545889864
+      ],
+      "successes_mean": 2.5087890625,
+      "line_recovery_mean": 0.7165615232365502,
+      "steps_per_goal_mean": 255.67975128513785,
+      "extra_steps_mean": 229.11378316660566,
+      "extra_steps_sd": 73.00545461558957,
+      "extra_steps_values": [
+        278.80182512202447,
+        145.29417174160767,
+        263.2453526361848
+      ],
+      "fall_mean": 0.0322265625,
+      "fall_max": 0.0517578125
+    },
+    {
+      "intent": "hand-8",
+      "channel": "hold",
+      "value": 30,
+      "seconds": 0.5,
+      "trained_under": true,
+      "n_seeds": 3,
+      "wait_steps": 14.5,
+      "recovery_mean": 0.021298882681564244,
+      "recovery_sd": 0.016812149728058053,
+      "recovery_values": [
+        0.038931564245810055,
+        0.0054494213886671986,
+        0.01951566241021548
+      ],
+      "successes_mean": 0.5621744791666666,
+      "line_recovery_mean": 0.5594682806569313,
+      "steps_per_goal_mean": 1930.8537036783155,
+      "extra_steps_mean": 1904.2877355597832,
+      "extra_steps_sd": 1851.0042648904564,
+      "extra_steps_values": [
+        560.2535161221555,
+        4015.5392950393625,
+        1137.0703955178315
+      ],
+      "fall_mean": 0.0361328125,
+      "fall_max": 0.046875
+    }
+  ]
+}

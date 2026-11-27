@@ -1,0 +1,2 @@
+iteration,mean_successes_per_episode,std_successes_per_episode,fraction_episodes_with_success,mean_episode_reward,std_episode_reward,mean_episode_length,fall_fraction
+15000,31.7744140625,7.839259773556573,0.9658203125,11069.582220267688,2696.61151304203,587.4326171875,0.029296875
