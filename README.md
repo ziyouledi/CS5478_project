@@ -2,7 +2,7 @@
 
 **Content, rate, and validity windows in low-dimensional intent interfaces** — CS5478 (NUS SoC), Team 34.
 
-<!-- VIDEO: drag Docs/Demo/videos/github_teaser.mp4 into the GitHub editor here; GitHub replaces this line with a user-attachments link that renders as a player. -->
+https://github.com/user-attachments/assets/4ac2db1f-b76f-4386-b123-20ce4ee6de7c
 
 Vision-language models plan at 0.2–2 Hz; a dexterous hand needs 60 Hz closed-loop control.
 This project asks what a low-dimensional *intent* sent from a slow planner to a fast Shadow Hand controller should contain.
@@ -27,7 +27,9 @@ The three tasks are:
 
 ## Demos
 
-<!-- VIDEO: full demo, Docs/Demo/videos/github_full_demo.mp4 (Acts 0–5) -->
+Full demo (Acts 0–5):
+
+https://github.com/user-attachments/assets/bb6c1e9f-7291-45bb-9175-90c29993c85e
 
 | Clip | What it shows |
 | --- | --- |
