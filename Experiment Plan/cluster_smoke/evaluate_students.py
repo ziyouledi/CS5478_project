@@ -30,8 +30,9 @@ parser.add_argument("--checkpoint_stride", type=int, default=1)
 parser.add_argument("--last_checkpoint_only", action="store_true", help="Evaluate only the final periodic checkpoint")
 parser.add_argument("--intent_hold", type=int, default=None,
                     help="Refresh the intent every N episode steps (zero-order hold); default: intent.json value or 1")
-parser.add_argument("--intent_delay", type=int, default=0,
-                    help="Actor sees the intent computed this many control steps earlier in the episode (evaluation only)")
+parser.add_argument("--intent_delay", type=int, default=None,
+                    help="Actor sees the intent computed this many control steps earlier in the episode; "
+                         "default: intent.json value or 0")
 parser.add_argument("--intent_bits", type=int, default=0,
                     help="Clip each intent component to [-1, 1] and round to 2**bits levels; 0 = off (evaluation only)")
 parser.add_argument("--num_envs", type=int, default=1024, help="Episodes per checkpoint (one per environment)")
@@ -54,6 +55,7 @@ import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
 import m2_tasks  # noqa: F401  registers Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0
+import hinged_cube_tasks  # noqa: F401  registers the face-turn task
 from intent_env_wrapper import IntentRlGamesVecEnvWrapper
 from intent_modules import build_intent, sha256
 from student_eval_utils import FirstEpisodeTracker, list_checkpoints
@@ -85,6 +87,18 @@ def main(env_cfg, agent_cfg: dict) -> None:
     record = load_intent_record(run_dir)
     if record.get("task") and record["task"] != args_cli.task:
         raise ValueError(f"--task {args_cli.task} differs from the training task {record['task']} in intent.json")
+    if args_cli.task == hinged_cube_tasks.FACE_TURN_TASK:
+        # hinged_cube_env.py reads these from the environment; they must be the training values.
+        current = {
+            "hinge_effort_limit": float(os.environ.get("HINGE_EFFORT_LIMIT", "0.1")),
+            "face_turn_hold_steps": int(os.environ.get("FACE_TURN_HOLD_STEPS", "1")),
+        }
+        for key, value in current.items():
+            if record.get(key) is not None and record[key] != value:
+                raise ValueError(f"{key}={value} differs from the training value {record[key]} in intent.json")
+        if os.environ.get("FACE_TURN_START_STATES"):
+            raise ValueError("FACE_TURN_START_STATES must be unset for evaluation (flat start only)")
+        record = {**record, "evaluation_face_turn_settings": current}
     pca_basis = record.get("pca_basis")
     if pca_basis and record.get("pca_basis_sha256") and sha256(Path(pca_basis)) != record["pca_basis_sha256"]:
         raise ValueError(f"PCA basis {pca_basis} changed since training")
@@ -113,9 +127,13 @@ def main(env_cfg, agent_cfg: dict) -> None:
     goal_hidden = bool(record.get("goal_hidden", False))
     trained_hold = int(record.get("intent_hold", 1))
     intent_hold = trained_hold if args_cli.intent_hold is None else args_cli.intent_hold
+    trained_delay = int(record.get("intent_delay", 0) or 0)
+    action_hold = int(record.get("action_hold", 1) or 1)
+    intent_delay = trained_delay if args_cli.intent_delay is None else args_cli.intent_delay
     env = IntentRlGamesVecEnvWrapper(
         base_env, rl_device, clip_obs, clip_actions, intent, goal_hidden=goal_hidden, intent_hold=intent_hold,
-        intent_delay=args_cli.intent_delay, intent_bits=args_cli.intent_bits,
+        intent_delay=intent_delay, intent_bits=args_cli.intent_bits, action_hold=action_hold,
+        hinge_angle=bool(record.get("hinge_angle_obs", False)),
     )
     vecenv.register(
         "IsaacRlgWrapper", lambda config_name, num_actors, **kwargs: RlGamesGpuEnv(config_name, num_actors, **kwargs)
@@ -191,11 +209,15 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "intent_hold": intent_hold,
         "intent_hold_trained": trained_hold,
         "intent_hold_rule": "intent recomputed when episode step % intent_hold == 0, held otherwise",
-        "intent_delay": args_cli.intent_delay,
+        "intent_delay": intent_delay,
+        "intent_delay_trained": trained_delay,
+        "action_hold": action_hold,
+        "action_hold_rule": "policy action applied when episode step % action_hold == 0, repeated otherwise (as trained)",
         "intent_delay_rule": "actor sees the intent of episode step max(t - intent_delay, 0)",
         "intent_bits": args_cli.intent_bits,
         "intent_bits_rule": "each component clipped to [-1, 1] and rounded to 2**bits evenly spaced levels; 0 = off",
         "actor_obs_dim": env.actor_obs_dim,
+        "hinge_angle_obs": bool(record.get("hinge_angle_obs", False)),
         "deterministic": True,
         "seed": args_cli.seed,
         "episodes_per_checkpoint": args_cli.num_envs,

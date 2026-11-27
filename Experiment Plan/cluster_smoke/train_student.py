@@ -41,7 +41,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--task", default="Isaac-Repose-Cube-Shadow-Direct-v0")
 parser.add_argument("--agent", default="rl_games_cfg_entry_point")
 parser.add_argument("--intent", required=True,
-                    help="blind | hand-K | joint-K | wrist-2 | wrist2-finger-K | obj-1|3|4 | goal-4 | goal-yaw | goal-7")
+                    help="blind | hand-K | joint-K | wrist-2 | wrist2-finger-K | obj-1|3|4 | goal-4 | goal-yaw | goal-7 | goal-11")
 parser.add_argument("--expert_checkpoint", default=None)
 parser.add_argument("--expert_sha256", default=None)
 parser.add_argument("--pca_basis", default=None)
@@ -224,9 +224,12 @@ def main(env_cfg, agent_cfg: dict) -> None:
         intent_record["face_turn_start_states"] = os.environ.get("FACE_TURN_START_STATES") or None
     elif unified:
         settings = {key: os.environ.get(key, default) for key, default in UNIFIED_ENV_DEFAULTS.items()}
-        if settings["UNIFIED_EXTRA_OBS"] == "0" or settings["UNIFIED_CYCLE"]:
-            raise ValueError("Unified students train on the v4 env: UNIFIED_EXTRA_OBS=1, random goal order")
+        diag = os.environ.get("E3_DIAG", "")
+        if settings["UNIFIED_EXTRA_OBS"] == "0" or (settings["UNIFIED_CYCLE"] and diag != "anyonly"):
+            raise ValueError("Unified students train on the v4 env: UNIFIED_EXTRA_OBS=1, random goal order "
+                             "(a fixed order only for the E3_DIAG=anyonly diagnostic)")
         intent_record["unified_env"] = settings
+        intent_record["e3_diag"] = diag or None
         start = settings["UNIFIED_START_STATES"]
         intent_record["unified_start_states_sha256"] = sha256(Path(start).expanduser()) if start else None
     elif args_cli.hinge_angle_obs:

@@ -98,11 +98,15 @@ def main() -> None:
         checks["goal7_quat"] = torch.equal(g7[:, :4], canonical_quat(obs[:, 64:68]))
         checks["goal7_hinge_goal"] = float((g7[:, 4:6] - torch.stack([goal.sin(), goal.cos()], 1)).abs().max()) < 1e-5
         checks["goal7_is_turn"] = torch.equal(g7[:, 6], (kind == TURN).float())
+        g11 = build_intent("goal-11", **common, unified=True)(ext)
+        checks["goal11_shape"] = tuple(g11.shape) == (N, 11)
+        checks["goal11_prefix_is_goal7"] = torch.equal(g11[:, :7], g7)
+        checks["goal11_relative_rot"] = torch.equal(g11[:, 7:], obs[:, 68:72])
         h8 = build_intent("hand-8", **common, unified=True)
         checks["hand8_uses_first_162"] = torch.allclose(h8(ext), (actions - mu) @ vec[:, :8], atol=1e-5)
         checks["blind_dim0"] = build_intent("blind", **common, unified=True)(ext).shape == (N, 0)
         rejected = []
-        for name, kwargs in (("goal-4", {"unified": True}), ("goal-7", {"unified": False}), ("hand-8", {"unified": False})):
+        for name, kwargs in (("goal-4", {"unified": True}), ("goal-7", {"unified": False}), ("goal-11", {"unified": False}), ("hand-8", {"unified": False})):
             try:
                 build_intent(name, **common, **kwargs)
                 rejected.append(False)

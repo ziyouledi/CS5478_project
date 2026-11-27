@@ -21,12 +21,33 @@ export PYTHONUNBUFFERED=1
 export OMNI_KIT_ACCEPT_EULA=YES
 export XDG_CACHE_HOME="${HOME}/data/low-dim-intent/cache/xdg"
 
-num_envs=2048
-seed=0
+num_envs="${EXPERT_NUM_ENVS:-2048}"
+seed="${EXPERT_SEED:-0}"
 # EXPERT_TASK=m2 trains the M2 task (shadow_zaxis_env.py); unset keeps the Stage 1 command unchanged.
 case "${EXPERT_TASK:-stage1}" in
     stage1) task=Isaac-Repose-Cube-Shadow-Direct-v0; run_prefix=expert; launcher=() ;;
     m2) task=Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0; run_prefix=expert-m2
+        launcher=("${SLURM_SUBMIT_DIR}/run_with_m2_tasks.py") ;;
+    faceturn) task=Isaac-FaceTurn-HingedCube-Shadow-Direct-v0
+        # Face-turn task on the hinged cube (hinged_cube_env.py). Needs HINGE_REFERENCE_JSON; the
+        # detent torque cap comes from HINGE_EFFORT_LIMIT (N m).
+        : "${HINGE_REFERENCE_JSON:?EXPERT_TASK=faceturn needs HINGE_REFERENCE_JSON}"
+        export HINGE_EFFORT_LIMIT="${HINGE_EFFORT_LIMIT:-0.1}"
+        export FACE_TURN_HOLD_STEPS="${FACE_TURN_HOLD_STEPS:-1}"
+        faceturn_tag="cap${HINGE_EFFORT_LIMIT}"
+        if [[ "${FACE_TURN_HOLD_STEPS}" != 1 ]]; then faceturn_tag+="_hold${FACE_TURN_HOLD_STEPS}"; fi
+        # FACE_TURN_START_STATES: npz of start states left by another skill (see hinged_cube_env.py)
+        if [[ -n "${FACE_TURN_START_STATES:-}" ]]; then faceturn_tag+="_handoff"; fi
+        run_prefix="expert-faceturn-${faceturn_tag}"
+        launcher=("${SLURM_SUBMIT_DIR}/run_with_m2_tasks.py") ;;
+    unified) task=Isaac-Unified-HingedCube-Shadow-Direct-v0
+        # One policy for reorientation and face turns (hinged_cube_env.py: ShadowHandUnifiedEnv).
+        : "${HINGE_REFERENCE_JSON:?EXPERT_TASK=unified needs HINGE_REFERENCE_JSON}"
+        export HINGE_EFFORT_LIMIT="${HINGE_EFFORT_LIMIT:-0.05}"
+        export FACE_TURN_HOLD_STEPS="${FACE_TURN_HOLD_STEPS:-10}"
+        faceturn_tag="cap${HINGE_EFFORT_LIMIT}_hold${FACE_TURN_HOLD_STEPS}"
+        if [[ -n "${UNIFIED_TAG:-}" ]]; then faceturn_tag+="_${UNIFIED_TAG}"; fi
+        run_prefix="expert-unified-${faceturn_tag}"
         launcher=("${SLURM_SUBMIT_DIR}/run_with_m2_tasks.py") ;;
     *) echo "unknown EXPERT_TASK=${EXPERT_TASK}" >&2; exit 2 ;;
 esac
@@ -63,6 +84,21 @@ cp "${agent_cfg_file}" "${metadata_dir}/rl_games_ppo_cfg.yaml"
 cp "${SLURM_SUBMIT_DIR}/08_train_expert.sbatch" "${metadata_dir}/08_train_expert.sbatch"
 if [[ "${EXPERT_TASK:-stage1}" == m2 ]]; then
     cp "${SLURM_SUBMIT_DIR}"/{m2_tasks.py,shadow_zaxis_env.py,run_with_m2_tasks.py} "${metadata_dir}/"
+fi
+if [[ "${EXPERT_TASK:-stage1}" == faceturn || "${EXPERT_TASK:-stage1}" == unified ]]; then
+    cp "${SLURM_SUBMIT_DIR}"/{hinged_cube_tasks.py,hinged_cube_env.py,m2_tasks.py,run_with_m2_tasks.py} "${metadata_dir}/"
+    cp "${HINGE_REFERENCE_JSON}" "${metadata_dir}/hinge_reference.json"
+    export HINGE_ASSET_DIR="${run_root}/asset"
+    echo "hinge_reference_json=${HINGE_REFERENCE_JSON}"
+    echo "hinge_effort_limit=${HINGE_EFFORT_LIMIT}"
+    echo "face_turn_hold_steps=${FACE_TURN_HOLD_STEPS}"
+    echo "face_turn_start_states=${FACE_TURN_START_STATES:-none}"
+    echo "face_turn_start_fraction=${FACE_TURN_START_FRACTION:-0.5}"
+    if [[ -n "${FACE_TURN_START_STATES:-}" ]]; then
+        echo "face_turn_start_states_sha256=$(sha256sum "${FACE_TURN_START_STATES}" | cut -d' ' -f1)"
+    fi
+    echo "hinge_stiffness=${HINGE_STIFFNESS:-5.0}"
+    echo "hinge_damping=${HINGE_DAMPING:-0.02}"
 fi
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
@@ -113,9 +149,30 @@ fi
 if [[ "${EXPERT_TASK:-stage1}" == m2 ]]; then
     train_args+=(agent.params.config.name=shadow_hand_zaxis)
 fi
+if [[ "${EXPERT_TASK:-stage1}" == faceturn ]]; then
+    train_args+=("agent.params.config.name=shadow_hand_faceturn_${faceturn_tag}")
+fi
+if [[ "${EXPERT_TASK:-stage1}" == unified ]]; then
+    train_args+=("agent.params.config.name=shadow_hand_unified_${faceturn_tag}")
+    echo "unified_tag=${UNIFIED_TAG:-none}"
+    echo "unified_turn_orient_tol=${UNIFIED_TURN_ORIENT_TOL:-0.4}"
+    echo "unified_max_phase_steps=${UNIFIED_MAX_PHASE_STEPS:-120}"
+    echo "unified_timeout_terminates=${UNIFIED_TIMEOUT_TERMINATES:-1}"
+    echo "unified_hinge_prog_scale=${UNIFIED_HINGE_PROG_SCALE:-30.0}"
+    echo "unified_orient_prog_scale=${UNIFIED_ORIENT_PROG_SCALE:-15.0}"
+    echo "unified_hold_prog_scale=${UNIFIED_HOLD_PROG_SCALE:-5.0}"
+    echo "unified_alive_bonus=${UNIFIED_ALIVE_BONUS:-0.5}"
+    echo "unified_fall_penalty=${UNIFIED_FALL_PENALTY:--15.0}"
+    echo "unified_extra_obs=${UNIFIED_EXTRA_OBS:-1}"
+    echo "unified_start_states=${UNIFIED_START_STATES:-none}"
+    echo "unified_start_fraction=${UNIFIED_START_FRACTION:-0.5}"
+    if [[ -n "${UNIFIED_START_STATES:-}" ]]; then
+        echo "unified_start_states_sha256=$(sha256sum "${UNIFIED_START_STATES}" | cut -d' ' -f1)"
+    fi
+fi
 
 set +e
-/usr/bin/time -p timeout --signal=INT --kill-after=60s 20700s \
+/usr/bin/time -p timeout --signal=INT --kill-after=60s "${EXPERT_TIMEOUT_S:-20700}s" \
     ./isaaclab.sh -p "${launcher[@]}" scripts/reinforcement_learning/rl_games/train.py "${train_args[@]}" \
     2>&1 | tee "${run_log}"
 command_status=$?

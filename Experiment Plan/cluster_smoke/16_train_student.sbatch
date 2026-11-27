@@ -127,7 +127,13 @@ if ! [[ "${action_hold}" =~ ^[1-9][0-9]*$ ]]; then echo "invalid action hold '${
 if [[ "${action_hold}" != "1" ]]; then hold_tag="${hold_tag}-ahold${action_hold}"; fi
 resume_tag=""
 if [[ -n "${resume_from}" ]]; then resume_tag="-resume"; fi
-name="student-${stage}-${intent}${hold_tag}-seed${seed}${resume_tag}"
+# E3_DIAG (unified-hidden only, see unified_env.sh) changes the training env; the run name gets -diag<name>.
+diag_tag=""
+if [[ -n "${E3_DIAG:-}" ]]; then
+    [[ "${stage}" == unified-hidden ]] || { echo "E3_DIAG applies to STUDENT_STAGE=unified-hidden only" >&2; exit 2; }
+    diag_tag="-diag${E3_DIAG}"
+fi
+name="student-${stage}-${intent}${hold_tag}${diag_tag}-seed${seed}${resume_tag}"
 if [[ "${STUDENT_PRINT_PLAN:-0}" == "1" ]]; then
     echo "plan task=${task_id} stage=${stage} task_name=${task} intent=${intent} hold=${intent_hold} delay=${intent_delay} action_hold=${action_hold} seed=${seed} iterations=${STUDENT_ITERATIONS} resume=${resume_from:-none} name=${name}"
     exit 0

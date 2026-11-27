@@ -63,11 +63,17 @@ parser.add_argument("--selector_delay", type=int, default=0,
                     help="Two experts only: the policies see the selector message of d steps earlier in the episode")
 parser.add_argument("--only_expert", choices=("reorient", "turn"), default=None,
                     help="Control: drive every phase with this one expert (its own observation layout for every phase)")
+parser.add_argument("--teacher_mask", choices=("goal", "relrot", "both"), default=None,
+                    help="Unified teacher only (diagnostic, FACE_TURN_PLAN.md E3 any failure): each step, replace "
+                         "obs[64:68] (goal), obs[68:72] (relative rotation) or obs[64:72] with the same columns of "
+                         "another env (random permutation per step), keeping their distribution but not their information")
 AppLauncher.add_app_launcher_args(parser)
 args_cli, hydra_args = parser.parse_known_args()
 single_policy = bool(args_cli.unified_checkpoint or args_cli.student_run_dir)
 if args_cli.unified_checkpoint and args_cli.student_run_dir:
     parser.error("pass --unified_checkpoint or --student_run_dir, not both")
+if args_cli.teacher_mask and not args_cli.unified_checkpoint:
+    parser.error("--teacher_mask needs --unified_checkpoint")
 if args_cli.student_checkpoint and not args_cli.student_run_dir:
     parser.error("--student_checkpoint needs --student_run_dir")
 if args_cli.student_iteration is not None and (not args_cli.student_run_dir or args_cli.student_checkpoint):
@@ -339,24 +345,35 @@ def main(env_cfg, agent_cfg: dict) -> None:
     channel = None if single_policy else IntentChannel(hold=args_cli.selector_hold, delay=args_cli.selector_delay)
     stale = {"kind_steps": 0, "goal_steps": 0, "replaced_steps": 0}
     passthrough_max_diff = 0.0
-    # goal-7 students: the intent the actor actually received (last 7 actor inputs) against the env's current goal
-    # (canonical goal quaternion, sin/cos hinge goal, is_turn), per phase kind. With hold > 1 stale steps differ.
+    # goal-7 / goal-11 students: the intent the actor actually received (last 7 / 11 actor inputs) against the env's
+    # current goal (canonical goal quaternion, sin/cos hinge goal, is_turn; goal-11 also the relative rotation
+    # object * conj(goal)), per phase kind. With hold > 1 stale steps differ.
     goal7_check = None
-    if student_record is not None and student_record["intent"] == "goal-7":
+    goal_intent_dim = {"goal-7": 7, "goal-11": 11}.get(student_record["intent"]) if student_record else None
+    if goal_intent_dim is not None:
         goal7_check = {name: {"steps": 0, "max_abs_error": 0.0, "steps_error_over_1e-3": 0,
                               "max_abs_error_quat": 0.0} for name in PHASE_KINDS}
+    mask_cols, mask_gen = None, None
+    if args_cli.teacher_mask:
+        mask_cols = {"goal": slice(64, 68), "relrot": slice(68, 72), "both": slice(64, 72)}[args_cli.teacher_mask]
+        mask_gen = torch.Generator(device=unwrapped.device)
+        mask_gen.manual_seed(args_cli.seed)
+        print(f"teacher_mask={args_cli.teacher_mask} columns={mask_cols.start}:{mask_cols.stop}")
     with torch.inference_mode():
         for _ in range(args_cli.steps):
             policy_obs = obs["obs"] if isinstance(obs, dict) else obs
             kind = unwrapped.current_kind()
             if goal7_check is not None:
-                seen = policy_obs[:, -7:].float()
+                seen = policy_obs[:, -goal_intent_dim:].float()
                 goal = unwrapped.hinge_goal.to(seen.device).float()
-                want = torch.cat([
+                parts = [
                     canonical_quat(unwrapped.goal_rot.to(seen.device).float()),
                     torch.sin(goal).unsqueeze(1), torch.cos(goal).unsqueeze(1),
                     (kind.to(seen.device) == TURN_KIND).float().unsqueeze(1),
-                ], dim=1)
+                ]
+                if goal_intent_dim == 11:
+                    parts.append(quat_mul(unwrapped.object_rot, quat_conjugate(unwrapped.goal_rot)).to(seen.device).float())
+                want = torch.cat(parts, dim=1)
                 err = (seen - want).abs()
                 err_all, err_quat = err.max(dim=1).values, err[:, :4].max(dim=1).values
                 for index, name in enumerate(PHASE_KINDS):
@@ -401,6 +418,10 @@ def main(env_cfg, agent_cfg: dict) -> None:
                     same_layout = ((forced == TURN_KIND) == (kind == TURN_KIND)).to(policy_obs.device)
                     policy_obs[:, GOAL_FIELDS] = torch.where(same_layout.unsqueeze(-1), policy_obs[:, GOAL_FIELDS], fields)
                     is_turn = torch.full_like(is_turn, args_cli.only_expert == "turn")
+            if mask_cols is not None:
+                perm = torch.randperm(policy_obs.shape[0], generator=mask_gen, device=policy_obs.device)
+                policy_obs = policy_obs.clone()
+                policy_obs[:, mask_cols] = policy_obs[perm][:, mask_cols]
             if single_policy:
                 (player,) = players.values()
                 actions = player.get_action(player.obs_to_torch(policy_obs), is_deterministic=True)
@@ -434,6 +455,7 @@ def main(env_cfg, agent_cfg: dict) -> None:
         "num_envs": args_cli.num_envs,
         "steps": args_cli.steps,
         "stall_steps": args_cli.stall_steps,
+        "teacher_mask": args_cli.teacher_mask,
         "student": None if student_record is None else {
             "run_dir": str(Path(args_cli.student_run_dir).expanduser().resolve()),
             "checkpoint_sha256": sha256(checkpoints["student"]),

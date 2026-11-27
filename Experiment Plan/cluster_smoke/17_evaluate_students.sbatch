@@ -43,6 +43,13 @@ stride="${EVAL_CHECKPOINT_STRIDE:-1}"
 num_envs="${EVAL_NUM_ENVS:-1024}"
 seed="${EVAL_SEED:-20261028}"
 task="${EVAL_TASK:-Isaac-Repose-Cube-Shadow-Direct-v0}"
+if [[ "${task}" == Isaac-FaceTurn-HingedCube-Shadow-Direct-v0 ]]; then
+    # Face-turn task (hinged_cube_env.py) as its expert was trained and evaluated: torque cap 0.05 N m,
+    # a turn counts after 10 held steps, flat start only.
+    export HINGE_REFERENCE_JSON="${HINGE_REFERENCE_JSON:-${HOME}/data/low-dim-intent/runs/hinged-cube-eval-job1141499/dexcube.json}"
+    export HINGE_EFFORT_LIMIT=0.05 FACE_TURN_HOLD_STEPS=10
+    unset FACE_TURN_START_STATES
+fi
 job_tag="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID}}_${task_id}"
 hold_tag="${EVAL_INTENT_HOLD:+-hold${EVAL_INTENT_HOLD}}${EVAL_INTENT_DELAY:+-delay${EVAL_INTENT_DELAY}}${EVAL_INTENT_BITS:+-bits${EVAL_INTENT_BITS}}"
 output_dir="${HOME}/data/low-dim-intent/runs/eval-$(basename "${run_dir}")${hold_tag}-job${job_tag}"
@@ -53,6 +60,13 @@ test -d "${run_dir}/nn"
 test -f "${evaluator}"
 mkdir -p "${output_dir}" "${metadata_dir}" "${XDG_CACHE_HOME}"
 cp "${SLURM_SUBMIT_DIR}"/{evaluate_students.py,student_eval_utils.py,intent_env_wrapper.py,intent_modules.py,m2_tasks.py,shadow_zaxis_env.py,17_evaluate_students.sbatch} "${metadata_dir}/"
+if [[ "${task}" == Isaac-FaceTurn-HingedCube-Shadow-Direct-v0 ]]; then
+    cp "${SLURM_SUBMIT_DIR}"/{hinged_cube_tasks.py,hinged_cube_env.py} "${metadata_dir}/"
+    export HINGE_ASSET_DIR="${output_dir}/asset"
+    echo "hinge_reference_json=${HINGE_REFERENCE_JSON}"
+    echo "hinge_effort_limit=${HINGE_EFFORT_LIMIT}"
+    echo "face_turn_hold_steps=${FACE_TURN_HOLD_STEPS}"
+fi
 scontrol show job "${SLURM_JOB_ID}" > "${metadata_dir}/slurm-job.txt"
 
 echo "record_type=shadow_student_evaluation_job"

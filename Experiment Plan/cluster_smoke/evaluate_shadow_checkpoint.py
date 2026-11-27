@@ -11,6 +11,8 @@ from pathlib import Path
 
 from isaaclab.app import AppLauncher
 
+import hinged_cube_tasks  # noqa: F401  registers Isaac-Repose-HingedCube-Shadow-Direct-v0
+
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--task", default="Isaac-Repose-Cube-Shadow-Direct-v0")
@@ -81,6 +83,33 @@ def _find_consecutive_successes(value, path: str = "infos"):
     return None
 
 
+def _probe_object(unwrapped) -> dict | None:
+    """Measure the in-hand object of env 0: local bounds, body masses, inertias and contact material."""
+    try:
+        import omni.usd
+        from pxr import Usd, UsdGeom
+
+        prim = omni.usd.get_context().get_stage().GetPrimAtPath("/World/envs/env_0/object")
+        cache = UsdGeom.BBoxCache(
+            Usd.TimeCode.Default(), [UsdGeom.Tokens.default_, UsdGeom.Tokens.render, UsdGeom.Tokens.proxy]
+        )
+        bounds = cache.ComputeUntransformedBound(prim).ComputeAlignedRange()
+        view = unwrapped.object.root_physx_view
+        materials = view.get_material_properties()[0]
+        return {
+            "bbox_min": [float(v) for v in bounds.GetMin()],
+            "bbox_max": [float(v) for v in bounds.GetMax()],
+            "masses": view.get_masses()[0].reshape(-1).tolist(),
+            "inertias": view.get_inertias()[0].reshape(-1).tolist(),
+            "coms": view.get_coms()[0].reshape(-1).tolist(),
+            "material": materials.reshape(-1, 3)[0].tolist(),
+            "materials_all_shapes": materials.reshape(-1, 3).tolist(),
+        }
+    except Exception as error:  # the probe is extra information; never fail an evaluation because of it
+        print(f"object_probe_error={type(error).__name__}: {error}")
+        return None
+
+
 @hydra_task_config(args_cli.task, args_cli.agent)
 def main(env_cfg, agent_cfg: dict) -> None:
     checkpoint = Path(args_cli.checkpoint).expanduser().resolve()
@@ -125,6 +154,9 @@ def main(env_cfg, agent_cfg: dict) -> None:
         # from adding another leading dimension and flattening the whole batch.
         player.has_batch_dimension = True
         print(f"player_has_batch_dimension={player.has_batch_dimension}")
+
+        object_probe = _probe_object(base_env.unwrapped)
+        print(f"object_probe={json.dumps(object_probe)}")
 
         obs = env.reset()
         device = torch.device(rl_device)
@@ -211,7 +243,10 @@ def main(env_cfg, agent_cfg: dict) -> None:
             "consecutive_success_source": consecutive_success_source,
             "mean_consecutive_successes": float(success_t.mean()) if success_t.numel() else None,
             "final_consecutive_successes": float(success_t[-1]) if success_t.numel() else None,
+            "object_probe": object_probe,
         }
+        if hasattr(base_env.unwrapped, "hinge_summary"):
+            result["hinge"] = base_env.unwrapped.hinge_summary()
 
         output_path = Path(args_cli.output).expanduser().resolve()
         output_path.parent.mkdir(parents=True, exist_ok=True)

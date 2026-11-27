@@ -128,6 +128,7 @@ for item in "${items[@]}"; do
             h[0-9]*) selector_args=(--selector_hold "${channel#h}") ;;
             d[0-9]*) selector_args=(--selector_delay "${channel#d}") ;;
             only-reorient|only-turn) selector_args=(--only_expert "${channel#only-}") ;;
+            mask-goal|mask-relrot|mask-both) selector_args=(--teacher_mask "${channel#mask-}") ;;
             *) echo "Unknown selector channel '${channel}' in '${condition}'"; overall_status=1; continue ;;
         esac
     fi
@@ -147,7 +148,7 @@ for item in "${items[@]}"; do
         --headless > "${run_log}" 2>&1
     command_status=$?
     set -e
-    grep -E "^(captured_states|switch_cycle|student=|unified_goal_check|selector=|phases_completed|cycles_completed|falls_per|kind=|transition=|open_turn=|switch_evaluation_status)" "${run_log}" || true
+    grep -E "^(captured_states|switch_cycle|teacher_mask=|student=|unified_goal_check|selector=|phases_completed|cycles_completed|falls_per|kind=|transition=|open_turn=|switch_evaluation_status)" "${run_log}" || true
     echo "command_status=${command_status}"
     cp "${run_log}" "${metadata_dir}/${label}.log"
     if [[ -f "${result_json}" ]]; then

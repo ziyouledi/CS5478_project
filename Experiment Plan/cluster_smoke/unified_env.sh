@@ -13,5 +13,14 @@ if [[ "$(sha256sum "${UNIFIED_START_STATES}" | cut -d' ' -f1)" != "${unified_sta
     echo "UNIFIED_START_STATES ${UNIFIED_START_STATES} does not match the v4 teacher's (sha256 ${unified_start_states_expected_sha256})" >&2
     exit 2
 fi
+# E3_DIAG (diagnostic of the goal-7 `any` failure, FACE_TURN_PLAN.md E3, not the main comparison):
+#   notimeout  no per-phase time limit (UNIFIED_MAX_PHASE_STEPS=0), as in the stock Stage 1 / M1 task
+#   anyonly    only `any` goals (UNIFIED_CYCLE=any; a fixed cycle loads no start states), timeout kept
+case "${E3_DIAG:-}" in
+    "") ;;
+    notimeout) export UNIFIED_MAX_PHASE_STEPS=0 ;;
+    anyonly) export UNIFIED_CYCLE=any ;;
+    *) echo "unknown E3_DIAG=${E3_DIAG}" >&2; exit 2 ;;
+esac
 unified_teacher_name=expert-unified-cap0.05_hold10_v4-seed0
 unified_teacher_file=expert-unified-v4-seed0.pth

@@ -12,7 +12,8 @@ Shadow Hand 的 Isaac Lab 环境、seed-0 PPO expert 训练、best/final checkpo
 - 核心问题：高层意图传给低层控制器时，手部动作、手腕动作和物体子目标各需要多少维，怎样影响学习效率与性能恢复。
 - 阶段一：goal 可见；比较 Blind、Wrist-2、Hand-2/4/20、Obj-1/4，重点看学习曲线 AUC 与达到 expert 性能 80% 的训练量 N80。
 - 阶段二 M1：actor 隐藏 goal，比较意图维度与性能恢复；计划至少 3 个 seeds（`0, 1, 2`）。M2（第二任务）和 M3（人类 synergy 基底）原计划按时间二选一；用户 2026-10-27 决定暂不砍掉，视进度再定。
-- 当前排期（用户 2026-10-27 确认）：**Project Milestone 2026-10-27**（当日尚未提交）、**Demo 2026-11-18**、**Final report 2026 年 11 月底**。取代此前记录的 10-20 / 11-22，以及 v3 原文中的“12 月 1 日那周”。
+- **最新排期（用户 2026-11-14）：Final presentation 已于 2026-11-13 完成，不再处理；唯一剩下的节点是 Final report，2026-11-22 提交。**
+- 旧排期（用户 2026-10-27 确认，已过时）：**Project Milestone 2026-10-27**（当日尚未提交）、**Demo 2026-11-18**、**Final report 2026 年 11 月底**。取代此前记录的 10-20 / 11-22，以及 v3 原文中的“12 月 1 日那周”。
 
 完整设计见 [低维意图接口实验设计 v3（分阶段）](Docs/Experiment%20Plan/低维意图接口实验设计%20v3（分阶段）.md)。集群脚本及操作说明见 [cluster_smoke/README.md](Experiment%20Plan/cluster_smoke/README.md)。
 

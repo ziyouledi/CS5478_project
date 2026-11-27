@@ -19,6 +19,8 @@ k-D vector that is appended to the student's observation:
 * ``goal-7``           unified task only (FACE_TURN_PLAN.md E3): goal quaternion (w >= 0), (sin, cos) of the hinge
                        goal, and the env's is_turn bit; computed from the extended unified observation
                        (``UNIFIED_EXT_DIM``).
+* ``goal-11``          unified task only, diagnostic (FACE_TURN_PLAN.md E3, ``any`` failure): goal-7 followed by the
+                       teacher's relative rotation obs[68:72] = quat_mul(object_rot, conj(goal_rot)), as the env gives it.
 
 Unified task (ShadowHandUnifiedEnv, v4 teacher): intents read the extended observation = the clipped 162-D
 policy observation followed by (sin, cos) of the current hinge angle, which the wrapper reads from the env
@@ -51,6 +53,7 @@ FINGERS = slice(2, 20)
 # Stage 2 M1 hides the goal from the actor: goal_rot [64:68] and quat_mul(object_rot, conj(goal_rot))
 # [68:72]. in_hand_pos [61:64] is a fixed target position and stays.
 GOAL_FIELDS = slice(64, 72)
+RELATIVE_ROT = slice(68, 72)
 GOAL_HIDDEN_OBS_DIM = OBS_DIM - (GOAL_FIELDS.stop - GOAL_FIELDS.start)
 
 # Unified task (hinged_cube_env.py ShadowHandUnifiedEnv, UNIFIED_EXTRA_OBS=1): 157 Stage 1 entries, then
@@ -234,6 +237,8 @@ def parse_intent(name: str) -> IntentSpec:
         return IntentSpec(name, "goal", 2, 2)
     if name == "goal-7":
         return IntentSpec(name, "goal", 7, 7)
+    if name == "goal-11":
+        return IntentSpec(name, "goal", 11, 11)
     if m := re.fullmatch(r"obj-([134])", name):
         k = int(m.group(1))
         return IntentSpec(name, "obj", k, k)
@@ -253,10 +258,10 @@ class IntentModule(nn.Module):
         self.spec = spec
         self.unified = bool(unified)
         self.input_dim = UNIFIED_EXT_DIM if unified else OBS_DIM
-        if unified and not (spec.kind in ("blind", "hand") or spec.name == "goal-7"):
-            raise ValueError(f"{spec.name} is not defined on the unified task (blind, hand-K, goal-7)")
-        if spec.name == "goal-7" and not unified:
-            raise ValueError("goal-7 is defined on the unified task only")
+        if unified and not (spec.kind in ("blind", "hand") or spec.name in ("goal-7", "goal-11")):
+            raise ValueError(f"{spec.name} is not defined on the unified task (blind, hand-K, goal-7, goal-11)")
+        if spec.name in ("goal-7", "goal-11") and not unified:
+            raise ValueError(f"{spec.name} is defined on the unified task only")
         if expert is not None and expert.obs_dim != (UNIFIED_OBS_DIM if unified else OBS_DIM):
             raise ValueError(f"Expert input {expert.obs_dim}-D does not match the task (unified={unified})")
         self.expert = expert
@@ -314,6 +319,8 @@ class IntentModule(nn.Module):
         if kind == "goal":
             if self.spec.k == 7:
                 return unified_goal(obs)
+            if self.spec.k == 11:
+                return torch.cat([unified_goal(obs), obs[:, RELATIVE_ROT]], dim=1)
             if self.spec.k == 2:
                 return goal_yaw(obs[:, GOAL_ROT])
             return canonical_quat(obs[:, GOAL_ROT])
