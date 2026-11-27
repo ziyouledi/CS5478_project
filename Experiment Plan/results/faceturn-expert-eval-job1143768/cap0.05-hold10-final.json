@@ -1,0 +1,117 @@
+{
+  "checkpoint": "/home/x/xiaox/software/isaaclab-stack/IsaacLab/logs/rl_games/shadow_hand_faceturn_cap0.05_hold10/2026-11-15_03-00-22/nn/last_shadow_hand_faceturn_cap0.05_hold10_ep_5000_rew__8055.5317_.pth",
+  "consecutive_success_source": "infos.episode.consecutive_successes",
+  "deterministic": true,
+  "episodes": 1024,
+  "final_consecutive_successes": 24.152667999267578,
+  "hinge": {
+    "damping": 0.02,
+    "effort_limit": 0.05,
+    "face_turns_per_600_steps": 27.710246243739565,
+    "face_turns_per_env_step": 0.04618374373956594,
+    "fraction_axis_tilt_over_45_deg": 0.01467778328464107,
+    "fraction_over_15_deg": 0.865785296314741,
+    "fraction_over_45_deg": 0.8484717380478087,
+    "fraction_over_5_deg": 0.8779989417330677,
+    "geometry": {
+      "mass_base": 0.1440000037352244,
+      "mass_top": 0.0720000018676122,
+      "mass_total": 0.2160000056028366,
+      "size": [
+        0.0600000000000005,
+        0.0600000000000005,
+        0.06000000000000005
+      ],
+      "top_inertia_about_hinge": 4.3200001120568034e-05
+    },
+    "hold_steps": 10,
+    "max_abs_angle_deg": 360.00001001791264,
+    "mean_abs_angle_deg": 167.8770110684608,
+    "mean_abs_hinge_speed_rad_s": 5.500175342437981,
+    "mean_axis_tilt_deg": 18.13184363066313,
+    "samples": 642560,
+    "stiffness": 5.0
+  },
+  "max_episode_length": 599,
+  "max_episode_reward": 12313.8583984375,
+  "mean_consecutive_successes": 12.7276107390817,
+  "mean_episode_length": 590.841796875,
+  "mean_episode_reward": 9613.240964731202,
+  "min_episode_length": 58,
+  "min_episode_reward": -293.69580078125,
+  "num_envs": 256,
+  "object_probe": {
+    "bbox_max": [
+      0.0017999999195339456,
+      0.0017999999195339456,
+      0.020199999544024516
+    ],
+    "bbox_min": [
+      -0.0017999999195339456,
+      -0.0017999999195339456,
+      -0.010799999740719768
+    ],
+    "coms": [
+      0.0,
+      0.0,
+      -0.009999999776482582,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.009999999776482582,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "inertias": [
+      6.240000220714137e-05,
+      0.0,
+      0.0,
+      0.0,
+      6.240000220714137e-05,
+      0.0,
+      0.0,
+      0.0,
+      8.64000030560419e-05,
+      2.4000000848900527e-05,
+      0.0,
+      0.0,
+      0.0,
+      2.4000000848900527e-05,
+      0.0,
+      0.0,
+      0.0,
+      4.320000152802095e-05
+    ],
+    "masses": [
+      0.14400000870227814,
+      0.07200000435113907
+    ],
+    "material": [
+      1.0,
+      1.0,
+      0.0
+    ],
+    "materials_all_shapes": [
+      [
+        1.0,
+        1.0,
+        0.0
+      ],
+      [
+        1.0,
+        1.0,
+        0.0
+      ]
+    ]
+  },
+  "record_type": "shadow_expert_evaluation",
+  "seed": 20261006,
+  "std_episode_reward": 1657.4580843030715,
+  "task": "Isaac-FaceTurn-HingedCube-Shadow-Direct-v0",
+  "vector_steps": 2396
+}

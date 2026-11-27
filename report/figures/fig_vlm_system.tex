@@ -1,0 +1,73 @@
+% Compact TikZ diagram for Figure 2: Part II End-to-End VLM + Frozen Unified v4 System (Steps 6--7)
+\definecolor{navink}{HTML}{17213A}
+\definecolor{mutedgray}{HTML}{62708D}
+\definecolor{cardbg}{HTML}{F6F8FC}
+\definecolor{cardborder}{HTML}{CBD5E1}
+\definecolor{intentblue}{HTML}{2C67F2}
+\definecolor{intentbluebg}{HTML}{EEF4FF}
+\definecolor{vlmviolet}{HTML}{6D28D9}
+\definecolor{vlmvioletbg}{HTML}{F5F3FF}
+\definecolor{ctrlgreen}{HTML}{1E9C77}
+\definecolor{ctrlgreenbg}{HTML}{EDF9F5}
+
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+    font=\sffamily\footnotesize,
+    >=Stealth,
+    box/.style={
+      rectangle, rounded corners=3.5pt, draw=cardborder, fill=cardbg,
+      line width=0.8pt, align=center, inner sep=4.5pt, text=navink
+    },
+    envbox/.style={
+      box, draw=navink!65, fill=cardbg, line width=1.0pt,
+      minimum width=3.3cm, minimum height=1.45cm
+    },
+    vlmbox/.style={
+      box, draw=vlmviolet, fill=vlmvioletbg, line width=1.0pt,
+      minimum width=5.2cm, minimum height=1.45cm
+    },
+    ctrlbox/.style={
+      box, draw=ctrlgreen, fill=ctrlgreenbg, line width=1.0pt,
+      minimum width=4.1cm, minimum height=1.45cm
+    },
+    wire/.style={->, line width=0.95pt, draw=navink!80}
+  ]
+
+  % Three main blocks with generous arrow gaps so labels never overlap boxes
+  \node[envbox] (env) at (0, 0) {
+    \textbf{Isaac Lab 60~Hz Env}\\[1.5pt]
+    {\scriptsize Hinged Cube (96 states)}\\
+    {\scriptsize 3 fixed cams: \texttt{c1, s040, s220}}
+  };
+
+  \node[vlmbox] (vlm) at (7.45, 0) {
+    \textbf{Slow VLM Planner (Step 7)}\\[1.5pt]
+    {\scriptsize \texttt{Qwen3-VL-8B} (Frozen ViT + 0.51\% LoRA)}\\
+    {\scriptsize Map-then-Reason: \texttt{view\_obs} $\to$ \texttt{state} $\to$ CoT $\to$ JSON}
+  };
+
+  \node[ctrlbox] (ctrl) at (16.15, 0) {
+    \textbf{Frozen 60~Hz Controller}\\[1.5pt]
+    {\scriptsize \texttt{Unified v4} (Step 6, goal-conditioned)}\\
+    {\scriptsize $\sim$16 steps/macro-action $\cdot$ 0\% drop (4~s hold)}
+  };
+
+  % Top band: Slow Macro-Loop
+  \draw[wire, draw=vlmviolet] (env.east) -- (vlm.west)
+    node[midway, above, font=\sffamily\scriptsize, text=vlmviolet, align=center] {3-cam \texttt{montage}\\{\tiny + target text}};
+
+  \draw[wire, draw=intentblue] (vlm.east) -- (ctrl.west)
+    node[midway, above, font=\sffamily\scriptsize, text=intentblue, align=center] {Goal macro-action\\{\tiny \texttt{reorient} / \texttt{turn}($\pm 90^\circ$)}};
+
+  % Bottom band: Fast 60 Hz Motor Closed Loop (Ctrl <-> Env)
+  \draw[wire, draw=ctrlgreen]
+    (ctrl.south) -- (16.15, -1.25) -- (0, -1.25) -- (env.south);
+  \node[fill=white, inner sep=2pt, font=\sffamily\scriptsize, text=ctrlgreen!90!black]
+    at (8.05, -1.25) {\textbf{Fast 60~Hz Motor Closed Loop:} 20-D Shadow Hand actions $a_t$ from proprio + cube state ($s_t$) until goal reached};
+
+  % Subtle loop-rate annotations above
+  \node[font=\sffamily\scriptsize\bfseries, text=vlmviolet] at (7.45, 1.05)
+    {Slow Deliberative Loop ($\sim$0.2--2~Hz, goal-level commands only)};
+
+\end{tikzpicture}%
+}

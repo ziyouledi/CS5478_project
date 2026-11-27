@@ -1,0 +1,2 @@
+JobID|JobName|State|Submit|Start|End|Elapsed|NodeList|SubmitLine
+1158839|unified-eval-v3|COMPLETED|2026-11-17T23:56:30|2026-11-18T00:06:51|2026-11-18T00:13:41|00:06:50|xgpf3|sbatch --parsable --export=ALL --job-name=unified-eval-v3 31_switch_eval.sbatch

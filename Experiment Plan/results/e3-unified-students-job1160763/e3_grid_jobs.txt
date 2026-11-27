@@ -1,0 +1,16 @@
+train=1160744 eval=1160763
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-blind-seed0-job1160744_0/student-unified-hidden-blind-seed0
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-blind-seed1-job1160744_1/student-unified-hidden-blind-seed1
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-blind-seed2-job1160744_2/student-unified-hidden-blind-seed2
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-goal-7-seed0-job1160744_3/student-unified-hidden-goal-7-seed0
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-goal-7-seed1-job1160744_4/student-unified-hidden-goal-7-seed1
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-goal-7-seed2-job1160744_5/student-unified-hidden-goal-7-seed2
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-goal-7-hold6-seed0-job1160744_6/student-unified-hidden-goal-7-hold6-seed0
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-goal-7-hold6-seed1-job1160744_7/student-unified-hidden-goal-7-hold6-seed1
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-goal-7-hold6-seed2-job1160744_8/student-unified-hidden-goal-7-hold6-seed2
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-hand-8-seed0-job1160744_9/student-unified-hidden-hand-8-seed0
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-hand-8-seed1-job1160744_10/student-unified-hidden-hand-8-seed1
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-hand-8-seed2-job1160744_11/student-unified-hidden-hand-8-seed2
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-hand-8-hold6-seed0-job1160744_12/student-unified-hidden-hand-8-hold6-seed0
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-hand-8-hold6-seed1-job1160744_13/student-unified-hidden-hand-8-hold6-seed1
+/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-hand-8-hold6-seed2-job1160744_14/student-unified-hidden-hand-8-hold6-seed2

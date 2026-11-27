@@ -1,0 +1,28 @@
+
+== s1  names[0:2]=[np.str_('robot0_WRJ1'), np.str_('robot0_WRJ0')]  finger-eig check max rel err=8.4e-16
+wrist var share of total: 0.155  (2/20 = 0.10 if equal)
+corr WRJ1-WRJ0: -0.017
+robot0_WRJ1: mean|r| to fingers 0.106, top: robot0_LFJ2 -0.41, robot0_FFJ3 +0.23, robot0_LFJ1 -0.21
+robot0_WRJ0: mean|r| to fingers 0.145, top: robot0_FFJ2 +0.43, robot0_THJ3 +0.43, robot0_LFJ3 -0.32
+finger-finger mean|r| 0.139, median 0.088
+R2(robot0_WRJ1 | 18 fingers) = 0.329
+R2(robot0_WRJ0 | 18 fingers) = 0.430
+canonical corr: [0.717 0.499]
+k=2: hand-k captures 0.358 of total var, 0.142 of wrist var | wrist2-finger-0 (k total nums) captures 0.155
+k=4: hand-k captures 0.568 of total var, 0.636 of wrist var | wrist2-finger-2 (k total nums) captures 0.499
+k=8: hand-k captures 0.811 of total var, 0.931 of wrist var | wrist2-finger-6 (k total nums) captures 0.781
+wrist loading share (sum w^2 on wrist) of PC1..8: [0.045 0.086 0.59  0.088 0.32  0.197 0.017 0.142]
+
+== m2  names[0:2]=[np.str_('robot0_WRJ1'), np.str_('robot0_WRJ0')]  finger-eig check max rel err=2.0e-15
+wrist var share of total: 0.119  (2/20 = 0.10 if equal)
+corr WRJ1-WRJ0: +0.064
+robot0_WRJ1: mean|r| to fingers 0.204, top: robot0_FFJ3 +0.66, robot0_MFJ3 +0.53, robot0_LFJ3 +0.44
+robot0_WRJ0: mean|r| to fingers 0.216, top: robot0_THJ2 -0.50, robot0_LFJ3 +0.46, robot0_THJ4 +0.43
+finger-finger mean|r| 0.176, median 0.142
+R2(robot0_WRJ1 | 18 fingers) = 0.680
+R2(robot0_WRJ0 | 18 fingers) = 0.529
+canonical corr: [0.835 0.71 ]
+k=2: hand-k captures 0.427 of total var, 0.577 of wrist var | wrist2-finger-0 (k total nums) captures 0.119
+k=4: hand-k captures 0.640 of total var, 0.703 of wrist var | wrist2-finger-2 (k total nums) captures 0.492
+k=8: hand-k captures 0.839 of total var, 0.807 of wrist var | wrist2-finger-6 (k total nums) captures 0.795
+wrist loading share (sum w^2 on wrist) of PC1..8: [0.075 0.275 0.085 0.044 0.044 0.151 0.011 0.04 ]

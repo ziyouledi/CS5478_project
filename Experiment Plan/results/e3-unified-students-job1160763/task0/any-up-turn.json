@@ -1,0 +1,156 @@
+{
+  "record_type": "shadow_task_switch_evaluation",
+  "cycle": [
+    "any",
+    "up",
+    "turn"
+  ],
+  "hold_steps": 10,
+  "checkpoints": {
+    "student": "/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-blind-seed0-job1160744_0/student-unified-hidden-blind-seed0/nn/last_shadow_hand_ep_5000_rew__40.04717_.pth"
+  },
+  "seed": 20261006,
+  "num_envs": 1024,
+  "steps": 600,
+  "stall_steps": 120,
+  "student": {
+    "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-unified-hidden-blind-seed0-job1160744_0/student-unified-hidden-blind-seed0",
+    "checkpoint_sha256": "e684c93ec082b091360ca53dc31953db8f8e2ed77c2473d3c8a8979ba102086e",
+    "intent": "blind",
+    "intent_dim": 0,
+    "intent_hold": 1,
+    "intent_delay": 0,
+    "actor_obs_dim": 152,
+    "seed": 0,
+    "teacher_sha256": null,
+    "pca_basis_sha256": null,
+    "unified_goal_check_max_error": 1.1920928955078125e-07
+  },
+  "selector": null,
+  "hinge": {
+    "stiffness": 5.0,
+    "damping": 0.02,
+    "effort_limit": 0.05,
+    "geometry": {
+      "size": [
+        0.0600000000000005,
+        0.0600000000000005,
+        0.06000000000000005
+      ],
+      "mass_total": 0.2160000056028366,
+      "mass_base": 0.1440000037352244,
+      "mass_top": 0.0720000018676122,
+      "top_inertia_about_hinge": 4.3200001120568034e-05
+    },
+    "samples": 640000,
+    "mean_abs_angle_deg": 0.5544832196198995,
+    "max_abs_angle_deg": 117.03001852212924,
+    "fraction_over_5_deg": 0.0085375,
+    "fraction_over_15_deg": 0.0030953125,
+    "fraction_over_45_deg": 0.0027234375
+  },
+  "phases_completed_per_600_steps": 0.0068359375,
+  "cycles_completed_per_600_steps": 0.0022786458333333335,
+  "falls_per_600_steps": 0.0234375,
+  "time_outs": 1001,
+  "fraction_of_steps_by_kind": {
+    "any": 0.9952311197916668,
+    "up": 0.004768880208333334
+  },
+  "by_kind": {
+    "any": {
+      "completed_per_600_steps": 0.0068359375,
+      "steps_to_complete": {
+        "n": 7,
+        "mean": 95.0,
+        "median": 78.0,
+        "p90": 171.20000000000002,
+        "max": 218.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 7,
+        "mean": 72.90242767333984,
+        "median": 89.1206283569336,
+        "p90": 104.1313491821289,
+        "max": 104.7809066772461
+      },
+      "falls_per_600_steps": 0.0234375,
+      "stalled_phases": 1036,
+      "stalled_fraction_of_started": 0.5056124938994632,
+      "hinge_drift_deg": {
+        "n": 7,
+        "mean": 0.4754773676395416,
+        "median": 0.4712924063205719,
+        "p90": 0.9149758696556094,
+        "max": 1.3190473318099976
+      },
+      "fraction_hinge_moved_over_45_deg": 0.0
+    },
+    "up": {
+      "completed_per_600_steps": 0.0,
+      "steps_to_complete": {
+        "n": 0
+      },
+      "tilt_deg_at_completion": {
+        "n": 0
+      },
+      "falls_per_600_steps": 0.0,
+      "stalled_phases": 6,
+      "stalled_fraction_of_started": 0.8571428571428571,
+      "hinge_drift_deg": {
+        "n": 0
+      },
+      "fraction_hinge_moved_over_45_deg": null
+    },
+    "turn": {
+      "completed_per_600_steps": 0.0,
+      "steps_to_complete": {
+        "n": 0
+      },
+      "tilt_deg_at_completion": {
+        "n": 0
+      },
+      "falls_per_600_steps": 0.0,
+      "stalled_phases": 0,
+      "stalled_fraction_of_started": 0.0,
+      "detent_error_deg_at_completion": {
+        "n": 0
+      }
+    }
+  },
+  "by_transition": {
+    "reset->any": {
+      "steps_to_complete": {
+        "n": 7,
+        "mean": 95.0,
+        "median": 78.0,
+        "p90": 171.20000000000002,
+        "max": 218.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 7,
+        "mean": 72.90242767333984,
+        "median": 89.1206283569336,
+        "p90": 104.1313491821289,
+        "max": 104.7809066772461
+      },
+      "falls": 24,
+      "fall_fraction_of_started": 0.7741935483870968
+    }
+  },
+  "trace_columns": [
+    "kind",
+    "phase_steps",
+    "hinge_error_rad",
+    "orient_error_rad",
+    "tilt_error_rad",
+    "yaw_error_rad",
+    "hold_count",
+    "hinge_pos_rad",
+    "phase_start_hinge_rad",
+    "reward"
+  ],
+  "open_turn_diagnostics": {
+    "n": 0
+  }
+}

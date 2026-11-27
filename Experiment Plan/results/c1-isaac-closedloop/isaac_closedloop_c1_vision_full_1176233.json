@@ -1,0 +1,47 @@
+{
+  "model": "vlm_planner",
+  "checkpoint": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-unified-cap0.05_hold10_v4-seed0/frozen/expert-unified-v4-seed0.pth",
+  "seconds": 452.7,
+  "overall": {
+    "n": 128,
+    "success_rate": 1.0,
+    "fall_rate": 0.0,
+    "mean_rounds_ratio": 1.1745,
+    "mean_ctrl_steps_per_round": 15.7
+  },
+  "by_L": {
+    "L1": {
+      "n": 32,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_ratio": 1.0625,
+      "mean_ctrl_steps_per_round": 16.0
+    },
+    "L2": {
+      "n": 32,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_ratio": 1.4688,
+      "mean_ctrl_steps_per_round": 15.4
+    },
+    "L3": {
+      "n": 32,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_ratio": 1.1667,
+      "mean_ctrl_steps_per_round": 15.6
+    },
+    "L4": {
+      "n": 32,
+      "success_rate": 1.0,
+      "fall_rate": 0.0,
+      "mean_rounds_ratio": 1.0,
+      "mean_ctrl_steps_per_round": 15.9
+    }
+  },
+  "round_metrics": {
+    "total_rounds": 368,
+    "live_state_exact_96": 0.9891,
+    "illegal_or_parse_fail": 0.0
+  }
+}

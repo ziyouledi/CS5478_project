@@ -1,0 +1,231 @@
+{
+  "record_type": "p2_text_planner_eval",
+  "plan_variant": "relational",
+  "model": "/home/x/xiaox/data/low-dim-intent/hf/Qwen3-VL-8B-Instruct",
+  "seed": 20261120,
+  "tasks_per_level": 50,
+  "levels": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "group_size": 8,
+  "max_tokens": 1024,
+  "greedy": {
+    "mode": "greedy",
+    "temperature": 0.0,
+    "num_samples": 1,
+    "elapsed_s": 281.28464365005493,
+    "overall_success_rate": 0.435,
+    "overall_effective_group_fraction": null,
+    "overall_step_attribution": {
+      "illegal_orient_pair": 0.0279,
+      "illegal_turn_not_white": 0.007,
+      "optimal": 0.2228,
+      "parse_error": 0.0009,
+      "suboptimal_legal": 0.1923,
+      "truncated": 0.5492
+    },
+    "by_level": {
+      "1": {
+        "n_tasks": 50,
+        "n_rollouts": 50,
+        "success_rate": 1.0,
+        "pass_at_k": 1.0,
+        "effective_group_fraction": null,
+        "mean_rounds_succeeded": 1.0,
+        "rounds_ratio_vs_optimal": 1.0,
+        "mean_tokens_per_round": 159.16,
+        "step_attribution": {
+          "optimal": 1.0
+        },
+        "first_step_attribution": {
+          "optimal": 1.0
+        }
+      },
+      "2": {
+        "n_tasks": 50,
+        "n_rollouts": 50,
+        "success_rate": 0.56,
+        "pass_at_k": 0.56,
+        "effective_group_fraction": null,
+        "mean_rounds_succeeded": 3.25,
+        "rounds_ratio_vs_optimal": 1.625,
+        "mean_tokens_per_round": 533.1210762331839,
+        "step_attribution": {
+          "illegal_orient_pair": 0.0179,
+          "optimal": 0.3857,
+          "suboptimal_legal": 0.1928,
+          "truncated": 0.4036
+        },
+        "first_step_attribution": {
+          "optimal": 0.6,
+          "suboptimal_legal": 0.38,
+          "truncated": 0.02
+        }
+      },
+      "3": {
+        "n_tasks": 50,
+        "n_rollouts": 50,
+        "success_rate": 0.14,
+        "pass_at_k": 0.14,
+        "effective_group_fraction": null,
+        "mean_rounds_succeeded": 5.142857142857143,
+        "rounds_ratio_vs_optimal": 1.7142857142857142,
+        "mean_tokens_per_round": 717.2473684210527,
+        "step_attribution": {
+          "illegal_orient_pair": 0.0447,
+          "illegal_turn_not_white": 0.0105,
+          "optimal": 0.1395,
+          "suboptimal_legal": 0.2053,
+          "truncated": 0.6
+        },
+        "first_step_attribution": {
+          "illegal_orient_pair": 0.02,
+          "optimal": 0.06,
+          "suboptimal_legal": 0.86,
+          "truncated": 0.06
+        }
+      },
+      "4": {
+        "n_tasks": 50,
+        "n_rollouts": 50,
+        "success_rate": 0.04,
+        "pass_at_k": 0.04,
+        "effective_group_fraction": null,
+        "mean_rounds_succeeded": 8.0,
+        "rounds_ratio_vs_optimal": 2.0,
+        "mean_tokens_per_round": 741.0927419354839,
+        "step_attribution": {
+          "illegal_orient_pair": 0.0222,
+          "illegal_turn_not_white": 0.0081,
+          "optimal": 0.1351,
+          "parse_error": 0.002,
+          "suboptimal_legal": 0.2016,
+          "truncated": 0.631
+        },
+        "first_step_attribution": {
+          "optimal": 0.02,
+          "parse_error": 0.02,
+          "suboptimal_legal": 0.9,
+          "truncated": 0.06
+        }
+      }
+    }
+  },
+  "grpo_group": {
+    "mode": "grpo_group",
+    "temperature": 1.0,
+    "num_samples": 8,
+    "elapsed_s": 1463.44082903862,
+    "overall_success_rate": 0.454375,
+    "overall_effective_group_fraction": 0.46,
+    "overall_step_attribution": {
+      "illegal_orient_pair": 0.0596,
+      "illegal_turn_not_white": 0.0118,
+      "optimal": 0.3565,
+      "parse_error": 0.0026,
+      "suboptimal_legal": 0.2892,
+      "truncated": 0.2803
+    },
+    "by_level": {
+      "1": {
+        "n_tasks": 50,
+        "n_rollouts": 400,
+        "success_rate": 0.995,
+        "pass_at_k": 1.0,
+        "effective_group_fraction": 0.04,
+        "mean_rounds_succeeded": 1.050251256281407,
+        "rounds_ratio_vs_optimal": 1.050251256281407,
+        "mean_tokens_per_round": 197.77699530516432,
+        "step_attribution": {
+          "illegal_orient_pair": 0.0047,
+          "optimal": 0.9343,
+          "suboptimal_legal": 0.0211,
+          "truncated": 0.0399
+        },
+        "first_step_attribution": {
+          "illegal_orient_pair": 0.0025,
+          "optimal": 0.9525,
+          "suboptimal_legal": 0.0225,
+          "truncated": 0.0225
+        }
+      },
+      "2": {
+        "n_tasks": 50,
+        "n_rollouts": 400,
+        "success_rate": 0.5025,
+        "pass_at_k": 0.74,
+        "effective_group_fraction": 0.6,
+        "mean_rounds_succeeded": 3.1940298507462686,
+        "rounds_ratio_vs_optimal": 1.5970149253731343,
+        "mean_tokens_per_round": 440.349128540305,
+        "step_attribution": {
+          "illegal_orient_pair": 0.0572,
+          "illegal_turn_not_white": 0.0054,
+          "optimal": 0.4227,
+          "suboptimal_legal": 0.2685,
+          "truncated": 0.2462
+        },
+        "first_step_attribution": {
+          "optimal": 0.585,
+          "suboptimal_legal": 0.375,
+          "truncated": 0.04
+        }
+      },
+      "3": {
+        "n_tasks": 50,
+        "n_rollouts": 400,
+        "success_rate": 0.1925,
+        "pass_at_k": 0.66,
+        "effective_group_fraction": 0.66,
+        "mean_rounds_succeeded": 5.662337662337662,
+        "rounds_ratio_vs_optimal": 1.8874458874458875,
+        "mean_tokens_per_round": 527.5943708609271,
+        "step_attribution": {
+          "illegal_orient_pair": 0.052,
+          "illegal_turn_not_white": 0.0199,
+          "optimal": 0.2974,
+          "parse_error": 0.002,
+          "suboptimal_legal": 0.3285,
+          "truncated": 0.3003
+        },
+        "first_step_attribution": {
+          "illegal_orient_pair": 0.0225,
+          "illegal_turn_not_white": 0.005,
+          "optimal": 0.1075,
+          "parse_error": 0.005,
+          "suboptimal_legal": 0.7775,
+          "truncated": 0.0825
+        }
+      },
+      "4": {
+        "n_tasks": 50,
+        "n_rollouts": 400,
+        "success_rate": 0.1275,
+        "pass_at_k": 0.54,
+        "effective_group_fraction": 0.54,
+        "mean_rounds_succeeded": 7.980392156862745,
+        "rounds_ratio_vs_optimal": 1.9950980392156863,
+        "mean_tokens_per_round": 542.0482422376186,
+        "step_attribution": {
+          "illegal_orient_pair": 0.0726,
+          "illegal_turn_not_white": 0.0098,
+          "optimal": 0.3079,
+          "parse_error": 0.0046,
+          "suboptimal_legal": 0.2979,
+          "truncated": 0.3072
+        },
+        "first_step_attribution": {
+          "illegal_orient_pair": 0.0025,
+          "illegal_turn_not_white": 0.0025,
+          "optimal": 0.055,
+          "parse_error": 0.0225,
+          "suboptimal_legal": 0.8275,
+          "truncated": 0.09
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "record_type": "shadow_policy_video",
+  "task": "Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0",
+  "run_dir": "/home/x/xiaox/data/low-dim-intent/runs/student-m2-hidden-goal-yaw-hold30-seed0-job1119088_12/student-m2-hidden-goal-yaw-hold30-seed0",
+  "checkpoint": "/home/x/xiaox/data/low-dim-intent/runs/student-m2-hidden-goal-yaw-hold30-seed0-job1119088_12/student-m2-hidden-goal-yaw-hold30-seed0/nn/last_shadow_hand_ep_5000_rew__4865.2065_.pth",
+  "checkpoint_sha256": "ade637a1b82fe41cf07a7bf1480bc54c8d4c862dea4c63bf734537fd9f0e96a7",
+  "intent_record": {
+    "intent": "goal-yaw",
+    "kind": "goal",
+    "k": 2,
+    "dim": 2,
+    "expert_checkpoint": null,
+    "expert_checkpoint_sha256": null,
+    "pca_basis": null,
+    "pca_basis_sha256": null,
+    "obj_lookahead_rad": null,
+    "task": "Isaac-Repose-Cube-Shadow-ZAxis-Direct-v0",
+    "seed": 0,
+    "num_envs": 2048,
+    "max_iterations": 5000,
+    "transitions_per_iteration": 32768,
+    "goal_hidden": true,
+    "asymmetric_critic": true,
+    "intent_hold": 30,
+    "student_obs_dim": 151,
+    "critic_states_dim": 157
+  },
+  "goal_hidden": true,
+  "seed": 20261028,
+  "video_steps": 600,
+  "control_hz": 60.0,
+  "camera": {
+    "origin": "env 0",
+    "eye": [
+      0.45,
+      -1.05,
+      0.95
+    ],
+    "lookat": [
+      -0.08,
+      -0.4,
+      0.6
+    ]
+  },
+  "env0_completed_episode_successes": [
+    20
+  ],
+  "env0_successes_in_unfinished_episode": 0,
+  "videos": [
+    "/home/x/xiaox/data/low-dim-intent/videos/student-m2-hidden-goal-yaw-hold30-seed0-job1122889_4/student-m2-hidden-goal-yaw-hold30-seed0-step-0.mp4"
+  ],
+  "trace": "/home/x/xiaox/data/low-dim-intent/videos/student-m2-hidden-goal-yaw-hold30-seed0-job1122889_4/student-m2-hidden-goal-yaw-hold30-seed0_trace.npz",
+  "trace_fields": "object_rot, goal_rot [steps, envs, 4] (w, x, y, z); successes, episode_step [steps, envs]; after each step"
+}

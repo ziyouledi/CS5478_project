@@ -1,0 +1,93 @@
+{
+  "model": "/home/x/xiaox/data/low-dim-intent/runs/c2-grpo-terminal-job1175222/merged_hf",
+  "mode": "vision_full",
+  "n_frames": 180,
+  "tasks": {
+    "state_canonical": {
+      "n": 180,
+      "seconds": 23.2,
+      "json_valid": 1.0,
+      "sky_acc": 1.0,
+      "front_acc": 0.8889,
+      "cap_acc": 0.9667,
+      "state_exact_96": 0.8778
+    },
+    "state_ood_rev_cycle": {
+      "n": 180,
+      "seconds": 19.8,
+      "json_valid": 1.0,
+      "sky_acc": 1.0,
+      "front_acc": 0.9167,
+      "cap_acc": 0.9722,
+      "state_exact_96": 0.9
+    },
+    "openloop_plan_canonical": {
+      "n": 360,
+      "json_valid": 1.0,
+      "act_parsed": 1.0,
+      "state_exact_96": 0.8972,
+      "action_exact": 0.9306,
+      "action_optimal": 0.9306,
+      "plan_given_pred_optimal": 0.938,
+      "seconds": 28.5,
+      "by_L": {
+        "L1": {
+          "n": 99,
+          "json_valid": 1.0,
+          "act_parsed": 1.0,
+          "state_exact_96": 0.9192,
+          "action_exact": 0.9798,
+          "action_optimal": 0.9798,
+          "plan_given_pred_optimal": 0.9899
+        },
+        "L2": {
+          "n": 109,
+          "json_valid": 1.0,
+          "act_parsed": 1.0,
+          "state_exact_96": 0.9083,
+          "action_exact": 0.7982,
+          "action_optimal": 0.7982,
+          "plan_given_pred_optimal": 0.8073
+        },
+        "L3": {
+          "n": 100,
+          "json_valid": 1.0,
+          "act_parsed": 1.0,
+          "state_exact_96": 0.88,
+          "action_exact": 0.99,
+          "action_optimal": 0.99,
+          "plan_given_pred_optimal": 1.0
+        },
+        "L4": {
+          "n": 52,
+          "json_valid": 1.0,
+          "act_parsed": 1.0,
+          "state_exact_96": 0.8654,
+          "action_exact": 1.0,
+          "action_optimal": 1.0,
+          "plan_given_pred_optimal": 1.0
+        }
+      },
+      "by_kind": {
+        "reorient": {
+          "n": 264,
+          "json_valid": 1.0,
+          "act_parsed": 1.0,
+          "state_exact_96": 0.8939,
+          "action_exact": 0.9886,
+          "action_optimal": 0.9886,
+          "plan_given_pred_optimal": 1.0
+        },
+        "turn": {
+          "n": 96,
+          "json_valid": 1.0,
+          "act_parsed": 1.0,
+          "state_exact_96": 0.9062,
+          "action_exact": 0.7708,
+          "action_optimal": 0.7708,
+          "plan_given_pred_optimal": 0.7708
+        }
+      }
+    }
+  }
+}

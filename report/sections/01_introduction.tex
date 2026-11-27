@@ -1,0 +1,24 @@
+\section{Introduction}
+\label{sec:intro}
+
+General-purpose large language and vision-language models (LLMs/VLMs) are rapidly emerging as high-level robot planners, capable of interpreting visual scenes and reasoning over multi-step manipulation tasks \citep{mirchandani2023llms,tang2026training}.
+Yet these models face a fundamental systems constraint: autoregressive decoding takes hundreds of milliseconds to several seconds per decision (0.2--2~Hz), whereas multi-fingered dexterous hands performing contact-rich in-hand manipulation require closed-loop feedback at 60~Hz or higher \citep{andrychowicz2020learning,akkaya2019solving}.
+For robot arms with parallel grippers, off-the-shelf inverse kinematics (IK) and pose controllers bridge this gap cleanly, allowing a slow model to output sparse end-effector poses \citep{tang2026training}.
+For a 20-DOF anthropomorphic hand, no standard low-frequency execution layer exists.
+Instead, a slow high-level planner must communicate with a fast pre-trained low-level controller across a rate-limited \emph{intent interface}.
+
+This raises a central design question: \textbf{what representation should cross the intent channel between a slow planner and a fast dexterous hand, and how does channel degradation—low refresh rate, transmission latency, and quantization—determine which representations remain viable?}
+Prior studies typically commit to a single interface level (e.g., hand synergies, wrist keypoints, or discrete skills) and evaluate it at a fixed control frequency.
+Consequently, the interaction between \emph{intent abstraction level} and \emph{channel rate/latency} remains poorly understood.
+
+To answer this question, we conduct a two-part study on the 20-DOF Shadow Hand in Isaac Lab \citep{mittal2023orbit} spanning three tasks of increasing complexity (3D reorientation, $z$-axis rotation, and a simplified Rubik's-like cube).
+First, we isolate the information carried by the intent channel using a goal-hidden asymmetric-critic student protocol \citep{pinto2018asymmetric}, comparing \emph{action-level}, \emph{object-subgoal}, and \emph{goal-level} interfaces across controlled refresh-rate, latency, and quantization sweeps.
+Second, guided by these findings, we instantiate an end-to-end VLM manipulation system: we pair a frozen 60~Hz multi-skill controller with an open-weight 8B VLM adapted via Map-then-Reason LoRA SFT and closed-loop GRPO \citep{shao2024deepseekmath}, evaluating perception generalization, planning efficiency, and real-time 60~Hz physical execution.
+
+Our main contributions are fourfold:
+\begin{enumerate}[leftmargin=1.5em,itemsep=1.5pt,topsep=2pt]
+  \item \textbf{Full-rate bandwidth and action diagnostics (Task 1).} On 3D cube reorientation, RL policies exhibit a flat action spectrum (8~PCs for 81\% variance vs.\ 2 in human grasping \citep{santello1998postural}), and \texttt{hand-8} matches goal-level commands at 60~Hz (87\% vs.\ 78\% recovery).
+  \item \textbf{Rate reversal and staleness laws (Tasks 1--2).} On both reorientation tasks, $\le 10$~Hz refresh or $\ge 0.1$~s latency collapses action and waypoint intents while goal commands follow an analytical waiting-time law $P(d)\approx 600/(T_0+d)$ ($\sim 32$~bits/goal); a slow-expert control confirms the hand itself must stay fast, and $z$-axis rotation exposes a \emph{stale-goal trap} below blind spinning.
+  \item \textbf{Multi-skill controller and Task 3 boundary conditions.} We train a unified 60~Hz hinged-cube policy (\texttt{Unified v4}, $2.4\times$ faster than two-expert handoff) where multi-skill switching reproduces the 10~Hz reversal, whereas on isolated 1-DOF face turns outcomes are bimodal and seed-driven rather than rate-driven at 10~Hz because held \texttt{hand-8} retains goal-direction information.
+  \item \textbf{End-to-end VLM control.} Pairing frozen \texttt{Unified v4} (100\% BFS execution, 4~s pause stability) with \texttt{Qwen3-VL-8B-Instruct} via lightweight Map-then-Reason LoRA SFT (0.51\% parameters, frozen ViT) achieves 100.0\% (128/128) real-time 60~Hz closed-loop manipulation in Isaac Lab with zero drops.
+\end{enumerate}

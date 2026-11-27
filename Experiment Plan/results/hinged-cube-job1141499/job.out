@@ -1,0 +1,117 @@
+record_type=shadow_hinged_cube_expert_eval
+timestamp=2026-11-14T21:45:32+08:00
+job_id=1141499
+node=xgpf0.comp.nus.edu.sg
+isaaclab_commit=5c2ec81cb17532d32f7922dd7fcaae40d123b71a
+gpu=Tesla T4
+checkpoint=/home/x/xiaox/data/low-dim-intent/checkpoints/expert-seed0/frozen/expert-seed0.pth
+checkpoint_sha256=b9b7128f151b44c8241603e0138d5110435e70e13fad902431a0bbe96f2074f9
+num_envs=256
+episodes=1024
+evaluation_seed=20261006
+conditions=locked:1000:1:100 cap0.3:5:0.02:0.3 cap0.1:5:0.02:0.1 cap0.03:5:0.02:0.03 cap0.01:5:0.02:0.01 free:0:0:100
+run_root=/home/x/xiaox/data/low-dim-intent/runs/hinged-cube-eval-job1141499
+--- evaluation_start label=dexcube task=Isaac-Repose-Cube-Shadow-Direct-v0 ---
+object_probe={"bbox_min": [-0.03000000000000025, -0.03000000000000025, -0.030000000000000027], "bbox_max": [0.03000000000000025, 0.03000000000000025, 0.030000000000000027], "masses": [0.2160000056028366], "inertias": [0.00012959999730810523, 0.0, 0.0, 0.0, 0.00012959999730810523, 0.0, 0.0, 0.0, 0.00012959999730810523], "coms": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], "material": [1.0, 1.0, 0.0], "materials_all_shapes": [[1.0, 1.0, 0.0]]}
+mean_episode_reward=7447.818149562925
+std_episode_reward=945.6377433219126
+mean_episode_length=592.7705078125
+mean_consecutive_successes=15.488907130214328
+final_consecutive_successes=23.715896606445312
+object_probe={'bbox_min': [-0.03000000000000025, -0.03000000000000025, -0.030000000000000027], 'bbox_max': [0.03000000000000025, 0.03000000000000025, 0.030000000000000027], 'masses': [0.2160000056028366], 'inertias': [0.00012959999730810523, 0.0, 0.0, 0.0, 0.00012959999730810523, 0.0, 0.0, 0.0, 0.00012959999730810523], 'coms': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], 'material': [1.0, 1.0, 0.0], 'materials_all_shapes': [[1.0, 1.0, 0.0]]}
+checkpoint_evaluation_status=PASS
+evaluation_label=dexcube
+evaluation_elapsed_seconds=118
+evaluation_command_status=0
+--- evaluation_end label=dexcube ---
+--- evaluation_start label=hinge-locked task=Isaac-Repose-HingedCube-Shadow-Direct-v0 ---
+hinged_cube_material=[1.0, 1.0, 0.0]
+hinged_cube stiffness=1000.0 damping=1.0 effort_limit=100.0 geometry={"size": [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], "mass_total": 0.2160000056028366, "mass_base": 0.1440000037352244, "mass_top": 0.0720000018676122, "top_inertia_about_hinge": 4.3200001120568034e-05}
+object_probe={"bbox_min": [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], "bbox_max": [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], "masses": [0.14400000870227814, 0.07200000435113907], "inertias": [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], "coms": [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], "material": [1.0, 1.0, 0.0], "materials_all_shapes": [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+mean_episode_reward=7356.042058432009
+std_episode_reward=1228.7800509325216
+mean_episode_length=585.5263671875
+mean_consecutive_successes=15.446776583566889
+final_consecutive_successes=25.694217681884766
+object_probe={'bbox_min': [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], 'bbox_max': [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], 'masses': [0.14400000870227814, 0.07200000435113907], 'inertias': [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], 'coms': [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], 'material': [1.0, 1.0, 0.0], 'materials_all_shapes': [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+checkpoint_evaluation_status=PASS
+evaluation_label=hinge-locked
+evaluation_elapsed_seconds=171
+evaluation_command_status=0
+--- evaluation_end label=hinge-locked ---
+--- evaluation_start label=hinge-cap0.3 task=Isaac-Repose-HingedCube-Shadow-Direct-v0 ---
+hinged_cube_material=[1.0, 1.0, 0.0]
+hinged_cube stiffness=5.0 damping=0.02 effort_limit=0.3 geometry={"size": [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], "mass_total": 0.2160000056028366, "mass_base": 0.1440000037352244, "mass_top": 0.0720000018676122, "top_inertia_about_hinge": 4.3200001120568034e-05}
+object_probe={"bbox_min": [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], "bbox_max": [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], "masses": [0.14400000870227814, 0.07200000435113907], "inertias": [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], "coms": [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], "material": [1.0, 1.0, 0.0], "materials_all_shapes": [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+mean_episode_reward=7422.375801782124
+std_episode_reward=1176.5803311809113
+mean_episode_length=586.0859375
+mean_consecutive_successes=14.365111673813631
+final_consecutive_successes=25.364870071411133
+object_probe={'bbox_min': [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], 'bbox_max': [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], 'masses': [0.14400000870227814, 0.07200000435113907], 'inertias': [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], 'coms': [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], 'material': [1.0, 1.0, 0.0], 'materials_all_shapes': [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+checkpoint_evaluation_status=PASS
+evaluation_label=hinge-cap0.3
+evaluation_elapsed_seconds=133
+evaluation_command_status=0
+--- evaluation_end label=hinge-cap0.3 ---
+--- evaluation_start label=hinge-cap0.1 task=Isaac-Repose-HingedCube-Shadow-Direct-v0 ---
+hinged_cube_material=[1.0, 1.0, 0.0]
+hinged_cube stiffness=5.0 damping=0.02 effort_limit=0.1 geometry={"size": [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], "mass_total": 0.2160000056028366, "mass_base": 0.1440000037352244, "mass_top": 0.0720000018676122, "top_inertia_about_hinge": 4.3200001120568034e-05}
+object_probe={"bbox_min": [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], "bbox_max": [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], "masses": [0.14400000870227814, 0.07200000435113907], "inertias": [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], "coms": [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], "material": [1.0, 1.0, 0.0], "materials_all_shapes": [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+mean_episode_reward=7389.649277872872
+std_episode_reward=1269.6108192873166
+mean_episode_length=583.26953125
+mean_consecutive_successes=18.85023586164059
+final_consecutive_successes=26.865644454956055
+object_probe={'bbox_min': [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], 'bbox_max': [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], 'masses': [0.14400000870227814, 0.07200000435113907], 'inertias': [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], 'coms': [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], 'material': [1.0, 1.0, 0.0], 'materials_all_shapes': [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+checkpoint_evaluation_status=PASS
+evaluation_label=hinge-cap0.1
+evaluation_elapsed_seconds=133
+evaluation_command_status=0
+--- evaluation_end label=hinge-cap0.1 ---
+--- evaluation_start label=hinge-cap0.03 task=Isaac-Repose-HingedCube-Shadow-Direct-v0 ---
+hinged_cube_material=[1.0, 1.0, 0.0]
+hinged_cube stiffness=5.0 damping=0.02 effort_limit=0.03 geometry={"size": [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], "mass_total": 0.2160000056028366, "mass_base": 0.1440000037352244, "mass_top": 0.0720000018676122, "top_inertia_about_hinge": 4.3200001120568034e-05}
+object_probe={"bbox_min": [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], "bbox_max": [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], "masses": [0.14400000870227814, 0.07200000435113907], "inertias": [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], "coms": [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], "material": [1.0, 1.0, 0.0], "materials_all_shapes": [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+mean_episode_reward=7143.270317540271
+std_episode_reward=1392.3377104564831
+mean_episode_length=578.9990234375
+mean_consecutive_successes=16.07109545352239
+final_consecutive_successes=25.915987014770508
+object_probe={'bbox_min': [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], 'bbox_max': [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], 'masses': [0.14400000870227814, 0.07200000435113907], 'inertias': [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], 'coms': [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], 'material': [1.0, 1.0, 0.0], 'materials_all_shapes': [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+checkpoint_evaluation_status=PASS
+evaluation_label=hinge-cap0.03
+evaluation_elapsed_seconds=132
+evaluation_command_status=0
+--- evaluation_end label=hinge-cap0.03 ---
+--- evaluation_start label=hinge-cap0.01 task=Isaac-Repose-HingedCube-Shadow-Direct-v0 ---
+hinged_cube_material=[1.0, 1.0, 0.0]
+hinged_cube stiffness=5.0 damping=0.02 effort_limit=0.01 geometry={"size": [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], "mass_total": 0.2160000056028366, "mass_base": 0.1440000037352244, "mass_top": 0.0720000018676122, "top_inertia_about_hinge": 4.3200001120568034e-05}
+object_probe={"bbox_min": [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], "bbox_max": [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], "masses": [0.14400000870227814, 0.07200000435113907], "inertias": [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], "coms": [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], "material": [1.0, 1.0, 0.0], "materials_all_shapes": [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+mean_episode_reward=6635.05023382185
+std_episode_reward=1409.2278155935028
+mean_episode_length=573.2255859375
+mean_consecutive_successes=14.8574108772496
+final_consecutive_successes=22.740398406982422
+object_probe={'bbox_min': [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], 'bbox_max': [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], 'masses': [0.14400000870227814, 0.07200000435113907], 'inertias': [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], 'coms': [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], 'material': [1.0, 1.0, 0.0], 'materials_all_shapes': [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+checkpoint_evaluation_status=PASS
+evaluation_label=hinge-cap0.01
+evaluation_elapsed_seconds=132
+evaluation_command_status=0
+--- evaluation_end label=hinge-cap0.01 ---
+--- evaluation_start label=hinge-free task=Isaac-Repose-HingedCube-Shadow-Direct-v0 ---
+hinged_cube_material=[1.0, 1.0, 0.0]
+hinged_cube stiffness=0.0 damping=0.0 effort_limit=100.0 geometry={"size": [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], "mass_total": 0.2160000056028366, "mass_base": 0.1440000037352244, "mass_top": 0.0720000018676122, "top_inertia_about_hinge": 4.3200001120568034e-05}
+object_probe={"bbox_min": [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], "bbox_max": [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], "masses": [0.14400000870227814, 0.07200000435113907], "inertias": [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], "coms": [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], "material": [1.0, 1.0, 0.0], "materials_all_shapes": [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+mean_episode_reward=6147.606446175836
+std_episode_reward=1485.9489431202746
+mean_episode_length=564.943359375
+mean_consecutive_successes=15.306280325886751
+final_consecutive_successes=21.136056900024414
+object_probe={'bbox_min': [-0.0017999999195339456, -0.0017999999195339456, -0.010799999740719768], 'bbox_max': [0.0017999999195339456, 0.0017999999195339456, 0.020199999544024516], 'masses': [0.14400000870227814, 0.07200000435113907], 'inertias': [6.240000220714137e-05, 0.0, 0.0, 0.0, 6.240000220714137e-05, 0.0, 0.0, 0.0, 8.64000030560419e-05, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 2.4000000848900527e-05, 0.0, 0.0, 0.0, 4.320000152802095e-05], 'coms': [0.0, 0.0, -0.009999999776482582, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.009999999776482582, 0.0, 0.0, 0.0, 1.0], 'material': [1.0, 1.0, 0.0], 'materials_all_shapes': [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0]]}
+checkpoint_evaluation_status=PASS
+evaluation_label=hinge-free
+evaluation_elapsed_seconds=134
+evaluation_command_status=0
+--- evaluation_end label=hinge-free ---
+hinged_cube_eval_status=PASS

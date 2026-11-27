@@ -1,0 +1,43 @@
+{
+  "record_type": "shadow_policy_video",
+  "task": "Isaac-Switch-HingedCube-Shadow-Direct-v0",
+  "run_dir": "/home/x/xiaox/software/isaaclab-stack/IsaacLab/logs/rl_games/shadow_hand_faceturn_cap0.05_hold10_handoff/2026-11-16_22-44-56",
+  "checkpoint": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-seed0/frozen/expert-seed0.pth",
+  "checkpoint_sha256": "b9b7128f151b44c8241603e0138d5110435e70e13fad902431a0bbe96f2074f9",
+  "turn_checkpoint": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-faceturn-cap0.05_hold10_handoff-seed0/frozen/expert-faceturn-handoff-seed0.pth",
+  "turn_checkpoint_sha256": "477f3d433c097ee1cea4c86d616383fd38cd76befb9887a0cd2eed9ae9e0f30a",
+  "intent_record": {
+    "intent": "blind"
+  },
+  "goal_hidden": false,
+  "intent_hold": 1,
+  "intent_delay": 0,
+  "intent_delay_trained": 0,
+  "seed": 20261028,
+  "video_steps": 600,
+  "control_hz": 60.0,
+  "num_envs": 16,
+  "env_index": 8,
+  "camera": {
+    "origin": "env 8",
+    "eye": [
+      0.45,
+      -1.05,
+      0.95
+    ],
+    "lookat": [
+      -0.08,
+      -0.4,
+      0.6
+    ]
+  },
+  "env_completed_episode_successes": [
+    17
+  ],
+  "env_successes_in_unfinished_episode": 0,
+  "videos": [
+    "/home/x/xiaox/data/low-dim-intent/videos/handoff-two-expert-upturn-job1160203_0/handoff-two-expert-upturn-step-0.mp4"
+  ],
+  "trace": "/home/x/xiaox/data/low-dim-intent/videos/handoff-two-expert-upturn-job1160203_0/handoff-two-expert-upturn_trace.npz",
+  "trace_fields": "object_rot, goal_rot [steps, envs, 4] (w, x, y, z); successes, episode_step [steps, envs]; after each step"
+}

@@ -1,0 +1,172 @@
+% Compact TikZ diagram for Figure 1 (v2): Part I Student Training & Channel-Sweep Architecture (Steps 1--5)
+% Explicitly decomposes: 157-D -> Frozen Expert -> 20-D action -> Fixed Offline PCA Projection -> k-D intent,
+% explicit Concat(149-D physical state, z_tilde), and solid-line Asymmetric Critic for all training conditions.
+\definecolor{navink}{HTML}{17213A}
+\definecolor{mutedgray}{HTML}{62708D}
+\definecolor{cardbg}{HTML}{F6F8FC}
+\definecolor{cardborder}{HTML}{CBD5E1}
+\definecolor{intentblue}{HTML}{2C67F2}
+\definecolor{intentbluebg}{HTML}{EEF4FF}
+\definecolor{chanorange}{HTML}{D9602F}
+\definecolor{chanorangebg}{HTML}{FFF3ED}
+\definecolor{criticgreen}{HTML}{1E9C77}
+\definecolor{criticgreenbg}{HTML}{EDF9F5}
+\definecolor{stripcrimson}{HTML}{C62828}
+
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+    font=\sffamily\footnotesize,
+    >=Stealth,
+    box/.style={
+      rectangle, rounded corners=3.5pt, draw=cardborder, fill=cardbg,
+      line width=0.85pt, align=center, inner sep=3.5pt, text=navink
+    },
+    envbox/.style={
+      box, draw=navink!70, fill=cardbg, line width=1.0pt,
+      minimum width=2.45cm, minimum height=1.85cm
+    },
+    expertbox/.style={
+      box, draw=navink!65, fill=cardbg, line width=0.95pt,
+      minimum width=2.7cm, minimum height=0.82cm
+    },
+    pcabox/.style={
+      box, draw=intentblue!85, fill=intentbluebg, line width=0.95pt,
+      minimum width=2.9cm, minimum height=0.82cm
+    },
+    basisbox/.style={
+      box, draw=mutedgray, fill=white, dashed, line width=0.8pt,
+      minimum height=0.48cm, inner sep=3pt
+    },
+    chanbox/.style={
+      box, draw=chanorange, fill=chanorangebg, line width=1.0pt,
+      minimum width=3.6cm, minimum height=0.82cm
+    },
+    actorbox/.style={
+      box, draw=intentblue, fill=intentbluebg, line width=1.05pt,
+      minimum width=3.6cm, minimum height=0.95cm
+    },
+    criticbox/.style={
+      box, draw=criticgreen, fill=criticgreenbg, line width=1.0pt,
+      minimum width=3.6cm, minimum height=0.88cm
+    },
+    concatnode/.style={
+      circle, draw=intentblue, fill=intentbluebg, line width=1.0pt,
+      inner sep=1.2pt, minimum size=0.46cm, font=\sffamily\small\bfseries, text=intentblue
+    },
+    wire/.style={->, line width=0.9pt, draw=navink!80},
+    criticwire/.style={->, line width=0.95pt, draw=criticgreen!90!black},
+    dashwire/.style={->, dashed, line width=0.8pt, draw=mutedgray},
+    stripwire/.style={-, dashed, line width=0.9pt, draw=stripcrimson}
+  ]
+
+  % Main nodes (vertically compacted to save page height)
+  \node[envbox] (env) at (-0.35, 1.30) {
+    \textbf{Isaac Lab Env}\\[1.5pt]
+    {\scriptsize Shadow Hand}\\
+    {\scriptsize 60~Hz ctrl (600 steps)}
+  };
+
+  % Top row: 157-D -> Frozen Expert -> 20-D action -> Online PCA Proj -> Intent Channel
+  \node[expertbox] (expert) at (5.05, 3.15) {
+    \textbf{Frozen Expert $\pi_E$}\\[0.5pt]
+    {\scriptsize Step 1 (action oracle)}
+  };
+
+  \node[pcabox] (pca) at (9.15, 3.15) {
+    \textbf{Online PCA Proj.}\\[0.5pt]
+    {\scriptsize $z_t = W_k^\top (a_t^E - \mu)$}
+  };
+
+  \node[basisbox] (basis) at (9.15, 4.25) {
+    \textbf{Offline PCA Basis (Step 2):} {\scriptsize fixed $\mu, W_k$ (1.23M rollout)}
+  };
+
+  \node[chanbox] (channel) at (13.95, 3.15) {
+    \textbf{Intent Channel (Step 3)}\\[0.5pt]
+    {\scriptsize Hold $N$ (60--2~Hz) $\cdot$ Delay $d$ $\cdot$ $b$-bit}
+  };
+
+  % Middle row: Concat + Student Actor
+  \node[concatnode] (concat) at (10.55, 1.40) {$\oplus$};
+
+  \node[actorbox] (actor) at (13.95, 1.25) {
+    \textbf{Student Actor $\pi_\theta$ (Step 4)}\\[0.5pt]
+    {\scriptsize Input: $[\text{149-D state},\; \tilde{z}_t]$}\\
+    {\scriptsize Trained via PPO (not distillation)}
+  };
+
+  % Bottom row: Asymmetric Critic (solid -- required in every training condition)
+  \node[criticbox] (critic) at (13.95, -0.35) {
+    \textbf{Asymmetric Critic $V_\phi$}\\[0.5pt]
+    {\scriptsize Full 157-D state (all conditions)}\\
+    {\scriptsize PPO updates $\cdot$ dropped at eval}
+  };
+
+  % Vertical observation bus at x = 2.65
+  \coordinate (bus_mid)    at (2.65, 1.30);
+  \coordinate (bus_top)    at (2.65, 3.15);
+  \coordinate (bus_bypass) at (2.65, 2.35);
+  \coordinate (bus_ok)     at (2.65, 1.40);
+  \coordinate (bus_no)     at (2.65, 0.72);
+  \coordinate (bus_bot)    at (2.65, -0.35);
+
+  \draw[line width=0.95pt, draw=navink!80] (env.east) -- (bus_mid)
+    node[midway, above, font=\sffamily\scriptsize, text=navink] {$s_t$ (157-D)};
+  \draw[line width=0.95pt, draw=navink!80] (bus_bot) -- (bus_top);
+  \fill[navink!80] (bus_mid) circle (1.4pt) (bus_bypass) circle (1.4pt)
+                   (bus_ok) circle (1.4pt) (bus_no) circle (1.4pt);
+
+  % Top branch: Action-level intent pipeline
+  \draw[wire] (bus_top) -- (expert.west)
+    node[midway, above, font=\sffamily\scriptsize, text=navink] {157-D};
+  \draw[wire, draw=intentblue] (expert.east) -- (pca.west)
+    node[midway, above, font=\sffamily\scriptsize, text=intentblue] {20-D $a_t^E$};
+  \draw[dashwire] (basis.south) -- (pca.north)
+    node[midway, right, font=\sffamily\scriptsize, text=mutedgray] {fixed axes};
+  \draw[wire, draw=intentblue] (pca.east) -- (channel.west)
+    node[midway, above, font=\sffamily\scriptsize, text=intentblue] {$z_t \in \mathbb{R}^k$};
+
+  % Bypass branch: Object / Goal intents (no expert, no PCA)
+  \draw[wire, dashed, draw=mutedgray]
+    (bus_bypass) -- (12.85, 2.35) -- ([xshift=-1.1cm]channel.south);
+  \node[above, font=\sffamily\scriptsize, text=mutedgray] at (7.75, 2.35)
+    {Obj / Goal intents: direct from 157-D $s_t$ (no expert, no PCA)};
+
+  % Channel -> Concat
+  \draw[wire, draw=chanorange]
+    (channel.south) -- (13.95, 1.93) -- (10.55, 1.93) -- (concat.north);
+  \node[above, font=\sffamily\scriptsize, text=chanorange!90!black] at (12.25, 1.93)
+    {$\tilde{z}_t$ ($k$-D sole goal cue)};
+
+  % Middle branch: 149-D state -> Concat -> Actor, and 8-D goal stripped
+  \draw[wire] (bus_ok) -- (concat.west)
+    node[midway, above, font=\sffamily\scriptsize, text=navink]
+    {149-D physical state (\texttt{obs[0:64,72:157]}: 60~Hz proprio \& obj)};
+  \draw[wire, draw=intentblue] (concat.east) -- (actor.west |- concat.east)
+    node[midway, above, font=\sffamily\scriptsize, text=intentblue] {$149+k$};
+
+  \coordinate (strip_end) at (6.7, 0.72);
+  \draw[stripwire] (bus_no) -- (strip_end)
+    node[midway, below, font=\sffamily\scriptsize, text=stripcrimson] {8-D goal (\texttt{obs[64:72]})};
+  \node[circle, draw=stripcrimson, fill=white, line width=0.9pt, inner sep=1pt,
+        font=\sffamily\scriptsize\bfseries, text=stripcrimson] (cross) at (strip_end) {$\times$};
+  \node[right=2.5pt of cross, font=\sffamily\scriptsize\bfseries, text=stripcrimson]
+    {Stripped (goal-hidden)};
+
+  % Bottom branch: Full 157-D -> Critic -> Actor (solid)
+  \draw[criticwire] (bus_bot) -- (critic.west)
+    node[midway, above, font=\sffamily\scriptsize, text=criticgreen!85!black]
+    {Full 157-D state (goal preserved, unmasked)};
+  \draw[criticwire] (critic.north) -- (actor.south)
+    node[midway, left, font=\sffamily\scriptsize, text=criticgreen!85!black]
+    {PPO $\hat{A}_t$};
+
+  % Action feedback loop + Step 5 evaluation note
+  \draw[wire, draw=intentblue]
+    (actor.east) -- (16.35, 1.25) -- (16.35, -1.12) -- (-0.35, -1.12) -- (env.south);
+  \node[fill=white, inner sep=2pt, font=\sffamily\scriptsize, text=intentblue]
+    at (8.00, -1.12)
+    {20-D Hand action $a_t$ (60~Hz) \quad $\vert$ \quad Step 5 Eval: Actor + Channel only (25 ckpts $\times$ 1,024 eps, no Critic)};
+
+\end{tikzpicture}%
+}

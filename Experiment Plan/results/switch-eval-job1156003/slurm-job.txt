@@ -1,0 +1,30 @@
+JobId=1156003 JobName=unified-eval-v2-it10000
+   UserId=xiaox(57227) GroupId=grad(8740) MCS_label=N/A
+   Priority=5351 Nice=0 Account=allusers QOS=normal
+   JobState=RUNNING Reason=None Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:01 TimeLimit=01:30:00 TimeMin=N/A
+   SubmitTime=2026-11-17T12:35:01 EligibleTime=2026-11-17T12:35:01
+   AccrueTime=2026-11-17T12:35:01
+   StartTime=2026-11-17T12:42:16 EndTime=2026-11-17T14:12:16 Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-17T12:42:16 Scheduler=Main
+   Partition=gpu AllocNode:Sid=xlogin2.comp.nus.edu.sg:2745015
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList=xgpf2
+   BatchHost=xgpf2
+   NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=8,mem=32G,node=1,billing=8,gres/gpu=1,gres/gpu:nv=1
+   AllocTRES=cpu=8,mem=32G,node=1,billing=8,gres/gpu=1,gres/gpu:nv=1
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+   MinCPUsNode=8 MinMemoryNode=32G MinTmpDiskNode=0
+   Features=xgpf DelayBoot=00:00:00
+   OverSubscribe=NO Exclusive=NO Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)
+   Command=/home/x/xiaox/cluster_smoke/31_switch_eval.sbatch
+   SubmitLine=sbatch --export=ALL --job-name=unified-eval-v2-it10000 31_switch_eval.sbatch
+   WorkDir=/home/x/xiaox/cluster_smoke
+   StdErr=/home/x/xiaox/cluster_smoke/logs/unified-eval-v2-it10000-1156003.err
+   StdIn=/dev/null
+   StdOut=/home/x/xiaox/cluster_smoke/logs/unified-eval-v2-it10000-1156003.out
+   TresPerJob=gres/gpu:nv:1
+   TresPerTask=cpu=8
+

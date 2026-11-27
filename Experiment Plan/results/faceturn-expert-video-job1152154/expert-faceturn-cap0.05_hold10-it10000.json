@@ -1,0 +1,41 @@
+{
+  "record_type": "shadow_policy_video",
+  "task": "Isaac-FaceTurn-HingedCube-Shadow-Direct-v0",
+  "run_dir": "/home/x/xiaox/software/isaaclab-stack/IsaacLab/logs/rl_games/shadow_hand_faceturn_cap0.05_hold10/2026-11-16_19-21-05",
+  "checkpoint": "/home/x/xiaox/software/isaaclab-stack/IsaacLab/logs/rl_games/shadow_hand_faceturn_cap0.05_hold10/2026-11-16_19-21-05/nn/last_shadow_hand_faceturn_cap0.05_hold10_ep_10000_rew__10811.122_.pth",
+  "checkpoint_sha256": "32fe0a5310143f3788f7f1c580b6f9ab99e212369792dcb604012697faca66f6",
+  "intent_record": {
+    "intent": "blind"
+  },
+  "goal_hidden": false,
+  "intent_hold": 1,
+  "intent_delay": 0,
+  "intent_delay_trained": 0,
+  "seed": 20261028,
+  "video_steps": 600,
+  "control_hz": 60.0,
+  "num_envs": 16,
+  "env_index": 0,
+  "camera": {
+    "origin": "env 0",
+    "eye": [
+      0.45,
+      -1.05,
+      0.95
+    ],
+    "lookat": [
+      -0.08,
+      -0.4,
+      0.6
+    ]
+  },
+  "env_completed_episode_successes": [
+    35
+  ],
+  "env_successes_in_unfinished_episode": 0,
+  "videos": [
+    "/home/x/xiaox/data/low-dim-intent/videos/expert-faceturn-cap0.05_hold10-it10000-job1152154_0/expert-faceturn-cap0.05_hold10-it10000-step-0.mp4"
+  ],
+  "trace": "/home/x/xiaox/data/low-dim-intent/videos/expert-faceturn-cap0.05_hold10-it10000-job1152154_0/expert-faceturn-cap0.05_hold10-it10000_trace.npz",
+  "trace_fields": "object_rot, goal_rot [steps, envs, 4] (w, x, y, z); successes, episode_step [steps, envs]; after each step"
+}

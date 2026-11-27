@@ -1,0 +1,120 @@
+% Compact TikZ diagram for Figure 1: Part I Student Training & Rate-Sweep Architecture (Steps 1--5)
+% Clearly separates Reference Expert (Action Oracle only) from Asymmetric-Critic PPO training.
+\definecolor{navink}{HTML}{17213A}
+\definecolor{mutedgray}{HTML}{62708D}
+\definecolor{cardbg}{HTML}{F6F8FC}
+\definecolor{cardborder}{HTML}{CBD5E1}
+\definecolor{intentblue}{HTML}{2C67F2}
+\definecolor{intentbluebg}{HTML}{EEF4FF}
+\definecolor{chanorange}{HTML}{D9602F}
+\definecolor{chanorangebg}{HTML}{FFF3ED}
+\definecolor{criticgreen}{HTML}{1E9C77}
+\definecolor{criticgreenbg}{HTML}{EDF9F5}
+\definecolor{stripcrimson}{HTML}{C62828}
+
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+    font=\sffamily\footnotesize,
+    >=Stealth,
+    box/.style={
+      rectangle, rounded corners=3.5pt, draw=cardborder, fill=cardbg,
+      line width=0.8pt, align=center, inner sep=4.5pt, text=navink
+    },
+    actorbox/.style={
+      box, draw=intentblue, fill=intentbluebg, line width=1.0pt,
+      minimum width=3.5cm, minimum height=1.0cm
+    },
+    chanbox/.style={
+      box, draw=chanorange, fill=chanorangebg, line width=1.0pt,
+      minimum width=3.5cm, minimum height=0.9cm
+    },
+    criticbox/.style={
+      box, draw=criticgreen, fill=criticgreenbg, dashed, line width=0.95pt,
+      minimum width=3.5cm, minimum height=0.85cm
+    },
+    envbox/.style={
+      box, draw=navink!65, fill=cardbg, line width=1.0pt,
+      minimum width=2.4cm, minimum height=1.75cm
+    },
+    oraclebox/.style={
+      box, draw=mutedgray, fill=cardbg, line width=0.85pt,
+      minimum width=3.45cm, minimum height=0.9cm
+    },
+    wire/.style={->, line width=0.9pt, draw=navink!80},
+    dashwire/.style={->, dashed, line width=0.85pt, draw=criticgreen!90!black},
+    stripwire/.style={-, dashed, line width=0.9pt, draw=stripcrimson}
+  ]
+
+  % Nodes (compact vertical spacing: y = 3.25, 1.55, -0.15)
+  \node[envbox] (env) at (0, 1.55) {
+    \textbf{Isaac Lab Env}\\[1.5pt]
+    {\scriptsize Shadow Hand}\\
+    {\scriptsize 60~Hz ctrl (600 steps)}
+  };
+
+  \node[oraclebox] (oracle) at (5.55, 3.25) {
+    \textbf{Intent Source (Step 3)}\\[1pt]
+    {\scriptsize Action: Ref.\ Expert + PCA (Steps 1--2)}\\
+    {\scriptsize Object / Goal: direct from $s_t$}
+  };
+
+  \node[chanbox] (channel) at (10.45, 3.25) {
+    \textbf{Intent Channel (Step 3)}\\[1pt]
+    {\scriptsize Hold $N$ (60--2~Hz) $\cdot$ Delay $d$ $\cdot$ $b$-bit}
+  };
+
+  \node[actorbox] (actor) at (10.45, 1.55) {
+    \textbf{Student Actor $\pi_\theta$ (Step 4)}\\[1pt]
+    {\scriptsize Input: $[\text{149-D state},\; \tilde{z}_t]$ (no goal)}\\
+    {\scriptsize Trained via PPO (not distillation)}
+  };
+
+  \node[criticbox] (critic) at (10.45, -0.15) {
+    \textbf{Asymmetric Critic $V_\phi$ (Train Only)}\\[1pt]
+    {\scriptsize Full 157-D state (goal preserved)}
+  };
+
+  % Vertical observation bus at x = 2.5
+  \coordinate (bus_mid) at (2.5, 1.55);
+  \coordinate (bus_top) at (2.5, 3.25);
+  \coordinate (bus_ok)  at (2.5, 1.80);
+  \coordinate (bus_no)  at (2.5, 1.25);
+  \coordinate (bus_bot) at (2.5, -0.15);
+
+  \draw[line width=0.9pt, draw=navink!80] (env.east) -- (bus_mid)
+    node[midway, above, font=\sffamily\scriptsize, text=navink] {$s_t$ (157-D)};
+  \draw[line width=0.9pt, draw=navink!80] (bus_bot) -- (bus_top);
+  \fill[navink!80] (bus_mid) circle (1.4pt) (bus_ok) circle (1.4pt) (bus_no) circle (1.4pt);
+
+  % Top branch: Bus -> Intent Source -> Channel -> Actor
+  \draw[wire] (bus_top) -- (oracle.west)
+    node[midway, above, font=\sffamily\scriptsize, text=navink] {157-D};
+  \draw[wire, draw=intentblue] (oracle.east) -- (channel.west)
+    node[midway, above, font=\sffamily\scriptsize, text=intentblue] {$z_t \in \mathbb{R}^k$};
+  \draw[wire, draw=chanorange] (channel.south) -- (actor.north)
+    node[midway, right, font=\sffamily\scriptsize, text=chanorange!90!black] {$\tilde{z}_t$ (sole goal cue)};
+
+  % Middle branch: 149-D kept + 8-D stripped
+  \draw[wire] (bus_ok) -- (actor.west |- bus_ok)
+    node[midway, above, font=\sffamily\scriptsize, text=navink] {149-D proprio \& obj (\texttt{obs[0:64, 72:157]})};
+  \coordinate (strip_end) at (6.7, 1.25);
+  \draw[stripwire] (bus_no) -- (strip_end)
+    node[midway, below, font=\sffamily\scriptsize, text=stripcrimson] {8-D goal (\texttt{obs[64:72]})};
+  \node[circle, draw=stripcrimson, fill=white, line width=0.9pt, inner sep=1pt,
+        font=\sffamily\scriptsize\bfseries, text=stripcrimson] (cross) at (strip_end) {$\times$};
+  \node[right=2.5pt of cross, font=\sffamily\scriptsize\bfseries, text=stripcrimson] {Stripped};
+
+  % Bottom branch: Bus -> Critic -> Actor
+  \draw[dashwire] (bus_bot) -- (critic.west)
+    node[midway, above, font=\sffamily\scriptsize, text=criticgreen!85!black] {Full 157-D state (unmasked)};
+  \draw[dashwire] (critic.north) -- (actor.south)
+    node[midway, right, font=\sffamily\scriptsize, text=criticgreen!85!black] {PPO $\hat{A}_t$};
+
+  % Action feedback loop + Step 5 Eval note
+  \draw[wire, draw=intentblue]
+    (actor.east) -- (12.75, 1.55) -- (12.75, -0.95) -- (0, -0.95) -- (env.south);
+  \node[fill=white, inner sep=2pt, font=\sffamily\scriptsize, text=intentblue]
+    at (6.35, -0.95) {20-D Hand action $a_t$ (60~Hz) \quad $\longrightarrow$ \quad Step 5: 25 ckpts $\times$ 1,024-ep deterministic eval};
+
+\end{tikzpicture}%
+}

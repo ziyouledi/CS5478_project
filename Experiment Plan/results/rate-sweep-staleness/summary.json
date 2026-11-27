@@ -1,0 +1,224 @@
+{
+ "n_points": 12,
+ "predictors": {
+  "retained~normalized_hold_error": {
+   "spearman": -0.8601398601398602,
+   "p": 0.0003316683391269209,
+   "loio_rmse": 0.22624662585078634
+  },
+  "retained~log2_hold": {
+   "spearman": -0.5026155365907202,
+   "p": 0.09583219093407536,
+   "loio_rmse": 0.4577370529386662
+  },
+  "retained_vs_ceiling~normalized_hold_error": {
+   "spearman": -0.8531468531468532,
+   "p": 0.0004181179404149969,
+   "loio_rmse": 0.260118339717905
+  },
+  "retained_vs_ceiling~log2_hold": {
+   "spearman": -0.3843530573929037,
+   "p": 0.2173606752988446,
+   "loio_rmse": 0.4771134790377828
+  },
+  "retained~stale_tol (obj-4, goal-4 only)": {
+   "spearman": -0.942857142857143,
+   "p": 0.004804664723032055,
+   "n": 6
+  }
+ },
+ "table": [
+  {
+   "intent": "goal-4",
+   "hold": 1,
+   "recovery": 0.7711,
+   "sd": 0.0764,
+   "ceiling": 1.0,
+   "retained": 1.0,
+   "retained_vs_ceiling": 1.0,
+   "normalized_hold_error": 0.0,
+   "stale_tol": 0.0,
+   "action_variance_explained": NaN
+  },
+  {
+   "intent": "goal-4",
+   "hold": 6,
+   "recovery": 0.7072,
+   "sd": 0.0106,
+   "ceiling": 1.0,
+   "retained": 0.9171,
+   "retained_vs_ceiling": 0.9171,
+   "normalized_hold_error": 0.2238,
+   "stale_tol": 0.1135,
+   "action_variance_explained": NaN
+  },
+  {
+   "intent": "goal-4",
+   "hold": 12,
+   "recovery": 0.6477,
+   "sd": 0.0172,
+   "ceiling": 1.0,
+   "retained": 0.84,
+   "retained_vs_ceiling": 0.84,
+   "normalized_hold_error": 0.4916,
+   "stale_tol": 0.2462,
+   "action_variance_explained": NaN
+  },
+  {
+   "intent": "goal-4",
+   "hold": 30,
+   "recovery": 0.4257,
+   "sd": 0.0279,
+   "ceiling": 0.766,
+   "retained": 0.5521,
+   "retained_vs_ceiling": 0.7207,
+   "normalized_hold_error": 1.1712,
+   "stale_tol": 0.5543,
+   "action_variance_explained": NaN
+  },
+  {
+   "intent": "hand-2",
+   "hold": 1,
+   "recovery": 0.5036,
+   "sd": 0.0792,
+   "ceiling": 1.0,
+   "retained": 1.0,
+   "retained_vs_ceiling": 1.0,
+   "normalized_hold_error": 0.0,
+   "stale_tol": NaN,
+   "action_variance_explained": 0.3577
+  },
+  {
+   "intent": "hand-2",
+   "hold": 6,
+   "recovery": 0.0297,
+   "sd": 0.0252,
+   "ceiling": 1.0,
+   "retained": 0.0591,
+   "retained_vs_ceiling": 0.0591,
+   "normalized_hold_error": 1.6701,
+   "stale_tol": NaN,
+   "action_variance_explained": -0.2397
+  },
+  {
+   "intent": "hand-2",
+   "hold": 12,
+   "recovery": 0.0018,
+   "sd": 0.0001,
+   "ceiling": 1.0,
+   "retained": 0.0035,
+   "retained_vs_ceiling": 0.0035,
+   "normalized_hold_error": 1.8046,
+   "stale_tol": NaN,
+   "action_variance_explained": -0.2878
+  },
+  {
+   "intent": "hand-2",
+   "hold": 30,
+   "recovery": 0.0005,
+   "sd": 0.0003,
+   "ceiling": 0.766,
+   "retained": 0.001,
+   "retained_vs_ceiling": 0.0013,
+   "normalized_hold_error": 1.9109,
+   "stale_tol": NaN,
+   "action_variance_explained": -0.3259
+  },
+  {
+   "intent": "hand-8",
+   "hold": 1,
+   "recovery": 0.8659,
+   "sd": 0.1118,
+   "ceiling": 1.0,
+   "retained": 1.0,
+   "retained_vs_ceiling": 1.0,
+   "normalized_hold_error": 0.0,
+   "stale_tol": NaN,
+   "action_variance_explained": 0.8114
+  },
+  {
+   "intent": "hand-8",
+   "hold": 6,
+   "recovery": 0.178,
+   "sd": 0.1051,
+   "ceiling": 1.0,
+   "retained": 0.2056,
+   "retained_vs_ceiling": 0.2056,
+   "normalized_hold_error": 1.6529,
+   "stale_tol": NaN,
+   "action_variance_explained": -0.5298
+  },
+  {
+   "intent": "hand-8",
+   "hold": 12,
+   "recovery": 0.0959,
+   "sd": 0.0327,
+   "ceiling": 1.0,
+   "retained": 0.1107,
+   "retained_vs_ceiling": 0.1107,
+   "normalized_hold_error": 1.784,
+   "stale_tol": NaN,
+   "action_variance_explained": -0.6362
+  },
+  {
+   "intent": "hand-8",
+   "hold": 30,
+   "recovery": 0.0213,
+   "sd": 0.0168,
+   "ceiling": 0.766,
+   "retained": 0.0246,
+   "retained_vs_ceiling": 0.0321,
+   "normalized_hold_error": 1.9125,
+   "stale_tol": NaN,
+   "action_variance_explained": -0.7404
+  },
+  {
+   "intent": "obj-4",
+   "hold": 1,
+   "recovery": 0.3278,
+   "sd": 0.1158,
+   "ceiling": 1.0,
+   "retained": 1.0,
+   "retained_vs_ceiling": 1.0,
+   "normalized_hold_error": 0.0,
+   "stale_tol": 0.0,
+   "action_variance_explained": NaN
+  },
+  {
+   "intent": "obj-4",
+   "hold": 6,
+   "recovery": 0.2174,
+   "sd": 0.0309,
+   "ceiling": 1.0,
+   "retained": 0.6632,
+   "retained_vs_ceiling": 0.6632,
+   "normalized_hold_error": 0.2372,
+   "stale_tol": 0.6628,
+   "action_variance_explained": NaN
+  },
+  {
+   "intent": "obj-4",
+   "hold": 12,
+   "recovery": 0.1316,
+   "sd": 0.0799,
+   "ceiling": 1.0,
+   "retained": 0.4015,
+   "retained_vs_ceiling": 0.4015,
+   "normalized_hold_error": 0.4874,
+   "stale_tol": 0.8069,
+   "action_variance_explained": NaN
+  },
+  {
+   "intent": "obj-4",
+   "hold": 30,
+   "recovery": 0.0186,
+   "sd": 0.0059,
+   "ceiling": 0.766,
+   "retained": 0.0566,
+   "retained_vs_ceiling": 0.0739,
+   "normalized_hold_error": 1.1317,
+   "stale_tol": 0.9108,
+   "action_variance_explained": NaN
+  }
+ ]
+}

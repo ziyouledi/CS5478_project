@@ -1,0 +1,67 @@
+{
+  "checkpoint": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-seed0/frozen/expert-seed0.pth",
+  "consecutive_success_source": "infos.episode.consecutive_successes",
+  "deterministic": true,
+  "episodes": 1024,
+  "final_consecutive_successes": 23.715896606445312,
+  "max_episode_length": 599,
+  "max_episode_reward": 9859.6884765625,
+  "mean_consecutive_successes": 15.488907130214328,
+  "mean_episode_length": 592.7705078125,
+  "mean_episode_reward": 7447.818149562925,
+  "min_episode_length": 36,
+  "min_episode_reward": -7.539798736572266,
+  "num_envs": 256,
+  "object_probe": {
+    "bbox_max": [
+      0.03000000000000025,
+      0.03000000000000025,
+      0.030000000000000027
+    ],
+    "bbox_min": [
+      -0.03000000000000025,
+      -0.03000000000000025,
+      -0.030000000000000027
+    ],
+    "coms": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "inertias": [
+      0.00012959999730810523,
+      0.0,
+      0.0,
+      0.0,
+      0.00012959999730810523,
+      0.0,
+      0.0,
+      0.0,
+      0.00012959999730810523
+    ],
+    "masses": [
+      0.2160000056028366
+    ],
+    "material": [
+      1.0,
+      1.0,
+      0.0
+    ],
+    "materials_all_shapes": [
+      [
+        1.0,
+        1.0,
+        0.0
+      ]
+    ]
+  },
+  "record_type": "shadow_expert_evaluation",
+  "seed": 20261006,
+  "std_episode_reward": 945.6377433219126,
+  "task": "Isaac-Repose-Cube-Shadow-Direct-v0",
+  "vector_steps": 2396
+}

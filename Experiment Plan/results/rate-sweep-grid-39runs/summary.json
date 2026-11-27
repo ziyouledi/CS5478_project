@@ -1,0 +1,623 @@
+{
+  "P_E": 26.1103515625,
+  "P_B": 0.006184895833333333,
+  "num_runs": 48,
+  "recovery_definition": "(final successes - P_B) / (P_E - P_B), final checkpoint (iteration 5000)",
+  "auc_definition": "trapezoidal mean of successes / P_E over the 25 evaluated checkpoints",
+  "n80_definition": "first iteration with successes >= 0.8 P_E, interpolated; None if never reached",
+  "ceiling_definition": "min(1, (600 / N) / P_E), derivation, not a measurement",
+  "test": "Welch t, uncorrected, 3 seeds per group",
+  "sources": "grid: train 1111584 + 1116466, eval 1111585, 1116420, 1116422, 1117654, 1117655; N = 1 for hand-2/hand-8/obj-4: M1 train 1104420, eval 1104422/1104730/1108150",
+  "failures": [],
+  "status": "PASS",
+  "groups": [
+    {
+      "intent": "hand-2",
+      "hold": 1,
+      "rate_hz": 60.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        11.12109375,
+        15.255859375,
+        13.076171875
+      ],
+      "recovery_values": [
+        0.4257906025538707,
+        0.5841854549082203,
+        0.5006858539505187
+      ],
+      "recovery_mean": 0.5035539704708699,
+      "recovery_sd": 0.07923636717044633,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.5035539704708699,
+      "auc_mean": 0.36740492783616546,
+      "auc_sd": 0.08383999084967365,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.033854166666666664,
+      "step1_eval_only_recovery_mean": 0.5044518156424581,
+      "p_recovery_vs_goal4_same_n": 0.013613431660751803,
+      "p_auc_vs_goal4_same_n": 0.2717841710291086
+    },
+    {
+      "intent": "hand-2",
+      "hold": 6,
+      "rate_hz": 10.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        0.0244140625,
+        1.205078125,
+        1.1181640625
+      ],
+      "recovery_values": [
+        0.0006983240223463687,
+        0.045927274541101355,
+        0.042597765363128495
+      ],
+      "recovery_mean": 0.02974112130885874,
+      "recovery_sd": 0.02520683366689754,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.02974112130885874,
+      "auc_mean": 0.014696134777856737,
+      "auc_sd": 0.012552991546143762,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.028645833333333332,
+      "step1_eval_only_recovery_mean": 0.0047635674381484435,
+      "p_recovery_vs_same_intent_n1": 0.005337570009118834,
+      "p_auc_vs_same_intent_n1": 0.016601451331499546,
+      "p_recovery_vs_goal4_same_n": 6.891164159006663e-05,
+      "p_auc_vs_goal4_same_n": 0.0002210994624096206
+    },
+    {
+      "intent": "hand-2",
+      "hold": 12,
+      "rate_hz": 5.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        0.052734375,
+        0.0546875,
+        0.05078125
+      ],
+      "recovery_values": [
+        0.0017832202713487628,
+        0.0018580407023144451,
+        0.0017083998403830804
+      ],
+      "recovery_mean": 0.0017832202713487625,
+      "recovery_sd": 7.482043096568238e-05,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.0017832202713487625,
+      "auc_mean": 0.0008433485847743244,
+      "auc_sd": 0.00020147926380192273,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.013671875,
+      "step1_eval_only_recovery_mean": null,
+      "p_recovery_vs_same_intent_n1": 0.00820995426165897,
+      "p_auc_vs_same_intent_n1": 0.016993927710529974,
+      "p_recovery_vs_goal4_same_n": 0.00023559069533451852,
+      "p_auc_vs_goal4_same_n": 0.0010438047446634673
+    },
+    {
+      "intent": "hand-2",
+      "hold": 30,
+      "rate_hz": 2.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        0.02734375,
+        0.0126953125,
+        0.0185546875
+      ],
+      "recovery_values": [
+        0.0008105546687948923,
+        0.00024940143655227453,
+        0.00047386272944932166
+      ],
+      "recovery_mean": 0.0005112729449321629,
+      "recovery_sd": 0.0002824409330832533,
+      "ceiling": 0.7659797284661705,
+      "recovery_over_ceiling": 0.0006674758168286738,
+      "auc_mean": 0.0005527088969509586,
+      "auc_sd": 0.00010417440123236611,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.027018229166666668,
+      "step1_eval_only_recovery_mean": 0.0006110335195530726,
+      "p_recovery_vs_same_intent_n1": 0.008168412448001375,
+      "p_auc_vs_same_intent_n1": 0.016968024258558284,
+      "p_recovery_vs_goal4_same_n": 0.0014343846968757992,
+      "p_auc_vs_goal4_same_n": 0.009501892418509664
+    },
+    {
+      "intent": "hand-8",
+      "hold": 1,
+      "rate_hz": 60.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        22.9580078125,
+        19.5341796875,
+        25.33984375
+      ],
+      "recovery_values": [
+        0.8792398244213887,
+        0.7480796089385475,
+        0.9704833399840384
+      ],
+      "recovery_mean": 0.8659342577813249,
+      "recovery_sd": 0.11179728741543168,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.8659342577813249,
+      "auc_mean": 0.6227696845403582,
+      "auc_sd": 0.07347750314093916,
+      "n80_values": [
+        3479.713774597496,
+        null,
+        2423.492769744161
+      ],
+      "n_reached_80": 2,
+      "n80_mean_reached": 2951.6032721708284,
+      "fall_mean": 0.029296875,
+      "step1_eval_only_recovery_mean": 0.864961592178771,
+      "p_recovery_vs_goal4_same_n": 0.3000000134766242,
+      "p_auc_vs_goal4_same_n": 0.05567276851920027
+    },
+    {
+      "intent": "hand-8",
+      "hold": 6,
+      "rate_hz": 10.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        7.6943359375,
+        2.361328125,
+        3.9052734375
+      ],
+      "recovery_values": [
+        0.294518156424581,
+        0.09022096967278531,
+        0.14936652035115722
+      ],
+      "recovery_mean": 0.17803521548284118,
+      "recovery_sd": 0.10512257459313676,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.17803521548284118,
+      "auc_mean": 0.08865549405110688,
+      "auc_sd": 0.08141954049941506,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.016276041666666668,
+      "step1_eval_only_recovery_mean": 0.02754638866719872,
+      "p_recovery_vs_same_intent_n1": 0.0015062609257018905,
+      "p_auc_vs_same_intent_n1": 0.0011321738227063028,
+      "p_recovery_vs_goal4_same_n": 0.012248427751023897,
+      "p_auc_vs_goal4_same_n": 0.012852587842872309
+    },
+    {
+      "intent": "hand-8",
+      "hold": 12,
+      "rate_hz": 5.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        1.96484375,
+        3.4912109375,
+        2.0703125
+      ],
+      "recovery_values": [
+        0.0750324221867518,
+        0.13350458898643255,
+        0.07907272545889864
+      ],
+      "recovery_mean": 0.09586991221069434,
+      "recovery_sd": 0.0326551325926484,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.09586991221069434,
+      "auc_mean": 0.04461228302020089,
+      "auc_sd": 0.024697283842866742,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.0322265625,
+      "step1_eval_only_recovery_mean": null,
+      "p_recovery_vs_same_intent_n1": 0.0041715748717767115,
+      "p_auc_vs_same_intent_n1": 0.0026018986586378453,
+      "p_recovery_vs_goal4_same_n": 0.00011811146821179848,
+      "p_auc_vs_goal4_same_n": 5.324904764793981e-05
+    },
+    {
+      "intent": "hand-8",
+      "hold": 30,
+      "rate_hz": 2.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        1.0224609375,
+        0.1484375,
+        0.515625
+      ],
+      "recovery_values": [
+        0.038931564245810055,
+        0.0054494213886671986,
+        0.01951566241021548
+      ],
+      "recovery_mean": 0.021298882681564244,
+      "recovery_sd": 0.016812149728058053,
+      "ceiling": 0.7659797284661705,
+      "recovery_over_ceiling": 0.027806065735204256,
+      "auc_mean": 0.006617961792439109,
+      "auc_sd": 0.004984760784468487,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.0361328125,
+      "step1_eval_only_recovery_mean": 0.00018705107741420591,
+      "p_recovery_vs_same_intent_n1": 0.004983627144061154,
+      "p_auc_vs_same_intent_n1": 0.00455542458896659,
+      "p_recovery_vs_goal4_same_n": 0.0001211664737373403,
+      "p_auc_vs_goal4_same_n": 0.00930702587842575
+    },
+    {
+      "intent": "obj-4",
+      "hold": 1,
+      "rate_hz": 60.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        5.3212890625,
+        11.3056640625,
+        9.0625
+      ],
+      "recovery_values": [
+        0.20361133280127694,
+        0.43286113328012765,
+        0.34692986831604145
+      ],
+      "recovery_mean": 0.32780077813248204,
+      "recovery_sd": 0.11581584228134023,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.32780077813248204,
+      "auc_mean": 0.10990232013065539,
+      "auc_sd": 0.046742294889566265,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.0791015625,
+      "step1_eval_only_recovery_mean": 0.32586791699920187,
+      "p_recovery_vs_goal4_same_n": 0.007870804747716368,
+      "p_auc_vs_goal4_same_n": 0.006525744328194177
+    },
+    {
+      "intent": "obj-4",
+      "hold": 6,
+      "rate_hz": 10.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        6.5380859375,
+        5.5693359375,
+        4.9365234375
+      ],
+      "recovery_values": [
+        0.25022446129289705,
+        0.2131135275339186,
+        0.18887170790103752
+      ],
+      "recovery_mean": 0.21740323224261773,
+      "recovery_sd": 0.030900505854378167,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.21740323224261773,
+      "auc_mean": 0.07998409403531519,
+      "auc_sd": 0.015937078342801288,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.07877604166666667,
+      "step1_eval_only_recovery_mean": 0.2305466879489226,
+      "p_recovery_vs_same_intent_n1": 0.23629743450609927,
+      "p_auc_vs_same_intent_n1": 0.38607912750357964,
+      "p_recovery_vs_goal4_same_n": 0.00045552583689561837,
+      "p_auc_vs_goal4_same_n": 0.00017833597525014695
+    },
+    {
+      "intent": "obj-4",
+      "hold": 12,
+      "rate_hz": 5.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        3.7607421875,
+        1.2158203125,
+        5.3486328125
+      ],
+      "recovery_values": [
+        0.14382980845969673,
+        0.04633878691141261,
+        0.2046588188347965
+      ],
+      "recovery_mean": 0.13160913806863528,
+      "recovery_sd": 0.07986436449168395,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.13160913806863528,
+      "auc_mean": 0.05406885173687732,
+      "auc_sd": 0.039182410575663275,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.056315104166666664,
+      "step1_eval_only_recovery_mean": null,
+      "p_recovery_vs_same_intent_n1": 0.0812197758823957,
+      "p_auc_vs_same_intent_n1": 0.1901748020437846,
+      "p_recovery_vs_goal4_same_n": 0.0059981086841152395,
+      "p_auc_vs_goal4_same_n": 0.0006658978543941299
+    },
+    {
+      "intent": "obj-4",
+      "hold": 30,
+      "rate_hz": 2.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        0.642578125,
+        0.4970703125,
+        0.3330078125
+      ],
+      "recovery_values": [
+        0.024378990422984834,
+        0.0188048683160415,
+        0.012519952114924182
+      ],
+      "recovery_mean": 0.018567936951316838,
+      "recovery_sd": 0.005933068325218009,
+      "ceiling": 0.7659797284661705,
+      "recovery_over_ceiling": 0.024240768079460854,
+      "auc_mean": 0.004822696803846522,
+      "auc_sd": 0.0005120397360345219,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.054036458333333336,
+      "step1_eval_only_recovery_mean": 0.052898044692737435,
+      "p_recovery_vs_same_intent_n1": 0.043387546807346265,
+      "p_auc_vs_same_intent_n1": 0.060058315100576375,
+      "p_recovery_vs_goal4_same_n": 0.001037883271229227,
+      "p_auc_vs_goal4_same_n": 0.009796404089601893
+    },
+    {
+      "intent": "goal-4",
+      "hold": 1,
+      "rate_hz": 60.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        22.326171875,
+        18.4267578125,
+        19.654296875
+      ],
+      "recovery_values": [
+        0.8550354150039904,
+        0.7056564245810056,
+        0.752681065442937
+      ],
+      "recovery_mean": 0.7711243016759776,
+      "recovery_sd": 0.0763782391588622,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.7711243016759776,
+      "auc_mean": 0.453223373352782,
+      "auc_sd": 0.081165639454852,
+      "n80_values": [
+        4003.3251833740837,
+        null,
+        null
+      ],
+      "n_reached_80": 1,
+      "n80_mean_reached": 4003.3251833740837,
+      "fall_mean": 0.07259114583333333,
+      "step1_eval_only_recovery_mean": null
+    },
+    {
+      "intent": "goal-4",
+      "hold": 6,
+      "rate_hz": 10.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        18.705078125,
+        18.1630859375,
+        18.53125
+      ],
+      "recovery_values": [
+        0.7163183359936154,
+        0.6955556664006385,
+        0.7096593176376697
+      ],
+      "recovery_mean": 0.7071777733439745,
+      "recovery_sd": 0.01060144606730422,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.7071777733439745,
+      "auc_mean": 0.4204919940324063,
+      "auc_sd": 0.026482590133301176,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.07194010416666667,
+      "step1_eval_only_recovery_mean": null,
+      "p_recovery_vs_same_intent_n1": 0.28307332509990624,
+      "p_auc_vs_same_intent_n1": 0.5643552860400414
+    },
+    {
+      "intent": "goal-4",
+      "hold": 12,
+      "rate_hz": 5.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        17.2236328125,
+        16.400390625,
+        17.1201171875
+      ],
+      "recovery_values": [
+        0.6595670391061452,
+        0.6280302274541102,
+        0.6556015562649641
+      ],
+      "recovery_mean": 0.6477329409417399,
+      "recovery_sd": 0.017177862283259893,
+      "ceiling": 1.0,
+      "recovery_over_ceiling": 0.6477329409417399,
+      "auc_mean": 0.4018650808492601,
+      "auc_sd": 0.022467531046848534,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.046223958333333336,
+      "step1_eval_only_recovery_mean": null,
+      "p_recovery_vs_same_intent_n1": 0.10102650711298364,
+      "p_auc_vs_same_intent_n1": 0.3888494685953107
+    },
+    {
+      "intent": "goal-4",
+      "hold": 30,
+      "rate_hz": 2.0,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "successes": [
+        10.359375,
+        11.8134765625,
+        11.1845703125
+      ],
+      "recovery_values": [
+        0.39661063447725453,
+        0.4523144453312051,
+        0.42822226656025536
+      ],
+      "recovery_mean": 0.42571578212290495,
+      "recovery_sd": 0.027936364904711283,
+      "ceiling": 0.7659797284661705,
+      "recovery_over_ceiling": 0.5557794368466851,
+      "auc_mean": 0.27252938084136424,
+      "auc_sd": 0.04625045345694438,
+      "n80_values": [
+        null,
+        null,
+        null
+      ],
+      "n_reached_80": 0,
+      "n80_mean_reached": null,
+      "fall_mean": 0.06966145833333333,
+      "step1_eval_only_recovery_mean": null,
+      "p_recovery_vs_same_intent_n1": 0.00908713646760605,
+      "p_auc_vs_same_intent_n1": 0.040487113389040416
+    }
+  ]
+}

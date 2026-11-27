@@ -1,0 +1,56 @@
+{
+  "model": "/home/x/xiaox/data/low-dim-intent/runs/c1-v2-sft-job1176313/merged_hf",
+  "seconds": 46.0,
+  "overall": {
+    "n": 200,
+    "n_covered": 181,
+    "n_uncovered_abort": 19,
+    "success_all": 0.895,
+    "success_covered": 0.989,
+    "mean_rounds_ratio": 1.1206
+  },
+  "by_L": {
+    "L1": {
+      "n": 50,
+      "n_covered": 44,
+      "n_uncovered_abort": 6,
+      "success_all": 0.88,
+      "success_covered": 1.0,
+      "mean_rounds_ratio": 1.0455
+    },
+    "L2": {
+      "n": 50,
+      "n_covered": 50,
+      "n_uncovered_abort": 0,
+      "success_all": 0.96,
+      "success_covered": 0.96,
+      "mean_rounds_ratio": 1.3229
+    },
+    "L3": {
+      "n": 50,
+      "n_covered": 43,
+      "n_uncovered_abort": 7,
+      "success_all": 0.86,
+      "success_covered": 1.0,
+      "mean_rounds_ratio": 1.0775
+    },
+    "L4": {
+      "n": 50,
+      "n_covered": 44,
+      "n_uncovered_abort": 6,
+      "success_all": 0.88,
+      "success_covered": 1.0,
+      "mean_rounds_ratio": 1.017
+    }
+  },
+  "step_metrics": {
+    "total_steps": 505,
+    "img_test_frac": 0.9663,
+    "img_train_fallback_frac": 0.0337,
+    "json_valid": 1.0,
+    "state_exact_96": 0.905,
+    "action_optimal": 0.9327,
+    "illegal_action": 0.004,
+    "parse_fail": 0.0
+  }
+}

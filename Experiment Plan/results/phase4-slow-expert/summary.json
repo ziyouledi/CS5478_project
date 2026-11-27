@@ -1,0 +1,174 @@
+{
+  "P_E": 26.1103515625,
+  "P_B": 0.006184895833333333,
+  "ratio_definition": "successes per episode / P_E (final checkpoint)",
+  "caveat": "lower bound: policy queried every step, PPO updates on unapplied actions, no phase in the observation",
+  "status": "PASS",
+  "failures": [],
+  "groups": [
+    {
+      "action_hold": 1,
+      "rate_hz": 60.0,
+      "n_seeds": 3,
+      "successes_values": [
+        26.1103515625,
+        24.7353515625,
+        25.451171875
+      ],
+      "successes_mean": 25.432291666666668,
+      "successes_sd": 0.687694406477203,
+      "ratio_values": [
+        1.0,
+        0.9473388936679508,
+        0.9747540860979167
+      ],
+      "ratio_mean": 0.9740309932552892,
+      "ratio_sd": 0.026337998737055612,
+      "auc_mean": 0.6950176721397314,
+      "fall_values": [
+        0.0556640625,
+        0.0712890625,
+        0.08203125
+      ],
+      "fall_mean": 0.06966145833333333,
+      "any_success_mean": 0.9967447916666666,
+      "late_gain_values": [
+        0.6357421875,
+        1.30859375,
+        1.05078125
+      ],
+      "late_gain_relative": [
+        0.024348281407786963,
+        0.052903786173950806,
+        0.04128616376333359
+      ],
+      "hand8_recovery_mean": 0.8659342577813249,
+      "p_vs_hand8": 0.23224042337796874,
+      "goal4_recovery_mean": 0.7711243016759776,
+      "p_vs_goal4": 0.033082151271385106
+    },
+    {
+      "action_hold": 6,
+      "rate_hz": 10.0,
+      "n_seeds": 3,
+      "successes_values": [
+        1.994140625,
+        3.9150390625,
+        3.3134765625
+      ],
+      "successes_mean": 3.07421875,
+      "successes_sd": 0.9825456363086649,
+      "ratio_values": [
+        0.07637356472304298,
+        0.14994202790141004,
+        0.1269027938811385
+      ],
+      "ratio_mean": 0.1177394621685305,
+      "ratio_sd": 0.03763050198526659,
+      "auc_mean": 0.05076376681502537,
+      "fall_values": [
+        0.162109375,
+        0.1318359375,
+        0.111328125
+      ],
+      "fall_mean": 0.13509114583333334,
+      "any_success_mean": 0.8675130208333334,
+      "late_gain_values": [
+        0.9609375,
+        0.427734375,
+        0.6484375
+      ],
+      "late_gain_relative": [
+        0.48188050930460335,
+        0.10925417809927662,
+        0.1956970232832302
+      ],
+      "hand8_recovery_mean": 0.17803521548284118,
+      "p_vs_hand8": 0.42937188111402197,
+      "goal4_recovery_mean": 0.7071777733439745,
+      "p_vs_goal4": 0.0006517561688651314
+    },
+    {
+      "action_hold": 12,
+      "rate_hz": 5.0,
+      "n_seeds": 3,
+      "successes_values": [
+        0.0205078125,
+        0.044921875,
+        0.0263671875
+      ],
+      "successes_mean": 0.030598958333333332,
+      "successes_sd": 0.012745294238575452,
+      "ratio_values": [
+        0.0007854284325092568,
+        0.0017204622807345626,
+        0.0010098365560833303
+      ],
+      "ratio_mean": 0.0011719090897757164,
+      "ratio_sd": 0.00048813185100427355,
+      "auc_mean": 0.0008664646993554499,
+      "fall_values": [
+        0.0751953125,
+        0.0439453125,
+        0.1650390625
+      ],
+      "fall_mean": 0.0947265625,
+      "any_success_mean": 0.0302734375,
+      "late_gain_values": [
+        -0.0009765625,
+        0.0244140625,
+        0.0107421875
+      ],
+      "late_gain_relative": [
+        null,
+        null,
+        null
+      ],
+      "hand8_recovery_mean": 0.09586991221069434,
+      "p_vs_hand8": 0.037223605506510576,
+      "goal4_recovery_mean": 0.6477329409417399,
+      "p_vs_goal4": 0.00023255851279526277
+    },
+    {
+      "action_hold": 30,
+      "rate_hz": 2.0,
+      "n_seeds": 3,
+      "successes_values": [
+        0.0107421875,
+        0.0078125,
+        0.0048828125
+      ],
+      "successes_mean": 0.0078125,
+      "successes_sd": 0.0029296875,
+      "ratio_values": [
+        0.00041141489321913454,
+        0.0002992108314320978,
+        0.00018700676964506115
+      ],
+      "ratio_mean": 0.0002992108314320978,
+      "ratio_sd": 0.0001122040617870367,
+      "auc_mean": 0.000292457809194915,
+      "fall_values": [
+        0.126953125,
+        0.216796875,
+        0.0703125
+      ],
+      "fall_mean": 0.13802083333333334,
+      "any_success_mean": 0.0078125,
+      "late_gain_values": [
+        0.0048828125,
+        0.0009765625,
+        0.0
+      ],
+      "late_gain_relative": [
+        null,
+        null,
+        null
+      ],
+      "hand8_recovery_mean": 0.021298882681564244,
+      "p_vs_hand8": 0.1601675905558159,
+      "goal4_recovery_mean": 0.42571578212290495,
+      "p_vs_goal4": 0.0014325361950622544
+    }
+  ]
+}

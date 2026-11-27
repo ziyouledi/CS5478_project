@@ -1,0 +1,111 @@
+{
+  "checkpoint": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-seed0/frozen/expert-seed0.pth",
+  "consecutive_success_source": "infos.episode.consecutive_successes",
+  "deterministic": true,
+  "episodes": 1024,
+  "final_consecutive_successes": 21.136056900024414,
+  "hinge": {
+    "damping": 0.0,
+    "effort_limit": 100.0,
+    "fraction_over_15_deg": 0.9306823228309649,
+    "fraction_over_45_deg": 0.8265312383133882,
+    "fraction_over_5_deg": 0.9692335335639491,
+    "geometry": {
+      "mass_base": 0.1440000037352244,
+      "mass_top": 0.0720000018676122,
+      "mass_total": 0.2160000056028366,
+      "size": [
+        0.0600000000000005,
+        0.0600000000000005,
+        0.06000000000000005
+      ],
+      "top_inertia_about_hinge": 4.3200001120568034e-05
+    },
+    "max_abs_angle_deg": 359.9997914518592,
+    "mean_abs_angle_deg": 159.98324740607544,
+    "samples": 684544,
+    "stiffness": 0.0
+  },
+  "max_episode_length": 599,
+  "max_episode_reward": 8749.197265625,
+  "mean_consecutive_successes": 15.306280325886751,
+  "mean_episode_length": 564.943359375,
+  "mean_episode_reward": 6147.606446175836,
+  "min_episode_length": 47,
+  "min_episode_reward": -11.241081237792969,
+  "num_envs": 256,
+  "object_probe": {
+    "bbox_max": [
+      0.0017999999195339456,
+      0.0017999999195339456,
+      0.020199999544024516
+    ],
+    "bbox_min": [
+      -0.0017999999195339456,
+      -0.0017999999195339456,
+      -0.010799999740719768
+    ],
+    "coms": [
+      0.0,
+      0.0,
+      -0.009999999776482582,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.009999999776482582,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "inertias": [
+      6.240000220714137e-05,
+      0.0,
+      0.0,
+      0.0,
+      6.240000220714137e-05,
+      0.0,
+      0.0,
+      0.0,
+      8.64000030560419e-05,
+      2.4000000848900527e-05,
+      0.0,
+      0.0,
+      0.0,
+      2.4000000848900527e-05,
+      0.0,
+      0.0,
+      0.0,
+      4.320000152802095e-05
+    ],
+    "masses": [
+      0.14400000870227814,
+      0.07200000435113907
+    ],
+    "material": [
+      1.0,
+      1.0,
+      0.0
+    ],
+    "materials_all_shapes": [
+      [
+        1.0,
+        1.0,
+        0.0
+      ],
+      [
+        1.0,
+        1.0,
+        0.0
+      ]
+    ]
+  },
+  "record_type": "shadow_expert_evaluation",
+  "seed": 20261006,
+  "std_episode_reward": 1485.9489431202746,
+  "task": "Isaac-Repose-HingedCube-Shadow-Direct-v0",
+  "vector_steps": 2396
+}

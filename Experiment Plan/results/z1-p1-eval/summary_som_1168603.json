@@ -1,0 +1,2275 @@
+{
+  "model": "/home/x/xiaox/data/low-dim-intent/hf/Qwen3-VL-8B-Instruct",
+  "frames": "/home/x/xiaox/data/low-dim-intent/runs/z1-questions/z1_frames_v2.jsonl",
+  "template_version": "z1-mcq-v2",
+  "visual_mode": "som",
+  "crop_size": 384,
+  "crop_pad": 0.3,
+  "hint": "The images show the same moment from {n} fixed camera{s}. A robot hand, palm up, holds a cube whose faces are coloured. The hand may hide parts of the cube.",
+  "questions": {
+    "up": [
+      "Which colour covers most of the cube face that points up (toward the sky)?",
+      [
+        "white",
+        "magenta",
+        "red",
+        "green",
+        "yellow",
+        "blue"
+      ]
+    ],
+    "turned": [
+      "Look at the cube face where [1] marks the large 2/3 panel and [2] marks the narrow 1/3 strip along its split edge. Do [1] and [2] show the same colour, or two different colours?",
+      [
+        "[1] and [2] show the same colour",
+        "[1] and [2] show two different colours"
+      ]
+    ],
+    "band": [
+      "Look at the cube face where [1] marks the red 2/3 panel and [2] marks the narrow 1/3 strip along its split edge. What colour is the strip marked [2]?",
+      [
+        "red (same colour as [1]; there is no different strip)",
+        "blue",
+        "yellow",
+        "green"
+      ]
+    ]
+  },
+  "cbd": "Cannot be determined",
+  "decoding": "greedy",
+  "max_tokens": 4096,
+  "min_face_px": 300,
+  "min_band_px": 100,
+  "results": {
+    "dev/c1": {
+      "n_frames": 54,
+      "seconds": 173.60951900482178,
+      "levels": {
+        "up": {
+          "n_answerable": 54,
+          "acc_circular": 0.9259259259259259,
+          "acc_vanilla": 0.9444444444444444,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35185185185185186,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 12.882716049382717,
+          "strata_circular": {
+            "detent=0": [
+              1.0,
+              22
+            ],
+            "detent=1": [
+              0.9,
+              10
+            ],
+            "detent=2": [
+              0.9230769230769231,
+              13
+            ],
+            "detent=3": [
+              0.7777777777777778,
+              9
+            ],
+            "truth=blue": [
+              0.9375,
+              16
+            ],
+            "truth=green": [
+              0.75,
+              8
+            ],
+            "truth=magenta": [
+              1.0,
+              1
+            ],
+            "truth=red": [
+              0.8571428571428571,
+              7
+            ],
+            "truth=white": [
+              1.0,
+              19
+            ],
+            "truth=yellow": [
+              1.0,
+              3
+            ],
+            "up=blue": [
+              0.9375,
+              16
+            ],
+            "up=green": [
+              0.75,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.8571428571428571,
+              7
+            ],
+            "up=white": [
+              1.0,
+              19
+            ],
+            "up=yellow": [
+              1.0,
+              3
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 54,
+          "acc_circular": 0.7962962962962963,
+          "acc_vanilla": 0.7962962962962963,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.5925925925925926,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 14.0,
+          "strata_circular": {
+            "detent=0": [
+              0.5,
+              22
+            ],
+            "detent=1": [
+              1.0,
+              10
+            ],
+            "detent=2": [
+              1.0,
+              13
+            ],
+            "detent=3": [
+              1.0,
+              9
+            ],
+            "truth=no": [
+              0.5,
+              22
+            ],
+            "truth=yes": [
+              1.0,
+              32
+            ],
+            "up=blue": [
+              0.625,
+              16
+            ],
+            "up=green": [
+              1.0,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              1.0,
+              7
+            ],
+            "up=white": [
+              0.7368421052631579,
+              19
+            ],
+            "up=yellow": [
+              1.0,
+              3
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 31,
+          "acc_circular": 0.6451612903225806,
+          "acc_vanilla": 0.8387096774193549,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.3870967741935484,
+          "best_constant_answer": "none",
+          "cbd_rate_answerable": 0.0967741935483871,
+          "n_unanswerable": 23,
+          "cbd_rate_unanswerable": 0.6521739130434783,
+          "unmatched": 0.041666666666666664,
+          "truncated": 0.06944444444444445,
+          "mean_tokens": 498.13425925925924,
+          "strata_circular": {
+            "detent=0": [
+              0.3333333333333333,
+              12
+            ],
+            "detent=1": [
+              0.8,
+              5
+            ],
+            "detent=2": [
+              0.8571428571428571,
+              7
+            ],
+            "detent=3": [
+              0.8571428571428571,
+              7
+            ],
+            "truth=blue": [
+              0.8,
+              5
+            ],
+            "truth=green": [
+              0.8571428571428571,
+              7
+            ],
+            "truth=none": [
+              0.3333333333333333,
+              12
+            ],
+            "truth=yellow": [
+              0.8571428571428571,
+              7
+            ],
+            "up=blue": [
+              0.42857142857142855,
+              7
+            ],
+            "up=green": [
+              0.6,
+              5
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.7142857142857143,
+              7
+            ],
+            "up=white": [
+              0.7272727272727273,
+              11
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.5806451612903226,
+      "n_all_answerable": 31
+    },
+    "dev/top": {
+      "n_frames": 54,
+      "seconds": 182.9375762939453,
+      "levels": {
+        "up": {
+          "n_answerable": 54,
+          "acc_circular": 0.9074074074074074,
+          "acc_vanilla": 0.9074074074074074,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35185185185185186,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 6.0092592592592595,
+          "strata_circular": {
+            "detent=0": [
+              0.9090909090909091,
+              22
+            ],
+            "detent=1": [
+              1.0,
+              10
+            ],
+            "detent=2": [
+              0.8461538461538461,
+              13
+            ],
+            "detent=3": [
+              0.8888888888888888,
+              9
+            ],
+            "truth=blue": [
+              0.8125,
+              16
+            ],
+            "truth=green": [
+              0.875,
+              8
+            ],
+            "truth=magenta": [
+              1.0,
+              1
+            ],
+            "truth=red": [
+              0.8571428571428571,
+              7
+            ],
+            "truth=white": [
+              1.0,
+              19
+            ],
+            "truth=yellow": [
+              1.0,
+              3
+            ],
+            "up=blue": [
+              0.8125,
+              16
+            ],
+            "up=green": [
+              0.875,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.8571428571428571,
+              7
+            ],
+            "up=white": [
+              1.0,
+              19
+            ],
+            "up=yellow": [
+              1.0,
+              3
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 43,
+          "acc_circular": 0.9069767441860465,
+          "acc_vanilla": 0.9534883720930233,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.5581395348837209,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 11,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 16.87962962962963,
+          "strata_circular": {
+            "detent=0": [
+              0.8947368421052632,
+              19
+            ],
+            "detent=1": [
+              0.8571428571428571,
+              7
+            ],
+            "detent=2": [
+              0.9090909090909091,
+              11
+            ],
+            "detent=3": [
+              1.0,
+              6
+            ],
+            "truth=no": [
+              0.8947368421052632,
+              19
+            ],
+            "truth=yes": [
+              0.9166666666666666,
+              24
+            ],
+            "up=blue": [
+              1.0,
+              16
+            ],
+            "up=green": [
+              1.0,
+              8
+            ],
+            "up=magenta": [
+              0.0,
+              1
+            ],
+            "up=red": [
+              1.0,
+              7
+            ],
+            "up=white": [
+              0.625,
+              8
+            ],
+            "up=yellow": [
+              1.0,
+              3
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 20,
+          "acc_circular": 0.55,
+          "acc_vanilla": 0.7,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.5,
+          "best_constant_answer": "none",
+          "cbd_rate_answerable": 0.05,
+          "n_unanswerable": 34,
+          "cbd_rate_unanswerable": 0.5294117647058824,
+          "unmatched": 0.06481481481481481,
+          "truncated": 0.10648148148148148,
+          "mean_tokens": 702.050925925926,
+          "strata_circular": {
+            "detent=0": [
+              0.3,
+              10
+            ],
+            "detent=1": [
+              0.75,
+              4
+            ],
+            "detent=2": [
+              0.6666666666666666,
+              3
+            ],
+            "detent=3": [
+              1.0,
+              3
+            ],
+            "truth=blue": [
+              0.75,
+              4
+            ],
+            "truth=green": [
+              1.0,
+              3
+            ],
+            "truth=none": [
+              0.3,
+              10
+            ],
+            "truth=yellow": [
+              0.6666666666666666,
+              3
+            ],
+            "up=blue": [
+              0.5,
+              6
+            ],
+            "up=green": [
+              1.0,
+              1
+            ],
+            "up=magenta": [
+              0.0,
+              1
+            ],
+            "up=red": [
+              0.5714285714285714,
+              7
+            ],
+            "up=white": [
+              0.6,
+              5
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.55,
+      "n_all_answerable": 20
+    },
+    "dev/s040+s220": {
+      "n_frames": 54,
+      "seconds": 182.1868121623993,
+      "levels": {
+        "up": {
+          "n_answerable": 54,
+          "acc_circular": 0.8518518518518519,
+          "acc_vanilla": 0.9444444444444444,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35185185185185186,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.05555555555555555,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0030864197530864196,
+          "truncated": 0.006172839506172839,
+          "mean_tokens": 39.06172839506173,
+          "strata_circular": {
+            "detent=0": [
+              0.9545454545454546,
+              22
+            ],
+            "detent=1": [
+              0.8,
+              10
+            ],
+            "detent=2": [
+              0.9230769230769231,
+              13
+            ],
+            "detent=3": [
+              0.5555555555555556,
+              9
+            ],
+            "truth=blue": [
+              0.6875,
+              16
+            ],
+            "truth=green": [
+              0.875,
+              8
+            ],
+            "truth=magenta": [
+              1.0,
+              1
+            ],
+            "truth=red": [
+              0.7142857142857143,
+              7
+            ],
+            "truth=white": [
+              1.0,
+              19
+            ],
+            "truth=yellow": [
+              1.0,
+              3
+            ],
+            "up=blue": [
+              0.6875,
+              16
+            ],
+            "up=green": [
+              0.875,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.7142857142857143,
+              7
+            ],
+            "up=white": [
+              1.0,
+              19
+            ],
+            "up=yellow": [
+              1.0,
+              3
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 54,
+          "acc_circular": 0.7037037037037037,
+          "acc_vanilla": 0.7037037037037037,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.5925925925925926,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 17.37037037037037,
+          "strata_circular": {
+            "detent=0": [
+              0.2727272727272727,
+              22
+            ],
+            "detent=1": [
+              1.0,
+              10
+            ],
+            "detent=2": [
+              1.0,
+              13
+            ],
+            "detent=3": [
+              1.0,
+              9
+            ],
+            "truth=no": [
+              0.2727272727272727,
+              22
+            ],
+            "truth=yes": [
+              1.0,
+              32
+            ],
+            "up=blue": [
+              0.5,
+              16
+            ],
+            "up=green": [
+              0.875,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.7142857142857143,
+              7
+            ],
+            "up=white": [
+              0.7368421052631579,
+              19
+            ],
+            "up=yellow": [
+              1.0,
+              3
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 49,
+          "acc_circular": 0.6530612244897959,
+          "acc_vanilla": 0.7959183673469388,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.40816326530612246,
+          "best_constant_answer": "none",
+          "cbd_rate_answerable": 0.10204081632653061,
+          "n_unanswerable": 5,
+          "cbd_rate_unanswerable": 0.6,
+          "unmatched": 0.027777777777777776,
+          "truncated": 0.05555555555555555,
+          "mean_tokens": 407.9259259259259,
+          "strata_circular": {
+            "detent=0": [
+              0.6,
+              20
+            ],
+            "detent=1": [
+              0.7142857142857143,
+              7
+            ],
+            "detent=2": [
+              0.6153846153846154,
+              13
+            ],
+            "detent=3": [
+              0.7777777777777778,
+              9
+            ],
+            "truth=blue": [
+              0.7142857142857143,
+              7
+            ],
+            "truth=green": [
+              0.7777777777777778,
+              9
+            ],
+            "truth=none": [
+              0.6,
+              20
+            ],
+            "truth=yellow": [
+              0.6153846153846154,
+              13
+            ],
+            "up=blue": [
+              0.75,
+              16
+            ],
+            "up=green": [
+              0.42857142857142855,
+              7
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.8571428571428571,
+              7
+            ],
+            "up=white": [
+              0.5555555555555556,
+              18
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.3469387755102041,
+      "n_all_answerable": 49
+    },
+    "dev/c1+s040+s220": {
+      "n_frames": 54,
+      "seconds": 194.6672704219818,
+      "levels": {
+        "up": {
+          "n_answerable": 54,
+          "acc_circular": 0.9259259259259259,
+          "acc_vanilla": 0.9444444444444444,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35185185185185186,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.037037037037037035,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.012345679012345678,
+          "truncated": 0.012345679012345678,
+          "mean_tokens": 65.81172839506173,
+          "strata_circular": {
+            "detent=0": [
+              1.0,
+              22
+            ],
+            "detent=1": [
+              0.8,
+              10
+            ],
+            "detent=2": [
+              1.0,
+              13
+            ],
+            "detent=3": [
+              0.7777777777777778,
+              9
+            ],
+            "truth=blue": [
+              0.875,
+              16
+            ],
+            "truth=green": [
+              0.875,
+              8
+            ],
+            "truth=magenta": [
+              1.0,
+              1
+            ],
+            "truth=red": [
+              0.8571428571428571,
+              7
+            ],
+            "truth=white": [
+              1.0,
+              19
+            ],
+            "truth=yellow": [
+              1.0,
+              3
+            ],
+            "up=blue": [
+              0.875,
+              16
+            ],
+            "up=green": [
+              0.875,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.8571428571428571,
+              7
+            ],
+            "up=white": [
+              1.0,
+              19
+            ],
+            "up=yellow": [
+              1.0,
+              3
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 54,
+          "acc_circular": 0.7222222222222222,
+          "acc_vanilla": 0.7222222222222222,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.5925925925925926,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 14.0,
+          "strata_circular": {
+            "detent=0": [
+              0.3181818181818182,
+              22
+            ],
+            "detent=1": [
+              1.0,
+              10
+            ],
+            "detent=2": [
+              1.0,
+              13
+            ],
+            "detent=3": [
+              1.0,
+              9
+            ],
+            "truth=no": [
+              0.3181818181818182,
+              22
+            ],
+            "truth=yes": [
+              1.0,
+              32
+            ],
+            "up=blue": [
+              0.5,
+              16
+            ],
+            "up=green": [
+              0.875,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.8571428571428571,
+              7
+            ],
+            "up=white": [
+              0.7368421052631579,
+              19
+            ],
+            "up=yellow": [
+              1.0,
+              3
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 50,
+          "acc_circular": 0.6,
+          "acc_vanilla": 0.7,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.42,
+          "best_constant_answer": "none",
+          "cbd_rate_answerable": 0.18,
+          "n_unanswerable": 4,
+          "cbd_rate_unanswerable": 0.75,
+          "unmatched": 0.037037037037037035,
+          "truncated": 0.06944444444444445,
+          "mean_tokens": 444.1712962962963,
+          "strata_circular": {
+            "detent=0": [
+              0.42857142857142855,
+              21
+            ],
+            "detent=1": [
+              0.7142857142857143,
+              7
+            ],
+            "detent=2": [
+              0.6153846153846154,
+              13
+            ],
+            "detent=3": [
+              0.8888888888888888,
+              9
+            ],
+            "truth=blue": [
+              0.7142857142857143,
+              7
+            ],
+            "truth=green": [
+              0.8888888888888888,
+              9
+            ],
+            "truth=none": [
+              0.42857142857142855,
+              21
+            ],
+            "truth=yellow": [
+              0.6153846153846154,
+              13
+            ],
+            "up=blue": [
+              0.5,
+              16
+            ],
+            "up=green": [
+              0.875,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              1.0,
+              7
+            ],
+            "up=white": [
+              0.3888888888888889,
+              18
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.42,
+      "n_all_answerable": 50
+    },
+    "dev/c1+s040+s220@nohand": {
+      "n_frames": 54,
+      "seconds": 203.1347815990448,
+      "levels": {
+        "up": {
+          "n_answerable": 54,
+          "acc_circular": 0.8888888888888888,
+          "acc_vanilla": 0.9444444444444444,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35185185185185186,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.07407407407407407,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.021604938271604937,
+          "truncated": 0.024691358024691357,
+          "mean_tokens": 142.93827160493828,
+          "strata_circular": {
+            "detent=0": [
+              1.0,
+              22
+            ],
+            "detent=1": [
+              0.8,
+              10
+            ],
+            "detent=2": [
+              0.9230769230769231,
+              13
+            ],
+            "detent=3": [
+              0.6666666666666666,
+              9
+            ],
+            "truth=blue": [
+              0.75,
+              16
+            ],
+            "truth=green": [
+              0.875,
+              8
+            ],
+            "truth=magenta": [
+              1.0,
+              1
+            ],
+            "truth=red": [
+              0.8571428571428571,
+              7
+            ],
+            "truth=white": [
+              1.0,
+              19
+            ],
+            "truth=yellow": [
+              1.0,
+              3
+            ],
+            "up=blue": [
+              0.75,
+              16
+            ],
+            "up=green": [
+              0.875,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.8571428571428571,
+              7
+            ],
+            "up=white": [
+              1.0,
+              19
+            ],
+            "up=yellow": [
+              1.0,
+              3
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 54,
+          "acc_circular": 0.7222222222222222,
+          "acc_vanilla": 0.7222222222222222,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.5925925925925926,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 26.13888888888889,
+          "strata_circular": {
+            "detent=0": [
+              0.3181818181818182,
+              22
+            ],
+            "detent=1": [
+              1.0,
+              10
+            ],
+            "detent=2": [
+              1.0,
+              13
+            ],
+            "detent=3": [
+              1.0,
+              9
+            ],
+            "truth=no": [
+              0.3181818181818182,
+              22
+            ],
+            "truth=yes": [
+              1.0,
+              32
+            ],
+            "up=blue": [
+              0.5625,
+              16
+            ],
+            "up=green": [
+              1.0,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              0.7142857142857143,
+              7
+            ],
+            "up=white": [
+              0.7368421052631579,
+              19
+            ],
+            "up=yellow": [
+              0.6666666666666666,
+              3
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 50,
+          "acc_circular": 0.74,
+          "acc_vanilla": 0.86,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.42,
+          "best_constant_answer": "none",
+          "cbd_rate_answerable": 0.1,
+          "n_unanswerable": 4,
+          "cbd_rate_unanswerable": 0.75,
+          "unmatched": 0.037037037037037035,
+          "truncated": 0.05555555555555555,
+          "mean_tokens": 438.97685185185185,
+          "strata_circular": {
+            "detent=0": [
+              0.7142857142857143,
+              21
+            ],
+            "detent=1": [
+              0.7142857142857143,
+              7
+            ],
+            "detent=2": [
+              0.6153846153846154,
+              13
+            ],
+            "detent=3": [
+              1.0,
+              9
+            ],
+            "truth=blue": [
+              0.7142857142857143,
+              7
+            ],
+            "truth=green": [
+              1.0,
+              9
+            ],
+            "truth=none": [
+              0.7142857142857143,
+              21
+            ],
+            "truth=yellow": [
+              0.6153846153846154,
+              13
+            ],
+            "up=blue": [
+              0.8125,
+              16
+            ],
+            "up=green": [
+              0.625,
+              8
+            ],
+            "up=magenta": [
+              1.0,
+              1
+            ],
+            "up=red": [
+              1.0,
+              7
+            ],
+            "up=white": [
+              0.6111111111111112,
+              18
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.42,
+      "n_all_answerable": 50
+    },
+    "test/c1": {
+      "n_frames": 180,
+      "seconds": 467.07495641708374,
+      "levels": {
+        "up": {
+          "n_answerable": 180,
+          "acc_circular": 0.8944444444444445,
+          "acc_vanilla": 0.9611111111111111,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.011111111111111112,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.003703703703703704,
+          "truncated": 0.005555555555555556,
+          "mean_tokens": 37.096296296296295,
+          "strata_circular": {
+            "detent=0": [
+              0.9622641509433962,
+              53
+            ],
+            "detent=1": [
+              0.8837209302325582,
+              43
+            ],
+            "detent=2": [
+              0.9024390243902439,
+              41
+            ],
+            "detent=3": [
+              0.813953488372093,
+              43
+            ],
+            "truth=blue": [
+              0.8378378378378378,
+              37
+            ],
+            "truth=green": [
+              0.75,
+              36
+            ],
+            "truth=magenta": [
+              1.0,
+              10
+            ],
+            "truth=red": [
+              0.8235294117647058,
+              17
+            ],
+            "truth=white": [
+              1.0,
+              63
+            ],
+            "truth=yellow": [
+              0.9411764705882353,
+              17
+            ],
+            "up=blue": [
+              0.8378378378378378,
+              37
+            ],
+            "up=green": [
+              0.75,
+              36
+            ],
+            "up=magenta": [
+              1.0,
+              10
+            ],
+            "up=red": [
+              0.8235294117647058,
+              17
+            ],
+            "up=white": [
+              1.0,
+              63
+            ],
+            "up=yellow": [
+              0.9411764705882353,
+              17
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 180,
+          "acc_circular": 0.8333333333333334,
+          "acc_vanilla": 0.8333333333333334,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.7055555555555556,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 14.811111111111112,
+          "strata_circular": {
+            "detent=0": [
+              0.4339622641509434,
+              53
+            ],
+            "detent=1": [
+              1.0,
+              43
+            ],
+            "detent=2": [
+              1.0,
+              41
+            ],
+            "detent=3": [
+              1.0,
+              43
+            ],
+            "truth=no": [
+              0.4339622641509434,
+              53
+            ],
+            "truth=yes": [
+              1.0,
+              127
+            ],
+            "up=blue": [
+              0.918918918918919,
+              37
+            ],
+            "up=green": [
+              0.8888888888888888,
+              36
+            ],
+            "up=magenta": [
+              0.8,
+              10
+            ],
+            "up=red": [
+              0.8235294117647058,
+              17
+            ],
+            "up=white": [
+              0.7777777777777778,
+              63
+            ],
+            "up=yellow": [
+              0.7647058823529411,
+              17
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 77,
+          "acc_circular": 0.7142857142857143,
+          "acc_vanilla": 0.8311688311688312,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.2987012987012987,
+          "best_constant_answer": "yellow",
+          "cbd_rate_answerable": 0.06493506493506493,
+          "n_unanswerable": 103,
+          "cbd_rate_unanswerable": 0.6504854368932039,
+          "unmatched": 0.03194444444444444,
+          "truncated": 0.05555555555555555,
+          "mean_tokens": 443.0375,
+          "strata_circular": {
+            "detent=0": [
+              0.3684210526315789,
+              19
+            ],
+            "detent=1": [
+              0.8333333333333334,
+              18
+            ],
+            "detent=2": [
+              0.782608695652174,
+              23
+            ],
+            "detent=3": [
+              0.8823529411764706,
+              17
+            ],
+            "truth=blue": [
+              0.8333333333333334,
+              18
+            ],
+            "truth=green": [
+              0.8823529411764706,
+              17
+            ],
+            "truth=none": [
+              0.3684210526315789,
+              19
+            ],
+            "truth=yellow": [
+              0.782608695652174,
+              23
+            ],
+            "up=blue": [
+              0.6153846153846154,
+              13
+            ],
+            "up=green": [
+              0.5789473684210527,
+              19
+            ],
+            "up=magenta": [
+              0.0,
+              1
+            ],
+            "up=red": [
+              0.8235294117647058,
+              17
+            ],
+            "up=white": [
+              0.8148148148148148,
+              27
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.5714285714285714,
+      "n_all_answerable": 77
+    },
+    "test/top": {
+      "n_frames": 180,
+      "seconds": 516.09339594841,
+      "levels": {
+        "up": {
+          "n_answerable": 180,
+          "acc_circular": 0.8388888888888889,
+          "acc_vanilla": 0.8777777777777778,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.022222222222222223,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.000925925925925926,
+          "mean_tokens": 17.924074074074074,
+          "strata_circular": {
+            "detent=0": [
+              0.7735849056603774,
+              53
+            ],
+            "detent=1": [
+              0.9069767441860465,
+              43
+            ],
+            "detent=2": [
+              0.8536585365853658,
+              41
+            ],
+            "detent=3": [
+              0.8372093023255814,
+              43
+            ],
+            "truth=blue": [
+              0.7297297297297297,
+              37
+            ],
+            "truth=green": [
+              0.7222222222222222,
+              36
+            ],
+            "truth=magenta": [
+              1.0,
+              10
+            ],
+            "truth=red": [
+              0.5294117647058824,
+              17
+            ],
+            "truth=white": [
+              0.9841269841269841,
+              63
+            ],
+            "truth=yellow": [
+              1.0,
+              17
+            ],
+            "up=blue": [
+              0.7297297297297297,
+              37
+            ],
+            "up=green": [
+              0.7222222222222222,
+              36
+            ],
+            "up=magenta": [
+              1.0,
+              10
+            ],
+            "up=red": [
+              0.5294117647058824,
+              17
+            ],
+            "up=white": [
+              0.9841269841269841,
+              63
+            ],
+            "up=yellow": [
+              1.0,
+              17
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 139,
+          "acc_circular": 0.8705035971223022,
+          "acc_vanilla": 0.8992805755395683,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.6906474820143885,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 41,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 15.180555555555555,
+          "strata_circular": {
+            "detent=0": [
+              0.6744186046511628,
+              43
+            ],
+            "detent=1": [
+              0.9393939393939394,
+              33
+            ],
+            "detent=2": [
+              0.967741935483871,
+              31
+            ],
+            "detent=3": [
+              0.96875,
+              32
+            ],
+            "truth=no": [
+              0.6744186046511628,
+              43
+            ],
+            "truth=yes": [
+              0.9583333333333334,
+              96
+            ],
+            "up=blue": [
+              0.918918918918919,
+              37
+            ],
+            "up=green": [
+              0.9166666666666666,
+              36
+            ],
+            "up=magenta": [
+              0.8571428571428571,
+              7
+            ],
+            "up=red": [
+              1.0,
+              17
+            ],
+            "up=white": [
+              0.56,
+              25
+            ],
+            "up=yellow": [
+              1.0,
+              17
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 51,
+          "acc_circular": 0.6666666666666666,
+          "acc_vanilla": 0.7254901960784313,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.27450980392156865,
+          "best_constant_answer": "none",
+          "cbd_rate_answerable": 0.0196078431372549,
+          "n_unanswerable": 129,
+          "cbd_rate_unanswerable": 0.4496124031007752,
+          "unmatched": 0.08333333333333333,
+          "truncated": 0.1111111111111111,
+          "mean_tokens": 671.4902777777778,
+          "strata_circular": {
+            "detent=0": [
+              0.14285714285714285,
+              14
+            ],
+            "detent=1": [
+              0.9166666666666666,
+              12
+            ],
+            "detent=2": [
+              0.6923076923076923,
+              13
+            ],
+            "detent=3": [
+              1.0,
+              12
+            ],
+            "truth=blue": [
+              0.9166666666666666,
+              12
+            ],
+            "truth=green": [
+              1.0,
+              12
+            ],
+            "truth=none": [
+              0.14285714285714285,
+              14
+            ],
+            "truth=yellow": [
+              0.6923076923076923,
+              13
+            ],
+            "up=blue": [
+              0.6666666666666666,
+              15
+            ],
+            "up=green": [
+              0.375,
+              8
+            ],
+            "up=magenta": [
+              0.5,
+              2
+            ],
+            "up=red": [
+              0.7058823529411765,
+              17
+            ],
+            "up=white": [
+              0.8888888888888888,
+              9
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.43137254901960786,
+      "n_all_answerable": 51
+    },
+    "test/s040+s220": {
+      "n_frames": 180,
+      "seconds": 513.9415235519409,
+      "levels": {
+        "up": {
+          "n_answerable": 180,
+          "acc_circular": 0.8055555555555556,
+          "acc_vanilla": 0.9166666666666666,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.027777777777777776,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.017592592592592594,
+          "truncated": 0.023148148148148147,
+          "mean_tokens": 116.63518518518518,
+          "strata_circular": {
+            "detent=0": [
+              0.8679245283018868,
+              53
+            ],
+            "detent=1": [
+              0.7674418604651163,
+              43
+            ],
+            "detent=2": [
+              0.8292682926829268,
+              41
+            ],
+            "detent=3": [
+              0.7441860465116279,
+              43
+            ],
+            "truth=blue": [
+              0.6486486486486487,
+              37
+            ],
+            "truth=green": [
+              0.6944444444444444,
+              36
+            ],
+            "truth=magenta": [
+              1.0,
+              10
+            ],
+            "truth=red": [
+              0.47058823529411764,
+              17
+            ],
+            "truth=white": [
+              0.9682539682539683,
+              63
+            ],
+            "truth=yellow": [
+              1.0,
+              17
+            ],
+            "up=blue": [
+              0.6486486486486487,
+              37
+            ],
+            "up=green": [
+              0.6944444444444444,
+              36
+            ],
+            "up=magenta": [
+              1.0,
+              10
+            ],
+            "up=red": [
+              0.47058823529411764,
+              17
+            ],
+            "up=white": [
+              0.9682539682539683,
+              63
+            ],
+            "up=yellow": [
+              1.0,
+              17
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 180,
+          "acc_circular": 0.7444444444444445,
+          "acc_vanilla": 0.7444444444444445,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.7055555555555556,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 18.06388888888889,
+          "strata_circular": {
+            "detent=0": [
+              0.1320754716981132,
+              53
+            ],
+            "detent=1": [
+              1.0,
+              43
+            ],
+            "detent=2": [
+              1.0,
+              41
+            ],
+            "detent=3": [
+              1.0,
+              43
+            ],
+            "truth=no": [
+              0.1320754716981132,
+              53
+            ],
+            "truth=yes": [
+              1.0,
+              127
+            ],
+            "up=blue": [
+              0.7567567567567568,
+              37
+            ],
+            "up=green": [
+              0.7222222222222222,
+              36
+            ],
+            "up=magenta": [
+              0.8,
+              10
+            ],
+            "up=red": [
+              0.7058823529411765,
+              17
+            ],
+            "up=white": [
+              0.746031746031746,
+              63
+            ],
+            "up=yellow": [
+              0.7647058823529411,
+              17
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 154,
+          "acc_circular": 0.6623376623376623,
+          "acc_vanilla": 0.7857142857142857,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.3051948051948052,
+          "best_constant_answer": "none",
+          "cbd_rate_answerable": 0.05194805194805195,
+          "n_unanswerable": 26,
+          "cbd_rate_unanswerable": 0.5,
+          "unmatched": 0.02638888888888889,
+          "truncated": 0.0375,
+          "mean_tokens": 324.475,
+          "strata_circular": {
+            "detent=0": [
+              0.3829787234042553,
+              47
+            ],
+            "detent=1": [
+              0.7575757575757576,
+              33
+            ],
+            "detent=2": [
+              0.7777777777777778,
+              36
+            ],
+            "detent=3": [
+              0.8157894736842105,
+              38
+            ],
+            "truth=blue": [
+              0.7575757575757576,
+              33
+            ],
+            "truth=green": [
+              0.8157894736842105,
+              38
+            ],
+            "truth=none": [
+              0.3829787234042553,
+              47
+            ],
+            "truth=yellow": [
+              0.7777777777777778,
+              36
+            ],
+            "up=blue": [
+              0.7142857142857143,
+              35
+            ],
+            "up=green": [
+              0.40625,
+              32
+            ],
+            "up=magenta": [
+              0.8,
+              10
+            ],
+            "up=red": [
+              0.9411764705882353,
+              17
+            ],
+            "up=white": [
+              0.6666666666666666,
+              60
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.3961038961038961,
+      "n_all_answerable": 154
+    },
+    "test/c1+s040+s220": {
+      "n_frames": 180,
+      "seconds": 550.0542793273926,
+      "levels": {
+        "up": {
+          "n_answerable": 180,
+          "acc_circular": 0.8666666666666667,
+          "acc_vanilla": 0.9611111111111111,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.03888888888888889,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.022222222222222223,
+          "truncated": 0.026851851851851852,
+          "mean_tokens": 130.5,
+          "strata_circular": {
+            "detent=0": [
+              1.0,
+              53
+            ],
+            "detent=1": [
+              0.7441860465116279,
+              43
+            ],
+            "detent=2": [
+              0.9024390243902439,
+              41
+            ],
+            "detent=3": [
+              0.7906976744186046,
+              43
+            ],
+            "truth=blue": [
+              0.8108108108108109,
+              37
+            ],
+            "truth=green": [
+              0.7222222222222222,
+              36
+            ],
+            "truth=magenta": [
+              1.0,
+              10
+            ],
+            "truth=red": [
+              0.6470588235294118,
+              17
+            ],
+            "truth=white": [
+              1.0,
+              63
+            ],
+            "truth=yellow": [
+              0.9411764705882353,
+              17
+            ],
+            "up=blue": [
+              0.8108108108108109,
+              37
+            ],
+            "up=green": [
+              0.7222222222222222,
+              36
+            ],
+            "up=magenta": [
+              1.0,
+              10
+            ],
+            "up=red": [
+              0.6470588235294118,
+              17
+            ],
+            "up=white": [
+              1.0,
+              63
+            ],
+            "up=yellow": [
+              0.9411764705882353,
+              17
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 180,
+          "acc_circular": 0.8,
+          "acc_vanilla": 0.8,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.7055555555555556,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.0,
+          "truncated": 0.0,
+          "mean_tokens": 15.602777777777778,
+          "strata_circular": {
+            "detent=0": [
+              0.32075471698113206,
+              53
+            ],
+            "detent=1": [
+              1.0,
+              43
+            ],
+            "detent=2": [
+              1.0,
+              41
+            ],
+            "detent=3": [
+              1.0,
+              43
+            ],
+            "truth=no": [
+              0.32075471698113206,
+              53
+            ],
+            "truth=yes": [
+              1.0,
+              127
+            ],
+            "up=blue": [
+              0.8918918918918919,
+              37
+            ],
+            "up=green": [
+              0.8333333333333334,
+              36
+            ],
+            "up=magenta": [
+              0.8,
+              10
+            ],
+            "up=red": [
+              0.8235294117647058,
+              17
+            ],
+            "up=white": [
+              0.746031746031746,
+              63
+            ],
+            "up=yellow": [
+              0.7058823529411765,
+              17
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 159,
+          "acc_circular": 0.6792452830188679,
+          "acc_vanilla": 0.7924528301886793,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.29559748427672955,
+          "best_constant_answer": "none",
+          "cbd_rate_answerable": 0.11320754716981132,
+          "n_unanswerable": 21,
+          "cbd_rate_unanswerable": 0.6666666666666666,
+          "unmatched": 0.02638888888888889,
+          "truncated": 0.03888888888888889,
+          "mean_tokens": 335.5652777777778,
+          "strata_circular": {
+            "detent=0": [
+              0.46808510638297873,
+              47
+            ],
+            "detent=1": [
+              0.6470588235294118,
+              34
+            ],
+            "detent=2": [
+              0.7692307692307693,
+              39
+            ],
+            "detent=3": [
+              0.8717948717948718,
+              39
+            ],
+            "truth=blue": [
+              0.6470588235294118,
+              34
+            ],
+            "truth=green": [
+              0.8717948717948718,
+              39
+            ],
+            "truth=none": [
+              0.46808510638297873,
+              47
+            ],
+            "truth=yellow": [
+              0.7692307692307693,
+              39
+            ],
+            "up=blue": [
+              0.6756756756756757,
+              37
+            ],
+            "up=green": [
+              0.6764705882352942,
+              34
+            ],
+            "up=magenta": [
+              0.6,
+              10
+            ],
+            "up=red": [
+              0.9411764705882353,
+              17
+            ],
+            "up=white": [
+              0.6229508196721312,
+              61
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.5094339622641509,
+      "n_all_answerable": 159
+    },
+    "test/c1+s040+s220@nohand": {
+      "n_frames": 180,
+      "seconds": 679.8936302661896,
+      "levels": {
+        "up": {
+          "n_answerable": 180,
+          "acc_circular": 0.8388888888888889,
+          "acc_vanilla": 0.9277777777777778,
+          "random_vanilla": 0.14285714285714285,
+          "random_circular": 8.499859752314083e-06,
+          "best_constant": 0.35,
+          "best_constant_answer": "white",
+          "cbd_rate_answerable": 0.07777777777777778,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.03888888888888889,
+          "truncated": 0.05648148148148148,
+          "mean_tokens": 280.8388888888889,
+          "strata_circular": {
+            "detent=0": [
+              0.9811320754716981,
+              53
+            ],
+            "detent=1": [
+              0.6744186046511628,
+              43
+            ],
+            "detent=2": [
+              0.8536585365853658,
+              41
+            ],
+            "detent=3": [
+              0.813953488372093,
+              43
+            ],
+            "truth=blue": [
+              0.7297297297297297,
+              37
+            ],
+            "truth=green": [
+              0.6666666666666666,
+              36
+            ],
+            "truth=magenta": [
+              1.0,
+              10
+            ],
+            "truth=red": [
+              0.7058823529411765,
+              17
+            ],
+            "truth=white": [
+              1.0,
+              63
+            ],
+            "truth=yellow": [
+              0.8823529411764706,
+              17
+            ],
+            "up=blue": [
+              0.7297297297297297,
+              37
+            ],
+            "up=green": [
+              0.6666666666666666,
+              36
+            ],
+            "up=magenta": [
+              1.0,
+              10
+            ],
+            "up=red": [
+              0.7058823529411765,
+              17
+            ],
+            "up=white": [
+              1.0,
+              63
+            ],
+            "up=yellow": [
+              0.8823529411764706,
+              17
+            ]
+          }
+        },
+        "turned": {
+          "n_answerable": 180,
+          "acc_circular": 0.8055555555555556,
+          "acc_vanilla": 0.8055555555555556,
+          "random_vanilla": 0.3333333333333333,
+          "random_circular": 0.1111111111111111,
+          "best_constant": 0.7055555555555556,
+          "best_constant_answer": "yes",
+          "cbd_rate_answerable": 0.0,
+          "n_unanswerable": 0,
+          "cbd_rate_unanswerable": 0.0,
+          "unmatched": 0.002777777777777778,
+          "truncated": 0.002777777777777778,
+          "mean_tokens": 29.40277777777778,
+          "strata_circular": {
+            "detent=0": [
+              0.33962264150943394,
+              53
+            ],
+            "detent=1": [
+              1.0,
+              43
+            ],
+            "detent=2": [
+              1.0,
+              41
+            ],
+            "detent=3": [
+              1.0,
+              43
+            ],
+            "truth=no": [
+              0.33962264150943394,
+              53
+            ],
+            "truth=yes": [
+              1.0,
+              127
+            ],
+            "up=blue": [
+              0.8918918918918919,
+              37
+            ],
+            "up=green": [
+              0.8611111111111112,
+              36
+            ],
+            "up=magenta": [
+              0.8,
+              10
+            ],
+            "up=red": [
+              0.8235294117647058,
+              17
+            ],
+            "up=white": [
+              0.746031746031746,
+              63
+            ],
+            "up=yellow": [
+              0.7058823529411765,
+              17
+            ]
+          }
+        },
+        "band": {
+          "n_answerable": 159,
+          "acc_circular": 0.6918238993710691,
+          "acc_vanilla": 0.8113207547169812,
+          "random_vanilla": 0.2,
+          "random_circular": 0.0016000000000000003,
+          "best_constant": 0.29559748427672955,
+          "best_constant_answer": "none",
+          "cbd_rate_answerable": 0.08176100628930817,
+          "n_unanswerable": 21,
+          "cbd_rate_unanswerable": 0.7619047619047619,
+          "unmatched": 0.03611111111111111,
+          "truncated": 0.05694444444444444,
+          "mean_tokens": 445.9875,
+          "strata_circular": {
+            "detent=0": [
+              0.5957446808510638,
+              47
+            ],
+            "detent=1": [
+              0.7058823529411765,
+              34
+            ],
+            "detent=2": [
+              0.6153846153846154,
+              39
+            ],
+            "detent=3": [
+              0.8717948717948718,
+              39
+            ],
+            "truth=blue": [
+              0.7058823529411765,
+              34
+            ],
+            "truth=green": [
+              0.8717948717948718,
+              39
+            ],
+            "truth=none": [
+              0.5957446808510638,
+              47
+            ],
+            "truth=yellow": [
+              0.6153846153846154,
+              39
+            ],
+            "up=blue": [
+              0.7837837837837838,
+              37
+            ],
+            "up=green": [
+              0.7058823529411765,
+              34
+            ],
+            "up=magenta": [
+              0.5,
+              10
+            ],
+            "up=red": [
+              1.0,
+              17
+            ],
+            "up=white": [
+              0.5737704918032787,
+              61
+            ]
+          }
+        }
+      },
+      "all_levels_circular": 0.4591194968553459,
+      "n_all_answerable": 159
+    }
+  }
+}

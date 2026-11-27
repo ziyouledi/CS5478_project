@@ -1,0 +1,215 @@
+{
+  "record_type": "shadow_task_switch_evaluation",
+  "cycle": [
+    "any",
+    "up",
+    "turn"
+  ],
+  "hold_steps": 10,
+  "checkpoints": {
+    "reorient": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-seed0/frozen/expert-seed0.pth",
+    "turn": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-faceturn-cap0.05_hold10_handoff-seed0/frozen/expert-faceturn-handoff-seed0.pth"
+  },
+  "seed": 20261006,
+  "num_envs": 1024,
+  "steps": 600,
+  "stall_steps": 120,
+  "selector": {
+    "hold": 1,
+    "only_expert": "reorient",
+    "delay": 0,
+    "fraction_env_steps_kind_stale": 0.0,
+    "fraction_env_steps_goal_stale": 0.0,
+    "passthrough_max_abs_goal_field_diff": 1.4901161193847656e-07
+  },
+  "hinge": {
+    "stiffness": 5.0,
+    "damping": 0.02,
+    "effort_limit": 0.05,
+    "geometry": {
+      "size": [
+        0.0600000000000005,
+        0.0600000000000005,
+        0.06000000000000005
+      ],
+      "mass_total": 0.2160000056028366,
+      "mass_base": 0.1440000037352244,
+      "mass_top": 0.0720000018676122,
+      "top_inertia_about_hinge": 4.3200001120568034e-05
+    },
+    "samples": 629760,
+    "mean_abs_angle_deg": 0.9719872029569686,
+    "max_abs_angle_deg": 185.00717570835766,
+    "fraction_over_5_deg": 0.024079014227642276,
+    "fraction_over_15_deg": 0.00822853150406504,
+    "fraction_over_45_deg": 0.006531059451219512
+  },
+  "phases_completed_per_600_steps": 2.0126953125,
+  "cycles_completed_per_600_steps": 0.6708984375,
+  "falls_per_600_steps": 0.013671875,
+  "time_outs": 1010,
+  "fraction_of_steps_by_kind": {
+    "any": 0.04891438802083334,
+    "up": 0.035047200520833335,
+    "turn": 0.9160384114583334
+  },
+  "by_kind": {
+    "any": {
+      "completed_per_600_steps": 1.0078125,
+      "steps_to_complete": {
+        "n": 1032,
+        "mean": 27.279069900512695,
+        "median": 27.0,
+        "p90": 39.0,
+        "max": 100.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1032,
+        "mean": 90.51126098632812,
+        "median": 90.59468078613281,
+        "p90": 133.53898010253906,
+        "max": 178.96788024902344
+      },
+      "falls_per_600_steps": 0.005859375,
+      "stalled_phases": 1,
+      "stalled_fraction_of_started": 0.0004880429477794046,
+      "hinge_drift_deg": {
+        "n": 1032,
+        "mean": 1.9155128002166748,
+        "median": 0.23722714185714722,
+        "p90": 3.988796806335447,
+        "max": 92.4615707397461
+      },
+      "fraction_hinge_moved_over_45_deg": 0.005813953488372093
+    },
+    "up": {
+      "completed_per_600_steps": 1.00390625,
+      "steps_to_complete": {
+        "n": 1028,
+        "mean": 20.790855407714844,
+        "median": 20.0,
+        "p90": 30.0,
+        "max": 54.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1028,
+        "mean": 3.370648145675659,
+        "median": 3.4070587158203125,
+        "p90": 5.046721363067627,
+        "max": 5.713710784912109
+      },
+      "falls_per_600_steps": 0.00390625,
+      "stalled_phases": 0,
+      "stalled_fraction_of_started": 0.0,
+      "hinge_drift_deg": {
+        "n": 1028,
+        "mean": 1.7458831071853638,
+        "median": 0.3959048092365265,
+        "p90": 4.955082750320439,
+        "max": 34.54106140136719
+      },
+      "fraction_hinge_moved_over_45_deg": 0.0
+    },
+    "turn": {
+      "completed_per_600_steps": 0.0009765625,
+      "steps_to_complete": {
+        "n": 1,
+        "mean": 26.0,
+        "median": 26.0,
+        "p90": 26.0,
+        "max": 26.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1,
+        "mean": 62.14360809326172,
+        "median": 62.14360809326172,
+        "p90": 62.14360809326172,
+        "max": 62.14360809326172
+      },
+      "falls_per_600_steps": 0.00390625,
+      "stalled_phases": 1023,
+      "stalled_fraction_of_started": 0.995136186770428,
+      "detent_error_deg_at_completion": {
+        "n": 1,
+        "mean": 0.1295003890991211,
+        "median": 0.1295003890991211,
+        "p90": 0.1295003890991211,
+        "max": 0.1295003890991211
+      }
+    }
+  },
+  "by_transition": {
+    "reset->any": {
+      "steps_to_complete": {
+        "n": 1031,
+        "mean": 27.282249450683594,
+        "median": 27.0,
+        "p90": 39.0,
+        "max": 100.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1031,
+        "mean": 90.47014617919922,
+        "median": 90.55866241455078,
+        "p90": 133.58721923828125,
+        "max": 178.96788024902344
+      },
+      "falls": 6,
+      "fall_fraction_of_started": 0.0057859209257473485
+    },
+    "any->up": {
+      "steps_to_complete": {
+        "n": 1028,
+        "mean": 20.790855407714844,
+        "median": 20.0,
+        "p90": 30.0,
+        "max": 54.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1028,
+        "mean": 3.370648145675659,
+        "median": 3.4070587158203125,
+        "p90": 5.046721363067627,
+        "max": 5.713710784912109
+      },
+      "falls": 4,
+      "fall_fraction_of_started": 0.003875968992248062
+    },
+    "up->turn": {
+      "steps_to_complete": {
+        "n": 1,
+        "mean": 26.0,
+        "median": 26.0,
+        "p90": 26.0,
+        "max": 26.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1,
+        "mean": 62.14360809326172,
+        "median": 62.14360809326172,
+        "p90": 62.14360809326172,
+        "max": 62.14360809326172
+      },
+      "falls": 4,
+      "fall_fraction_of_started": 0.8
+    },
+    "turn->any": {
+      "steps_to_complete": {
+        "n": 1,
+        "mean": 24.0,
+        "median": 24.0,
+        "p90": 24.0,
+        "max": 24.0
+      },
+      "tilt_deg_at_completion": {
+        "n": 1,
+        "mean": 132.90589904785156,
+        "median": 132.90589904785156,
+        "p90": 132.90589904785156,
+        "max": 132.90589904785156
+      },
+      "falls": 0,
+      "fall_fraction_of_started": 0.0
+    }
+  }
+}

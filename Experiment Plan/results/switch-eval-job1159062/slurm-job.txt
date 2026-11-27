@@ -1,0 +1,2 @@
+JobID|JobName|State|Submit|Start|End|Elapsed|NodeList|SubmitLine
+1159062|unified-eval-v4|COMPLETED|2026-11-18T01:04:48|2026-11-18T03:27:43|2026-11-18T03:34:36|00:06:53|xgpf9|sbatch --parsable --export=ALL --dependency=afterok:1159044 --job-name=unified-eval-v4 31_switch_eval.sbatch

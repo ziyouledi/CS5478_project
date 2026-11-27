@@ -1,0 +1,30 @@
+{
+  "train_job": "1103415",
+  "eval_job": "1103416",
+  "condition": "m1-gate: goal visible, asymmetric critic, blind, seed 0, 5000 it",
+  "run_dir": "~/data/low-dim-intent/runs/student-m1-gate-blind-seed0-job1103415_0/",
+  "eval_dir": "~/data/low-dim-intent/runs/eval-student-m1-gate-blind-seed0-job1103416_0/",
+  "final_successes_per_episode": 25.7548828125,
+  "final_reward": 7133.7637795736155,
+  "final_fall_fraction": 0.0634765625,
+  "threshold": 23.499,
+  "P_E": 26.11,
+  "final_normalized": 0.9863991885292991,
+  "n80_iterations": 2375.45,
+  "auc_normalized": 0.649,
+  "stage1_blind_range": {
+    "final_normalized": [
+      0.947,
+      1.0
+    ],
+    "n80_iterations": [
+      1546,
+      3189
+    ],
+    "auc_normalized": [
+      0.598,
+      0.8
+    ]
+  },
+  "verdict": "PASS"
+}

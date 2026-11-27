@@ -1,0 +1,201 @@
+{
+  "P_E": 31.13671875,
+  "P_E_source": "M2 expert ep_5000, job 1032490",
+  "P_B": 19.657552083333332,
+  "P_B_source": "mean of m2-hidden blind seeds 0-2",
+  "num_runs": 27,
+  "status": "PASS",
+  "failures": [],
+  "groups": [
+    {
+      "intent": "blind",
+      "hold": 1,
+      "rate_hz": 60.0,
+      "n_seeds": 3,
+      "successes_mean": 19.657552083333332,
+      "recovery_mean": 1.1102230246251565e-16,
+      "recovery_sd": 0.2559100798464772,
+      "recovery_values": [
+        0.09908121597096198,
+        -0.290636343012704,
+        0.19155512704174238
+      ],
+      "auc_mean": 0.5188402141791774,
+      "auc_sd": 0.05077630356491998,
+      "ceiling": 1.0,
+      "n80_reached": 0,
+      "fall_mean": 0.005859375,
+      "stage1_goal4_recovery": null
+    },
+    {
+      "intent": "goal-4",
+      "hold": 1,
+      "rate_hz": 60.0,
+      "n_seeds": 3,
+      "successes_mean": 32.7041015625,
+      "recovery_mean": 1.1365415154264973,
+      "recovery_sd": 0.06339912090837514,
+      "recovery_values": [
+        1.0824353448275863,
+        1.2063010435571688,
+        1.1208881578947367
+      ],
+      "auc_mean": 0.7805876597805935,
+      "auc_sd": 0.04362020897097848,
+      "ceiling": 1.0,
+      "n80_reached": 3,
+      "fall_mean": 0.011393229166666666,
+      "stage1_goal4_recovery": 0.7711243016759776
+    },
+    {
+      "intent": "goal-4",
+      "hold": 6,
+      "rate_hz": 10.0,
+      "n_seeds": 3,
+      "successes_mean": 28.920247395833332,
+      "recovery_mean": 0.8069135662431942,
+      "recovery_sd": 0.15123601820291718,
+      "recovery_values": [
+        0.9370462794918331,
+        0.6409936479128857,
+        0.8427007713248639
+      ],
+      "auc_mean": 0.6859821279220508,
+      "auc_sd": 0.09682055931912684,
+      "ceiling": 1.0,
+      "n80_reached": 3,
+      "fall_mean": 0.011067708333333334,
+      "stage1_goal4_recovery": 0.7071777733439745,
+      "p_vs_same_intent_n1": 0.0475849182727519
+    },
+    {
+      "intent": "goal-4",
+      "hold": 12,
+      "rate_hz": 5.0,
+      "n_seeds": 3,
+      "successes_mean": 26.8447265625,
+      "recovery_mean": 0.626105943738657,
+      "recovery_sd": 0.10546768422833525,
+      "recovery_values": [
+        0.7226633393829401,
+        0.5135549001814883,
+        0.6420995916515427
+      ],
+      "auc_mean": 0.6229519943824141,
+      "auc_sd": 0.0433227272483617,
+      "ceiling": 1.0,
+      "n80_reached": 3,
+      "fall_mean": 0.009114583333333334,
+      "stage1_goal4_recovery": 0.6477329409417399,
+      "p_vs_same_intent_n1": 0.004106762288794613
+    },
+    {
+      "intent": "goal-4",
+      "hold": 30,
+      "rate_hz": 2.0,
+      "n_seeds": 3,
+      "successes_mean": 16.291015625,
+      "recovery_mean": -0.29327359346642456,
+      "recovery_sd": 0.06278086630795492,
+      "recovery_values": [
+        -0.22240812159709605,
+        -0.341935117967332,
+        -0.3154775408348456
+      ],
+      "auc_mean": 0.4331796512357295,
+      "auc_sd": 0.018441968948112973,
+      "ceiling": 0.6423284405971648,
+      "n80_reached": 0,
+      "fall_mean": 0.027994791666666668,
+      "stage1_goal4_recovery": 0.42571578212290495,
+      "p_vs_same_intent_n1": 1.0030846603530543e-05
+    },
+    {
+      "intent": "goal-yaw",
+      "hold": 1,
+      "rate_hz": 60.0,
+      "n_seeds": 3,
+      "successes_mean": 35.664713541666664,
+      "recovery_mean": 1.3944532667876588,
+      "recovery_sd": 0.14632264637400874,
+      "recovery_values": [
+        1.355858666061706,
+        1.5562046279491832,
+        1.2712965063520871
+      ],
+      "auc_mean": 0.8204489538465828,
+      "auc_sd": 0.06771135903566286,
+      "ceiling": 1.0,
+      "n80_reached": 3,
+      "fall_mean": 0.009114583333333334,
+      "stage1_goal4_recovery": 0.7711243016759776,
+      "p_vs_goal4_same_n": 0.0756668202021182
+    },
+    {
+      "intent": "goal-yaw",
+      "hold": 6,
+      "rate_hz": 10.0,
+      "n_seeds": 3,
+      "successes_mean": 31.25390625,
+      "recovery_mean": 1.0102087114337568,
+      "recovery_sd": 0.2913160321661961,
+      "recovery_values": [
+        0.7245349364791289,
+        1.3068568511796732,
+        0.9992343466424682
+      ],
+      "auc_mean": 0.7359126921897433,
+      "auc_sd": 0.0835807672660218,
+      "ceiling": 1.0,
+      "n80_reached": 3,
+      "fall_mean": 0.0078125,
+      "stage1_goal4_recovery": 0.7071777733439745,
+      "p_vs_same_intent_n1": 0.1354353189903933,
+      "p_vs_goal4_same_n": 0.36187569069550696
+    },
+    {
+      "intent": "goal-yaw",
+      "hold": 12,
+      "rate_hz": 5.0,
+      "n_seeds": 3,
+      "successes_mean": 28.19921875,
+      "recovery_mean": 0.7441016333938295,
+      "recovery_sd": 0.2004710572151204,
+      "recovery_values": [
+        0.7118591197822142,
+        0.9587397912885662,
+        0.5617059891107079
+      ],
+      "auc_mean": 0.6786469441308075,
+      "auc_sd": 0.11237239351298897,
+      "ceiling": 1.0,
+      "n80_reached": 3,
+      "fall_mean": 0.0087890625,
+      "stage1_goal4_recovery": 0.6477329409417399,
+      "p_vs_same_intent_n1": 0.012892086734006812,
+      "p_vs_goal4_same_n": 0.43287008170960306
+    },
+    {
+      "intent": "goal-yaw",
+      "hold": 30,
+      "rate_hz": 2.0,
+      "n_seeds": 3,
+      "successes_mean": 16.216796875,
+      "recovery_mean": -0.29973911070780385,
+      "recovery_sd": 0.10117385143512429,
+      "recovery_values": [
+        -0.21347549909255886,
+        -0.27464269509981837,
+        -0.41109913793103436
+      ],
+      "auc_mean": 0.4108463057054043,
+      "auc_sd": 0.010157394293795032,
+      "ceiling": 0.6423284405971648,
+      "n80_reached": 0,
+      "fall_mean": 0.022786458333333332,
+      "stage1_goal4_recovery": 0.42571578212290495,
+      "p_vs_same_intent_n1": 0.00017309833151474608,
+      "p_vs_goal4_same_n": 0.9304301647324555
+    }
+  ]
+}

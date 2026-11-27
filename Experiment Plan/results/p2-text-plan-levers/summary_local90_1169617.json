@@ -1,0 +1,87 @@
+{
+  "record_type": "p2_text_planner_eval",
+  "plan_variant": "local90",
+  "model": "/home/x/xiaox/data/low-dim-intent/hf/Qwen3-VL-8B-Instruct",
+  "seed": 20261120,
+  "tasks_per_level": 50,
+  "levels": [
+    1
+  ],
+  "group_size": 8,
+  "max_tokens": 1024,
+  "greedy": {
+    "mode": "greedy",
+    "temperature": 0.0,
+    "num_samples": 1,
+    "elapsed_s": 63.38774824142456,
+    "overall_success_rate": 0.16,
+    "overall_effective_group_fraction": null,
+    "overall_step_attribution": {
+      "optimal": 0.1326,
+      "parse_error": 0.0055,
+      "suboptimal_legal": 0.3149,
+      "truncated": 0.547
+    },
+    "by_level": {
+      "1": {
+        "n_tasks": 50,
+        "n_rollouts": 50,
+        "success_rate": 0.16,
+        "pass_at_k": 0.16,
+        "effective_group_fraction": null,
+        "mean_rounds_succeeded": 1.625,
+        "rounds_ratio_vs_optimal": 1.625,
+        "mean_tokens_per_round": 683.5580110497237,
+        "step_attribution": {
+          "optimal": 0.1326,
+          "parse_error": 0.0055,
+          "suboptimal_legal": 0.3149,
+          "truncated": 0.547
+        },
+        "first_step_attribution": {
+          "optimal": 0.12,
+          "suboptimal_legal": 0.44,
+          "truncated": 0.44
+        }
+      }
+    }
+  },
+  "grpo_group": {
+    "mode": "grpo_group",
+    "temperature": 1.0,
+    "num_samples": 8,
+    "elapsed_s": 266.24384331703186,
+    "overall_success_rate": 0.215,
+    "overall_effective_group_fraction": 0.68,
+    "overall_step_attribution": {
+      "optimal": 0.1314,
+      "parse_error": 0.0099,
+      "suboptimal_legal": 0.262,
+      "truncated": 0.5968
+    },
+    "by_level": {
+      "1": {
+        "n_tasks": 50,
+        "n_rollouts": 400,
+        "success_rate": 0.215,
+        "pass_at_k": 0.7,
+        "effective_group_fraction": 0.68,
+        "mean_rounds_succeeded": 1.8604651162790697,
+        "rounds_ratio_vs_optimal": 1.8604651162790697,
+        "mean_tokens_per_round": 727.4689265536723,
+        "step_attribution": {
+          "optimal": 0.1314,
+          "parse_error": 0.0099,
+          "suboptimal_legal": 0.262,
+          "truncated": 0.5968
+        },
+        "first_step_attribution": {
+          "optimal": 0.1075,
+          "parse_error": 0.0175,
+          "suboptimal_legal": 0.3925,
+          "truncated": 0.4825
+        }
+      }
+    }
+  }
+}

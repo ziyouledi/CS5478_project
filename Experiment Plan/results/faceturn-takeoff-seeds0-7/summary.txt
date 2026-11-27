@@ -1,0 +1,50 @@
+
+goal-yaw 60Hz: seed final(/PE) max first>10 fall@5000 last5mean v4200
+  s0  25.03 (0.79) max  25.03 first 3600 fall 0.02 last5 22.75 @4200 20.56
+  s1   1.49 (0.05) max   1.59 first None fall 0.22 last5  1.52 @4200  1.43
+  s2   0.00 (0.00) max   0.00 first None fall 0.03 last5  0.00 @4200  0.00
+  s3   2.78 (0.09) max   2.91 first None fall 0.07 last5  2.76 @4200  2.64
+  s4   5.29 (0.17) max   5.29 first None fall 0.07 last5  4.45 @4200  3.65
+  s5   0.00 (0.00) max   0.00 first None fall 0.03 last5  0.00 @4200  0.00
+  s6   0.40 (0.01) max   0.45 first None fall 0.06 last5  0.41 @4200  0.38
+  s7   0.37 (0.01) max   0.50 first None fall 0.03 last5  0.41 @4200  0.44
+  mean final/PE 0.139
+
+hand-8 60Hz: seed final(/PE) max first>10 fall@5000 last5mean v4200
+  s0   1.08 (0.03) max   1.08 first None fall 0.02 last5  0.87 @4200  0.73
+  s1   0.46 (0.01) max   0.48 first None fall 0.22 last5  0.44 @4200  0.48
+  s2   0.48 (0.02) max   0.51 first None fall 0.02 last5  0.50 @4200  0.50
+  s3   0.89 (0.03) max   0.93 first None fall 0.39 last5  0.87 @4200  0.82
+  s4  33.90 (1.07) max  34.52 first 2800 fall 0.02 last5 33.93 @4200 33.48
+  s5   0.92 (0.03) max   0.97 first None fall 0.22 last5  0.93 @4200  0.92
+  s6   0.00 (0.00) max   0.01 first None fall 0.01 last5  0.00 @4200  0.00
+  s7  33.19 (1.04) max  33.58 first 1000 fall 0.01 last5 33.31 @4200 33.01
+  mean final/PE 0.279
+
+goal-yaw 10Hz: seed final(/PE) max first>10 fall@5000 last5mean v4200
+  s0  30.09 (0.95) max  30.47 first 2400 fall 0.01 last5 30.21 @4200 30.44
+  s1   3.73 (0.12) max   3.79 first None fall 0.33 last5  3.22 @4200  2.80
+  s2   2.72 (0.09) max   2.83 first None fall 0.06 last5  2.66 @4200  2.65
+  s3  29.03 (0.91) max  29.03 first 3400 fall 0.00 last5 27.60 @4200 25.67
+  s4   0.00 (0.00) max   0.00 first None fall 0.00 last5  0.00 @4200  0.00
+  s5   1.02 (0.03) max   1.02 first None fall 0.37 last5  0.98 @4200  0.93
+  s6   3.12 (0.10) max   3.12 first None fall 0.04 last5  2.84 @4200  2.67
+  s7  14.84 (0.47) max  14.84 first 4800 fall 0.21 last5  8.27 @4200  3.35
+  mean final/PE 0.333
+
+hand-8 10Hz: seed final(/PE) max first>10 fall@5000 last5mean v4200
+  s0   0.00 (0.00) max   0.00 first None fall 0.03 last5  0.00 @4200  0.00
+  s1   0.86 (0.03) max   0.92 first None fall 0.30 last5  0.87 @4200  0.83
+  s2   2.77 (0.09) max   2.86 first None fall 0.04 last5  2.66 @4200  2.58
+  s3  23.21 (0.73) max  23.21 first 2600 fall 0.01 last5 22.98 @4200 23.12
+  s4   1.46 (0.05) max   1.52 first None fall 0.58 last5  1.44 @4200  1.41
+  s5  34.01 (1.07) max  34.18 first 1400 fall 0.00 last5 33.92 @4200 33.36
+  s6   0.89 (0.03) max   0.89 first None fall 0.07 last5  0.79 @4200  0.72
+  s7   0.49 (0.02) max   0.49 first None fall 0.04 last5  0.46 @4200  0.45
+  mean final/PE 0.251
+60Hz take-off goal-yaw 1 /8 hand-8 2 /8 Fisher two-sided p=1.0000 one-sided p=0.9000
+10Hz take-off goal-yaw 3 /8 hand-8 2 /8 Fisher two-sided p=1.0000 one-sided p=0.5000
+pooled 4 /16 4 /16 two-sided p=1.0000 one-sided 0.6575
+threshold 5 {('goal-yaw', '60Hz'): 2, ('goal-yaw', '10Hz'): 3, ('hand-8', '60Hz'): 2, ('hand-8', '10Hz'): 2}
+threshold 15 {('goal-yaw', '60Hz'): 1, ('goal-yaw', '10Hz'): 2, ('hand-8', '60Hz'): 2, ('hand-8', '10Hz'): 2}
+threshold 20 {('goal-yaw', '60Hz'): 1, ('goal-yaw', '10Hz'): 2, ('hand-8', '60Hz'): 2, ('hand-8', '10Hz'): 2}

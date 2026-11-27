@@ -1,0 +1,56 @@
+{
+  "model": "/home/x/xiaox/data/low-dim-intent/runs/c2-grpo-terminal-job1175222/merged_hf",
+  "seconds": 49.4,
+  "overall": {
+    "n": 200,
+    "n_covered": 181,
+    "n_uncovered_abort": 19,
+    "success_all": 0.905,
+    "success_covered": 1.0,
+    "mean_rounds_ratio": 1.2155
+  },
+  "by_L": {
+    "L1": {
+      "n": 50,
+      "n_covered": 44,
+      "n_uncovered_abort": 6,
+      "success_all": 0.88,
+      "success_covered": 1.0,
+      "mean_rounds_ratio": 1.0
+    },
+    "L2": {
+      "n": 50,
+      "n_covered": 50,
+      "n_uncovered_abort": 0,
+      "success_all": 1.0,
+      "success_covered": 1.0,
+      "mean_rounds_ratio": 1.54
+    },
+    "L3": {
+      "n": 50,
+      "n_covered": 42,
+      "n_uncovered_abort": 8,
+      "success_all": 0.84,
+      "success_covered": 1.0,
+      "mean_rounds_ratio": 1.2857
+    },
+    "L4": {
+      "n": 50,
+      "n_covered": 45,
+      "n_uncovered_abort": 5,
+      "success_all": 0.9,
+      "success_covered": 1.0,
+      "mean_rounds_ratio": 1.0
+    }
+  },
+  "step_metrics": {
+    "total_steps": 542,
+    "img_test_frac": 0.9686,
+    "img_train_fallback_frac": 0.0314,
+    "json_valid": 1.0,
+    "state_exact_96": 0.9151,
+    "action_optimal": 0.9133,
+    "illegal_action": 0.0,
+    "parse_fail": 0.0
+  }
+}

@@ -1,0 +1,37 @@
+record_type=shadow_face_turn_expert_eval
+timestamp=2026-11-16T21:31:38+08:00
+job_id=1152153
+node=xgpf0.comp.nus.edu.sg
+isaaclab_commit=5c2ec81cb17532d32f7922dd7fcaae40d123b71a
+num_envs=256
+episodes=1024
+evaluation_seed=20261006
+face_turn_hold_steps=10
+run_root=/home/x/xiaox/data/low-dim-intent/runs/faceturn-eval-job1152153
+--- evaluation_start label=cap0.05-hold10-it10000-final effort_limit=0.05 ---
+checkpoint=/home/x/xiaox/software/isaaclab-stack/IsaacLab/logs/rl_games/shadow_hand_faceturn_cap0.05_hold10/2026-11-16_19-21-05/nn/last_shadow_hand_faceturn_cap0.05_hold10_ep_10000_rew__10811.122_.pth
+checkpoint_sha256=32fe0a5310143f3788f7f1c580b6f9ab99e212369792dcb604012697faca66f6
+hinged_cube stiffness=5.0 damping=0.02 effort_limit=0.05 geometry={"size": [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], "mass_total": 0.2160000056028366, "mass_base": 0.1440000037352244, "mass_top": 0.0720000018676122, "top_inertia_about_hinge": 4.3200001120568034e-05}
+face_turn_hold_steps=10
+mean_episode_reward=11659.919882982387
+std_episode_reward=1581.7354882663135
+mean_episode_length=596.06640625
+mean_consecutive_successes=8.043052555324637
+hinge={'stiffness': 5.0, 'damping': 0.02, 'effort_limit': 0.05, 'geometry': {'size': [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], 'mass_total': 0.2160000056028366, 'mass_base': 0.1440000037352244, 'mass_top': 0.0720000018676122, 'top_inertia_about_hinge': 4.3200001120568034e-05}, 'samples': 622592, 'mean_abs_angle_deg': 166.35095643672338, 'max_abs_angle_deg': 360.00001001791264, 'fraction_over_5_deg': 0.8733665064761513, 'fraction_over_15_deg': 0.8669385408100329, 'fraction_over_45_deg': 0.8447892038445723, 'hold_steps': 10, 'face_turns_per_env_step': 0.05622978401502504, 'face_turns_per_600_steps': 33.737870409015024, 'mean_axis_tilt_deg': 12.499855112586095, 'fraction_axis_tilt_over_45_deg': 0.00943140911936561, 'mean_abs_hinge_speed_rad_s': 5.950604319559825}
+checkpoint_evaluation_status=PASS
+evaluation_command_status=0
+--- evaluation_end label=cap0.05-hold10-it10000-final ---
+--- evaluation_start label=cap0.05-hold10-it10000-best effort_limit=0.05 ---
+checkpoint=/home/x/xiaox/software/isaaclab-stack/IsaacLab/logs/rl_games/shadow_hand_faceturn_cap0.05_hold10/2026-11-16_19-21-05/nn/shadow_hand_faceturn_cap0.05_hold10.pth
+checkpoint_sha256=34db1bd3ef08dd8d5f35b01ec99612215060257be3ad6b0a4f2ebfe81c390caf
+hinged_cube stiffness=5.0 damping=0.02 effort_limit=0.05 geometry={"size": [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], "mass_total": 0.2160000056028366, "mass_base": 0.1440000037352244, "mass_top": 0.0720000018676122, "top_inertia_about_hinge": 4.3200001120568034e-05}
+face_turn_hold_steps=10
+mean_episode_reward=11577.993291900493
+std_episode_reward=1947.2833747304853
+mean_episode_length=597.435546875
+mean_consecutive_successes=12.00083298895365
+hinge={'stiffness': 5.0, 'damping': 0.02, 'effort_limit': 0.05, 'geometry': {'size': [0.0600000000000005, 0.0600000000000005, 0.06000000000000005], 'mass_total': 0.2160000056028366, 'mass_base': 0.1440000037352244, 'mass_top': 0.0720000018676122, 'top_inertia_about_hinge': 4.3200001120568034e-05}, 'samples': 624640, 'mean_abs_angle_deg': 164.7126568141286, 'max_abs_angle_deg': 360.00001001791264, 'fraction_over_5_deg': 0.8650902920081968, 'fraction_over_15_deg': 0.8556352459016393, 'fraction_over_45_deg': 0.8316982581967213, 'hold_steps': 10, 'face_turns_per_env_step': 0.0556640625, 'face_turns_per_600_steps': 33.3984375, 'mean_axis_tilt_deg': 13.099257975192927, 'fraction_axis_tilt_over_45_deg': 0.014304439691151919, 'mean_abs_hinge_speed_rad_s': 5.888024145526178}
+checkpoint_evaluation_status=PASS
+evaluation_command_status=0
+--- evaluation_end label=cap0.05-hold10-it10000-best ---
+face_turn_eval_status=PASS

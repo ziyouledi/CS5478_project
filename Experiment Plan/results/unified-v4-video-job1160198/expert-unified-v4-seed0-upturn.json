@@ -1,0 +1,43 @@
+{
+  "record_type": "shadow_policy_video",
+  "task": "Isaac-Unified-HingedCube-Shadow-Direct-v0",
+  "run_dir": "/home/x/xiaox/software/isaaclab-stack/IsaacLab/logs/rl_games/shadow_hand_unified_cap0.05_hold10_v4/2026-11-18_01-50-48",
+  "checkpoint": "/home/x/xiaox/data/low-dim-intent/checkpoints/expert-unified-cap0.05_hold10_v4-seed0/frozen/expert-unified-v4-seed0.pth",
+  "checkpoint_sha256": "ca3d9367a648a933a927e612697e2aa3fa37e66d564cff76c6ea7c8e250ca1d4",
+  "turn_checkpoint": null,
+  "turn_checkpoint_sha256": null,
+  "intent_record": {
+    "intent": "blind"
+  },
+  "goal_hidden": false,
+  "intent_hold": 1,
+  "intent_delay": 0,
+  "intent_delay_trained": 0,
+  "seed": 20261028,
+  "video_steps": 600,
+  "control_hz": 60.0,
+  "num_envs": 16,
+  "env_index": 5,
+  "camera": {
+    "origin": "env 5",
+    "eye": [
+      0.45,
+      -1.05,
+      0.95
+    ],
+    "lookat": [
+      -0.08,
+      -0.4,
+      0.6
+    ]
+  },
+  "env_completed_episode_successes": [
+    40
+  ],
+  "env_successes_in_unfinished_episode": 0,
+  "videos": [
+    "/home/x/xiaox/data/low-dim-intent/videos/expert-unified-v4-seed0-upturn-job1160198_0/expert-unified-v4-seed0-upturn-step-0.mp4"
+  ],
+  "trace": "/home/x/xiaox/data/low-dim-intent/videos/expert-unified-v4-seed0-upturn-job1160198_0/expert-unified-v4-seed0-upturn_trace.npz",
+  "trace_fields": "object_rot, goal_rot [steps, envs, 4] (w, x, y, z); successes, episode_step [steps, envs]; after each step"
+}
